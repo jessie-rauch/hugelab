@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trupanion · Three Journey Narratives</title>
+<link href="https://api.fontshare.com/v2/css?f[]=monument-grotesk@400,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #000000;
+    --ink-soft: #3B4145;
+    --ink-muted: #6D737F;
+    --paper: #FFFFFF;
+    --paper-warm: #F2F8FE;
+    --paper-deep: #DCEAF7;
+    --rule: #CCD5E7;
+    --rule-soft: #DCEAF7;
+    --accent: #FF0090;
+    --accent-deep: #CC006F;
+    --gap: #CC0000;
+    --gap-deep: #990000;
+    --aspirational: #00FF75;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Monument Grotesk', 'Helvetica Neue', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .frame { max-width: 860px; margin: 0 auto; padding: 48px 40px 120px; }
+
+  /* MASTHEAD */
+  .masthead {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding-bottom: 28px; border-bottom: 1px solid var(--rule); margin-bottom: 32px;
+  }
+  .masthead-eyebrow {
+    font-family: 'DM Mono', 'Courier New', monospace; font-size: 10px;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 6px; display: block;
+  }
+  .masthead-title {
+    font-family: 'Monument Grotesk', 'Helvetica Neue', sans-serif; font-weight: 400; font-size: 28px;
+    line-height: 1.1; letter-spacing: -0.02em;
+  }
+  .masthead-title em { font-style: normal; font-weight: 400; color: inherit; }
+  .masthead-meta {
+    font-family: 'DM Mono', 'Courier New', monospace; font-size: 10px;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-muted);
+    text-align: right; line-height: 1.9;
+  }
+  .masthead-meta strong { color: var(--ink); }
+
+  /* PERSONA NAV */
+  .persona-nav {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+    margin-bottom: 56px;
+  }
+  .persona-nav-item {
+    display: flex; flex-direction: column; gap: 3px;
+    padding: 16px 18px; background: var(--paper-warm);
+    border: 1px solid var(--rule-soft); text-decoration: none;
+    color: var(--ink); transition: border-color 0.2s ease;
+  }
+  .persona-nav-item:hover { border-color: var(--accent); }
+  .persona-nav-num {
+    font-family: 'DM Mono', 'Courier New', monospace; font-size: 9px;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent);
+  }
+  .persona-nav-name {
+    font-family: 'Monument Grotesk', 'Helvetica Neue', sans-serif; font-weight: 500; font-size: 17px;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  .persona-nav-desc { font-size: 12px; color: var(--ink-muted); }
+
+  /* PERSONA DIVIDER */
+  .persona-divider {
+    display: flex; align-items: center; gap: 20px;
+    margin: 80px 0 64px;
+  }
+  .persona-divider-line { flex: 1; height: 1px; background: var(--ink); }
+  .persona-divider-inner {
+    display: flex; flex-direction: column; gap: 2px; align-items: center;
+  }
+  .persona-divider-num {
+    font-family: 'DM Mono', 'Courier New', monospace; font-size: 9px;
+    letter-spacing: 0.25em; text-transform: uppercase; color: var(--ink-muted);
+  }
+  .persona-divider-name {
+    font-family: 'Monument Grotesk', 'Helvetica Neue', sans-serif; font-weight: 500; font-size: 22px;
+    letter-spacing: -0.02em; color: var(--ink); white-space: nowrap;
+  }
+
+  /* PERSONA CARD */
+  .persona-card {
+    background: var(--ink); color: var(--paper);
+    padding: 36px 40px; margin-bottom: 56px;
+    position: relative; overflow: hidden;
+  }
+  .persona-card::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 15% 50%, rgba(255,0,144,0.1), transparent 50%),
+      radial-gradient(ellipse at 85% 20%, rgba(0,255,117,0.06), transparent 45%);
+    pointer-events: none;
+  }
+  .persona-card-inner {
+    position: relative; z-index: 1;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start;
+  }
+  .persona-label {
+    font-family: 'DM Mono', 'Courier New', monospace; font-size: 9px;
+    letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 14px; display: block;
+  }
+  .persona-name {
+    font-family: 'Monument Grotesk', 'Helvetica Neue', sans-serif; font-size: 42px; font-weight: 400;
+    letter-spacing: -0.03em; line-height: 0.95; color: var(--paper); margin-bottom: 6px;
+  }
+  .persona-descriptor {
+    font-family: 'Monument Grotesk', 'Helvetica Neue', sans-serif; font-style: normal; font-weight: 400;
+    font-size: 16px; color: rgba(255,255,255,0.55); margin-bottom: 20px; line-height: 1.4;
+  }
+  .persona-stats { display: flex; flex-direction: column; gap: 0; }
+  .persona-stat {
+    display: flex; gap: 10px; align-items: baseline; font-size: 13px;
+    color: rgba(255,255,255,0.7); border-top: 1px solid rgba(255,255,255,0.08);
+    padding: 8px 0;
+  }
+  .persona-stat-label {
+    font-family: 'DM Mono', 'Courier New', monospace; font-size: 9px;
+    text-transform: uppercase; letter-spacing: 0.15em;
+    color: #DCEAF7; min-width: 80px; flex-shrink: 0;
+  }
+  .persona-quote-block { border-left: 2px solid rgba(255,0,144,0.5); padding-left: 20px; }
+  .persona-quote-text {
+    font-family: 'Monument Grotesk', 'Helvetica Neue', sans-serif; font-style: normal; font-weight: 400;
+    font-size: 19px; line-height: 1.5; color: var(--paper); margin-bottom: 16px;
+  }
+  .persona-quote-text em { font-style: normal; font-weight: 500; color: var(--accent); }
+  .persona-quote-subtext { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+
+  /* SECTION HEADER */
+  .section-header { margin-bottom: 32px; }
+  .section-eyebrow {
+    font-family: 'DM Mono', 'Courier New', monospace; font-size: 9px;
+    letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 8px; display: block;
+  }
+  .section-eyebrow--green { color: #007A3D; }
+  .section-title {
+    font-family: 'Monument Grotesk', 'Helvetica Neue', sans-serif; font-weight: 400; font-size: 30px;
+    line-height: 1.1; letter-spacing: -0.025em;
+  }
+  .section-title em { font-style: normal; font-weight: 400; color: inherit; }
+  .section-title em.green { color: inherit; }
+
+  /* JOURNEY */
+  .journey { margin-bottom: 0; position: relative; }
+  .journey-spine {
+    position: absolute; left: 19px; top: 28px; bottom: 0; width: 1px;
+    background: linear-gradient(to bottom, var(--rule) 0%, var(--rule-soft) 70%, transparent 100%);
+  }
+  .journey-spine--green {
+    background: linear-gradient(to bottom, rgba(0,255,117,0.4) 0%, rgba(0,255,117,0.15) 70%, transparent 100%);
+  }
+  .moment {
+    display: grid; grid-template-columns: 40px 1fr; gap: 24px;
+    margin-bottom: 0; position: relative;
+  }
+  .moment-node {
+    display: flex; flex-direction: column; align-items: center;
+    padding-top: 4px; position: relative; z-index: 1;
+  }
+  .moment-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    border: 2px solid var(--rule); background: var(--paper);
+    flex-shrink: 0;
+  }
+  .moment.is-gap .moment-dot {
+    background: var(--gap); border-color: var(--gap);
+    box-shadow: 0 0 0 4px rgba(204,0,0,0.12);
+  }
+  .moment.is-opportunity .moment-dot {
+    background: var(--aspirational); border-color: var(--aspirational);
+    box-shadow: 0 0 0 4px rgba(0,255,117,0.15);
+  }
+  .moment-connector {
+    flex: 1; width: 1px; background: var(--rule-soft); min-height: 32px; margin-top: 4px;
+  }
+  .moment:last-child .moment-connector { display: none; }
+  .moment-body { padding-bottom: 40px; }
+  .moment:last-child .moment-body { padding-bottom: 0; }
+  .moment-phase {
+    font-family: 'DM Mono', 'Courier New', monospace; font-size: 9px;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-muted);
+    margin-bottom: 6px; display: block;
+  }
+  .moment.is-gap .moment-phase { color: var(--gap); }
+  .moment.is-opportunity .moment-phase { color: #007A3D; }
+  .moment-heading {
+    font-family: 'Monument Grotesk', 'Helvetica Neue', sans-serif; font-weight: 500; font-size: 20px;
+    line-height: 1.2; letter-spacing: -0.015em; color: var(--ink); margin-bottom: 10px;
+  }
+  .moment-heading em { font-style: normal; font-weight: 500; color: inherit; }
+  .moment.is-opportunity .moment-heading em { color: inherit; }
+  .moment-text { font-size: 14px; line-height: 1.7; color: var(--ink-soft); max-width: 620px; }
+  .moment-callout {
+    display: block; margin-top: 12px; padding: 14px 18px;
+    border-left: 3px solid var(--rule);
+    font-size: 15px; color: var(--ink); line-height: 1.6;
+    font-style: italic; font-family: 'Monument Grotesk', 'Helvetica Neue', sans-serif; font-weight: 400;
+    background: var(--paper-warm);
+  }
+  .moment.is-gap .moment-callout {
+    background: rgba(204,0,0,0.06); border-left-color: var(--gap); color: var(--gap-deep);
+  }
+  .moment.is-opportunity .moment-callout {
+    background: rgba(0,255,117,0.07); border-left-color: var(--aspirational); color: #007A3D;
+  }
+
+  /* ARC DIVIDER */
+  .arc-divider {
+    display: flex; align-items: center; gap: 20px; margin: 52px 0 48px;
+  }
+  .arc-divider-line { flex: 1; height: 1px; background: var(--rule); }
+  .arc-divider-label {
+    font-family: 'DM Mono', 'Courier New', monospace; font-size: 10px;
+    letter-spacing: 0.2em; text-transform: uppercase; color: #007A3D;
+    white-space: nowrap; padding: 6px 14px;
+    border: 1px solid rgba(0,122,61,0.35); background: rgba(0,122,61,0.05);
+  }
+
+  /* DATA ROW */
+  .data-row { display: flex; gap: 2px; margin: 48px 0; }
+  .data-item {
+    flex: 1; background: var(--paper-deep); border: 1px solid var(--rule-soft);
+    padding: 16px 18px; text-align: center;
+  }
+  .data-item-num {
+    font-family: 'Monument Grotesk', 'Helvetica Neue', sans-serif; font-weight: 500; font-size: 26px;
+    letter-spacing: -0.02em; color: var(--accent); display: block;
+    line-height: 1; margin-bottom: 6px;
+  }
+  .data-item-label { font-size: 11px; color: var(--ink-muted); line-height: 1.4; }
+
+  /* DESIGN CHALLENGE */
+  .design-challenge {
+    background: var(--paper-warm); border: 1px solid var(--rule);
+    border-left: 3px solid var(--accent); padding: 28px 32px; margin: 48px 0;
+  }
+  .design-challenge-label {
+    font-family: 'DM Mono', 'Courier New', monospace; font-size: 9px;
+    letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 14px; display: block;
+  }
+  .design-challenge-text {
+    font-family: 'Monument Grotesk', 'Helvetica Neue', sans-serif; font-weight: 400; font-size: 21px;
+    line-height: 1.45; letter-spacing: -0.015em; color: var(--ink); margin-bottom: 10px;
+  }
+  .design-challenge-text em { font-style: normal; font-weight: 400; color: inherit; }
+  .design-challenge-sub { font-size: 13.5px; color: var(--ink-soft); line-height: 1.65; max-width: 580px; }
+
+  /* TERRITORY */
+  .territory-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin: 48px 0 0;
+  }
+  .territory-card {
+    background: var(--paper-warm); border: 1px solid var(--rule-soft); padding: 24px 26px;
+  }
+  .territory-card.primary {
+    background: var(--ink); color: var(--paper); grid-column: 1 / -1; border-color: var(--ink);
+  }
+  .territory-card-label {
+    font-family: 'DM Mono', 'Courier New', monospace; font-size: 9px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--ink-muted); margin-bottom: 10px; display: block;
+  }
+  .territory-card.primary .territory-card-label { color: var(--accent); }
+  .territory-card-title {
+    font-family: 'Monument Grotesk', 'Helvetica Neue', sans-serif; font-weight: 500; font-size: 18px;
+    line-height: 1.25; letter-spacing: -0.01em; color: var(--ink); margin-bottom: 8px;
+  }
+  .territory-card.primary .territory-card-title { color: var(--paper); font-size: 21px; }
+  .territory-card-title em { font-style: normal; font-weight: 500; color: inherit; }
+  .territory-card-text { font-size: 13.5px; line-height: 1.65; color: var(--ink-soft); }
+  .territory-card.primary .territory-card-text { color: rgba(255,255,255,0.65); max-width: 600px; }
+
+  /* FOOTER */
+  .doc-footer {
+    margin-top: 80px; padding-top: 20px; border-top: 1px solid var(--rule);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .doc-footer-left {
+    font-family: 'DM Mono', 'Courier New', monospace; font-size: 9px;
+    letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-muted); line-height: 1.8;
+  }
+  .doc-footer-right {
+    font-family: 'DM Mono', 'Courier New', monospace; font-size: 9px;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--rule);
+  }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.55s ease-out, transform 0.55s ease-out;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+<div class="frame">
+
+  <!-- MASTHEAD -->
+  <header class="masthead reveal">
+    <div>
+      <span class="masthead-eyebrow">New Pet Insurance Brand · Journey Narratives</span>
+      <h1 class="masthead-title">Three moments, two users.</h1>
+    </div>
+    <div class="masthead-meta">
+      Huge Inc. · May 2026<br>
+      <strong>Internal · Not for distribution</strong>
+    </div>
+  </header>
+
+  <!-- PERSONA NAV -->
+  <nav class="persona-nav reveal">
+    <a href="#emily" class="persona-nav-item">
+      <span class="persona-nav-num">01</span>
+      <span class="persona-nav-name" style="font-family:'Monument Grotesk','Helvetica Neue',sans-serif;font-weight:500;font-size:16px;letter-spacing:-0.01em;">Emily</span>
+      <span style="font-size:12px;color:var(--ink-muted);">New puppy · first time</span>
+    </a>
+    <a href="#emily-renewal" class="persona-nav-item">
+      <span class="persona-nav-num">02</span>
+      <span class="persona-nav-name" style="font-family:'Monument Grotesk','Helvetica Neue',sans-serif;font-weight:500;font-size:16px;letter-spacing:-0.01em;">Emily · Year Two</span>
+      <span style="font-size:12px;color:var(--ink-muted);">Renewal inflection</span>
+    </a>
+    <a href="#josh" class="persona-nav-item">
+      <span class="persona-nav-num">03</span>
+      <span class="persona-nav-name" style="font-family:'Monument Grotesk','Helvetica Neue',sans-serif;font-weight:500;font-size:16px;letter-spacing:-0.01em;">Josh</span>
+      <span style="font-size:12px;color:var(--ink-muted);">Senior cat · unplanned owner</span>
+    </a>
+  </nav>
+
+
+  <!-- ═══════════════════════════════════ -->
+  <!-- PERSONA 01 — EMILY                  -->
+  <!-- ═══════════════════════════════════ -->
+
+  <div id="emily" class="persona-divider reveal">
+    <div class="persona-divider-line"></div>
+    <div class="persona-divider-inner">
+      <span class="persona-divider-num">01</span>
+      <span class="persona-divider-name">Emily</span>
+    </div>
+    <div class="persona-divider-line"></div>
+  </div>
+
+  <div class="persona-card reveal">
+    <div class="persona-card-inner">
+      <div>
+        <span class="persona-label">The audience</span>
+        <div class="persona-name">Emily.</div>
+        <div class="persona-descriptor">24. New dog. Phone in hand.<br>Figuring it out in real time.</div>
+        <div class="persona-stats">
+          <div class="persona-stat"><span class="persona-stat-label">City</span><span>Austin, TX — renting</span></div>
+          <div class="persona-stat"><span class="persona-stat-label">Income</span><span>$52K. Thinks carefully about money.</span></div>
+          <div class="persona-stat"><span class="persona-stat-label">Dog</span><span>French Bulldog mix. 9 weeks old. Unnamed.</span></div>
+          <div class="persona-stat"><span class="persona-stat-label">Research</span><span>ChatGPT, Reddit, TikTok. Not Google.</span></div>
+        </div>
+      </div>
+      <div class="persona-quote-block">
+        <p class="persona-quote-text">"I don't even know what I don't know yet. I just want to <em>not mess this up.</em>"</p>
+        <p class="persona-quote-subtext">She decided to adopt three weeks ago. She's already spent $340 on things the internet told her to buy. Pet insurance hasn't come up yet — but it will. The question is where, and from whom.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-header reveal">
+    <span class="section-eyebrow">Arc 01 · Today</span>
+    <h2 class="section-title">What actually happens.</h2>
+  </div>
+
+  <div class="journey reveal">
+    <div class="journey-spine"></div>
+    <div class="moment">
+      <div class="moment-node"><div class="moment-dot"></div><div class="moment-connector"></div></div>
+      <div class="moment-body">
+        <span class="moment-phase">Before the dog comes home</span>
+        <h3 class="moment-heading">She opens ChatGPT and asks what she needs.</h3>
+        <p class="moment-text">The question isn't "should I get pet insurance." It's "I'm getting a puppy, what do I need to know." A list comes back — food, crate, vet, vaccines, flea prevention. Somewhere in the follow-up questions, the words "pet insurance" appear. Not as an ad. As advice from a system she already trusts.</p>
+        <div class="moment-callout">This is the first moment. No pet insurance brand is designed to be present for it.</div>
+      </div>
+    </div>
+    <div class="moment is-gap">
+      <div class="moment-node"><div class="moment-dot"></div><div class="moment-connector"></div></div>
+      <div class="moment-body">
+        <span class="moment-phase">Consideration</span>
+        <h3 class="moment-heading">She ends up on Lemonade. <em>Reddit told her to.</em></h3>
+        <p class="moment-text">She's not comparing on price. She's comparing on legibility — does this brand feel like it understands her, or is it waiting for her to mess up? Lemonade feels like the first. She enrolls because it's the brand that showed up in the conversation she was already having.</p>
+        <div class="moment-callout">Reddit recommends Trupanion second — "after you've been through something." The new brand needs to earn the first recommendation, not inherit the second.</div>
+      </div>
+    </div>
+    <div class="moment is-gap">
+      <div class="moment-node"><div class="moment-dot"></div><div class="moment-connector"></div></div>
+      <div class="moment-body">
+        <span class="moment-phase">Enrollment → the quiet middle</span>
+        <h3 class="moment-heading">She pays $56 a month. The brand <em>disappears.</em></h3>
+        <p class="moment-text">A policy PDF. A welcome email. Then nothing. Six months later it's Tuesday afternoon and the dog is acting weird. She goes to Reddit. She goes to TikTok. She texts her friend. She does not open the insurance app, because the insurance app has given her no reason to.</p>
+        <div class="moment-callout">The brand earned $56 a month and vanished. The relationship that should have been built in week one has to be rebuilt — if it can be — at the $1,800 bill.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arc-divider reveal">
+    <div class="arc-divider-line"></div>
+    <div class="arc-divider-label">What if the brand had shown up on day one?</div>
+    <div class="arc-divider-line"></div>
+  </div>
+
+  <div class="section-header reveal">
+    <span class="section-eyebrow section-eyebrow--green">Arc 02 · The opportunity</span>
+    <h2 class="section-title">What could happen <em class="green">instead.</em></h2>
+  </div>
+
+  <div class="journey reveal">
+    <div class="journey-spine journey-spine--green"></div>
+    <div class="moment is-opportunity">
+      <div class="moment-node"><div class="moment-dot"></div><div class="moment-connector"></div></div>
+      <div class="moment-body">
+        <span class="moment-phase">Before the dog comes home</span>
+        <h3 class="moment-heading">The brand is part of the conversation <em>forming the question.</em></h3>
+        <p class="moment-text">Not a comparison ad. Not a sponsored result. A brand present in the AI conversation, the breed forum, the adoption partner checklist — where Emily is already deciding what kind of pet parent she wants to be. She finds this brand before she knows she's looking for insurance.</p>
+      </div>
+    </div>
+    <div class="moment is-opportunity">
+      <div class="moment-node"><div class="moment-dot"></div><div class="moment-connector"></div></div>
+      <div class="moment-body">
+        <span class="moment-phase">Enrollment</span>
+        <h3 class="moment-heading">She understands exactly what she just bought.</h3>
+        <p class="moment-text">The quote flow shows her what her French Bulldog mix is likely to need, year by year, and what that costs with and without coverage. She commits not because someone reassured her, but because the math is visible and the tradeoffs are named. No fine print. No surprises deferred.</p>
+      </div>
+    </div>
+    <div class="moment is-opportunity">
+      <div class="moment-node"><div class="moment-dot"></div><div class="moment-connector"></div></div>
+      <div class="moment-body">
+        <span class="moment-phase">Go Home Day</span>
+        <h3 class="moment-heading">The dog comes home. <em>So does the brand.</em></h3>
+        <p class="moment-text">Not a policy reminder. Something that says: we know the puppy just arrived, here's what the first week looks like for a dog like hers. Breed-specific. Useful. The brand earns a relationship before anything has gone wrong — so it has somewhere to stand when something does.</p>
+        <div class="moment-callout">The only uncontested moment in the entire arc. Every competitor's onboarding is a policy document and a thank-you email. This one isn't.</div>
+      </div>
+    </div>
+    <div class="moment is-opportunity">
+      <div class="moment-node"><div class="moment-dot"></div><div class="moment-connector"></div></div>
+      <div class="moment-body">
+        <span class="moment-phase">The quiet middle</span>
+        <h3 class="moment-heading">Tuesday afternoon. The dog is acting weird.</h3>
+        <p class="moment-text">She opens the app — because the app has been useful before. Breed-specific health alerts. A symptom triage that tells her whether to wait or go. The brand that showed up on Go Home Day is the brand she reaches for now. The $1K–$2K fear has somewhere to go other than Reddit.</p>
+        <div class="moment-callout">406 average views per vet fundraising post vs. 6 for pet products. The anxiety is constant. The brand that becomes the exit from the caring loop wins the category emotionally — long before any claim is filed.</div>
+      </div>
+    </div>
+    <div class="moment is-opportunity">
+      <div class="moment-node"><div class="moment-dot"></div><div class="moment-connector"></div></div>
+      <div class="moment-body">
+        <span class="moment-phase">Moment of truth</span>
+        <h3 class="moment-heading">The $1,800 bill. Direct pay. 38 seconds.</h3>
+        <p class="moment-text">VetDirect Pay processes the claim before she checks out. No form. No 30-day wait. She walks out paying her share. This moment is already Trupanion's strongest. What's different is that it arrives inside a relationship — not as a first impression.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="data-row reveal">
+    <div class="data-item"><span class="data-item-num">406×</span><div class="data-item-label">avg views per vet<br>fundraising post</div></div>
+    <div class="data-item"><span class="data-item-num">$1K</span><div class="data-item-label">modal vet bill —<br>the acquisition trigger</div></div>
+    <div class="data-item"><span class="data-item-num">80%</span><div class="data-item-label">of leads don't buy —<br>structural, not price</div></div>
+    <div class="data-item"><span class="data-item-num">4%</span><div class="data-item-label">category conversion —<br>nobody's solved this yet</div></div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════ -->
+  <!-- PERSONA 02 — EMILY YEAR TWO         -->
+  <!-- ═══════════════════════════════════ -->
+
+  <div id="emily-renewal" class="persona-divider reveal">
+    <div class="persona-divider-line"></div>
+    <div class="persona-divider-inner">
+      <span class="persona-divider-num">02</span>
+      <span class="persona-divider-name">Emily · Year Two</span>
+    </div>
+    <div class="persona-divider-line"></div>
+  </div>
+
+  <div class="persona-card reveal">
+    <div class="persona-card-inner">
+      <div>
+        <span class="persona-label">The audience</span>
+        <div class="persona-name">Emily,<br>one year later.</div>
+        <div class="persona-descriptor">25. Dog is healthy. Renewal<br>window is open.</div>
+        <div class="persona-stats">
+          <div class="persona-stat"><span class="persona-stat-label">Paid in</span><span>$672 over 12 months. Zero claims filed.</span></div>
+          <div class="persona-stat"><span class="persona-stat-label">Renewal</span><span>Rate increases 14% due to dog's age.</span></div>
+          <div class="persona-stat"><span class="persona-stat-label">Mindset</span><span>Quietly asking: is this still worth it?</span></div>
+          <div class="persona-stat"><span class="persona-stat-label">Risk</span><span>Will compare. Will consider cancelling.</span></div>
+        </div>
+      </div>
+      <div class="persona-quote-block">
+        <p class="persona-quote-text">"I've paid $672 and used none of it. I know that's how insurance works. But <em>I want to feel like someone remembers I exist.</em>"</p>
+        <p class="persona-quote-subtext">Daisy is fine. Emily is grateful. She's also doing quiet math. The renewal email arrived with a new rate and a brief explanation. She's not furious — she's on the edge. This moment goes one of two ways, and the difference is entirely about what the brand says before the bill arrives.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-header reveal">
+    <span class="section-eyebrow">Arc 01 · Today</span>
+    <h2 class="section-title">What actually happens.</h2>
+  </div>
+
+  <div class="journey reveal">
+    <div class="journey-spine"></div>
+    <div class="moment is-gap">
+      <div class="moment-node"><div class="moment-dot"></div><div class="moment-connector"></div></div>
+      <div class="moment-body">
+        <span class="moment-phase">The renewal email</span>
+        <h3 class="moment-heading">The bill goes up. The explanation is thin.</h3>
+        <p class="moment-text">A renewal notice arrives. New rate: $64/month. Brief language about age-based pricing. No context about what the $672 paid for in aggregate. No reminder of the coverage she has. No acknowledgment that she hasn't filed a single claim. It reads like an invoice, not a relationship.</p>
+        <div class="moment-callout">The parent brand's BBB average dropped to 1.18/5 on exactly this dynamic. Not the rate hike — the surprise. Emily isn't surprised yet. But she's close.</div>
+      </div>
+    </div>
+    <div class="moment is-gap">
+      <div class="moment-node"><div class="moment-dot"></div><div class="moment-connector"></div></div>
+      <div class="moment-body">
+        <span class="moment-phase">The comparison moment</span>
+        <h3 class="moment-heading">She opens the Lemonade app to see what they'd charge.</h3>
+        <p class="moment-text">She's not angry. She's doing due diligence. The same due diligence she did a year ago. Lemonade is still fast. Pets Best is still cheaper. If the brand she's with can't answer "what did I get for $672" — she might not stay.</p>
+        <div class="moment-callout">Renewal is the moment the brand's promise is tested against memory. If there's no relationship to fall back on, it becomes a pure price comparison — and the new brand can't win that fight.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arc-divider reveal">
+    <div class="arc-divider-line"></div>
+    <div class="arc-divider-label">What if she heard from the brand before the bill arrived?</div>
+    <div class="arc-divider-line"></div>
+  </div>
+
+  <div class="section-header reveal">
+    <span class="section-eyebrow section-eyebrow--green">Arc 02 · The opportunity</span>
+    <h2 class="section-title">What could happen <em class="green">instead.</em></h2>
+  </div>
+
+  <div class="journey reveal">
+    <div class="journey-spine journey-spine--green"></div>
+    <div class="moment is-opportunity">
+      <div class="moment-node"><div class="moment-dot"></div><div class="moment-connector"></div></div>
+      <div class="moment-body">
+        <span class="moment-phase">30 days before renewal</span>
+        <h3 class="moment-heading">The brand reaches out first. <em>With the math.</em></h3>
+        <p class="moment-text">Not a rate notice. A year-in-review: here's what happened with your dog's breed this year, here's what the coverage was worth in actual claims paid for French Bulldogs like hers, here's what's changing and exactly why. The rate increase arrives with context that makes it legible — not a surprise, an explanation she already has.</p>
+        <div class="moment-callout">The parent brand's failure wasn't the rate hike. It was the silence before it. The mitigation is a transparency layer that runs proactively, before the invoice, every year.</div>
+      </div>
+    </div>
+    <div class="moment is-opportunity">
+      <div class="moment-node"><div class="moment-dot"></div><div class="moment-connector"></div></div>
+      <div class="moment-body">
+        <span class="moment-phase">The renewal conversation</span>
+        <h3 class="moment-heading">She knows what the $672 actually bought.</h3>
+        <p class="moment-text">Claims paid for dogs like hers in her zip code. The one Tuesday night triage that saved her a $400 emergency visit she didn't need to make. The Go Home Day content she still references. The rate increase is visible, contextualized, and attached to a real reason. She renews — not from inertia, but from understanding.</p>
+      </div>
+    </div>
+    <div class="moment is-opportunity">
+      <div class="moment-node"><div class="moment-dot"></div><div class="moment-connector"></div></div>
+      <div class="moment-body">
+        <span class="moment-phase">Resolution</span>
+        <h3 class="moment-heading">She tells someone. <em>Before they've been through anything.</em></h3>
+        <p class="moment-text">This is the advocacy the new brand is built for — not the shocked-positive post-claim review that Trupanion earns today, but the pre-crisis recommendation. "I've had it for a year, never had to use it, and I still feel like it's worth it." That's the category-shifting word of mouth. It starts here.</p>
+        <div class="moment-callout">The audience that got recognised pre-crisis becomes the audience that recommends the brand pre-crisis to others. Advocacy moves upstream. That's what makes the renewal moment strategic, not just operational.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="design-challenge reveal">
+    <span class="design-challenge-label">The design challenge · Renewal</span>
+    <p class="design-challenge-text">The product vision is clear. <em>The emotional sequence is the work.</em></p>
+    <p class="design-challenge-sub">Radical transparency — real math, no fine print, honest coverage — is the right promise. But you have to trust someone before their math means anything to you. That trust has to be built before the first claim, reinforced at renewal, and it starts on Go Home Day. The design question is: how does the brand earn that trust in the long quiet stretch between enrollment and emergency — and prove it every year after?</p>
+  </div>
+
+
+  <!-- PERSONA 03 — JOSH                  -->
+  <!-- ═══════════════════════════════════ -->
+
+  <div id="josh" class="persona-divider reveal">
+    <div class="persona-divider-line"></div>
+    <div class="persona-divider-inner">
+      <span class="persona-divider-num">03</span>
+      <span class="persona-divider-name">Josh</span>
+    </div>
+    <div class="persona-divider-line"></div>
+  </div>
+
+  <div class="persona-card reveal">
+    <div class="persona-card-inner">
+      <div>
+        <span class="persona-label">The audience</span>
+        <div class="persona-name">Josh.</div>
+        <div class="persona-descriptor">29. Cat owner for 9 years.<br>Didn't plan it. Can't imagine it otherwise.</div>
+        <div class="persona-stats">
+          <div class="persona-stat"><span class="persona-stat-label">City</span><span>Seattle, WA — renting with a roommate</span></div>
+          <div class="persona-stat"><span class="persona-stat-label">Income</span><span>$61K. Financially careful. Not obsessive.</span></div>
+          <div class="persona-stat"><span class="persona-stat-label">Cat</span><span>Miso. 12 years old. Hyperthyroidism, managed.</span></div>
+          <div class="persona-stat"><span class="persona-stat-label">History</span><span>Inherited from a roommate who moved out. Never planned for this.</span></div>
+        </div>
+      </div>
+      <div class="persona-quote-block">
+        <p class="persona-quote-text">"She was supposed to be temporary. That was nine years ago. She's not going to be <em>fine forever.</em>"</p>
+        <p class="persona-quote-subtext">Miso's vet mentioned senior bloodwork at the last visit. Josh went home and looked up what a cat's last few years can cost. He's in a place he never expected to be: genuinely attached, genuinely worried, and genuinely unprepared. He didn't choose to be a pet owner. But nine years in, he's more committed than he ever planned.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-header reveal">
+    <span class="section-eyebrow">Arc 01 · Today</span>
+    <h2 class="section-title">What actually happens.</h2>
+  </div>
+
+  <div class="journey reveal">
+    <div class="journey-spine"></div>
+    <div class="moment">
+      <div class="moment-node"><div class="moment-dot"></div><div class="moment-connector"></div></div>
+      <div class="moment-body">
+        <span class="moment-phase">The trigger</span>
+        <h3 class="moment-heading">A vet visit plants a seed he can't ignore.</h3>
+        <p class="moment-text">The vet doesn't push insurance. She mentions senior panels, kidney function, what to watch for. Josh goes home and spends an hour on Reddit reading about what hyperthyroid cats cost in their final years. The search starts not with "pet insurance" but with "is pet insurance worth it for a senior cat."</p>
+      </div>
+    </div>
+    <div class="moment is-gap">
+      <div class="moment-node"><div class="moment-dot"></div><div class="moment-connector"></div></div>
+      <div class="moment-body">
+        <span class="moment-phase">Consideration</span>
+        <h3 class="moment-heading">Every quote page treats Miso like a liability.</h3>
+        <p class="moment-text">He gets to the breed/age inputs and watches the price shift. Fine print emerges: pre-existing conditions excluded, waiting periods, annual caps. The brands that could help him most — the ones with actual claims infrastructure — are the ones that feel most opaque. He didn't choose this carefully the first time. He's not going to get burned by something he didn't read. He closes the tabs.</p>
+        <div class="moment-callout">The category fails older-pet owners at exactly the moment they're most motivated. The fear of exclusions is bigger than the fear of the bill.</div>
+      </div>
+    </div>
+    <div class="moment is-gap">
+      <div class="moment-node"><div class="moment-dot"></div><div class="moment-connector"></div></div>
+      <div class="moment-body">
+        <span class="moment-phase">The decision not made</span>
+        <h3 class="moment-heading">He decides to "just save the money instead." <em>For now.</em></h3>
+        <p class="moment-text">It's a rational decision made in the absence of the one thing that would change it: a clear, honest accounting of what Miso's specific conditions will likely cost, what would and wouldn't be covered, and what the math looks like over the next three years. Nobody showed him that. So he walked.</p>
+        <div class="moment-callout">37% of pet owners have gone into debt for vet bills. Most of them decided to "just save" at some point too.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arc-divider reveal">
+    <div class="arc-divider-line"></div>
+    <div class="arc-divider-label">What if honesty was the enrollment mechanism?</div>
+    <div class="arc-divider-line"></div>
+  </div>
+
+  <div class="section-header reveal">
+    <span class="section-eyebrow section-eyebrow--green">Arc 02 · The opportunity</span>
+    <h2 class="section-title">What could happen <em class="green">instead.</em></h2>
+  </div>
+
+  <div class="journey reveal">
+    <div class="journey-spine journey-spine--green"></div>
+    <div class="moment is-opportunity">
+      <div class="moment-node"><div class="moment-dot"></div><div class="moment-connector"></div></div>
+      <div class="moment-body">
+        <span class="moment-phase">Discovery</span>
+        <h3 class="moment-heading">The search for "senior cat insurance" leads somewhere <em>different.</em></h3>
+        <p class="moment-text">Not a comparison grid. Not a fear-based ad. A brand that leads with what it actually covers for a cat Miso's age — and what it doesn't. The honesty is the hook. Josh has never trusted fine print. A brand that names the exclusions upfront reads as trustworthy rather than disqualifying — which is the opposite of everything he's seen in the category so far.</p>
+      </div>
+    </div>
+    <div class="moment is-opportunity">
+      <div class="moment-node"><div class="moment-dot"></div><div class="moment-connector"></div></div>
+      <div class="moment-body">
+        <span class="moment-phase">Enrollment</span>
+        <h3 class="moment-heading">The Medical Record Summary does what a sales conversation used to.</h3>
+        <p class="moment-text">He uploads Miso's records. The system comes back with a clear picture: here's what's covered, here's what isn't, here's what Miso's condition profile typically costs over the next three years, here's the math with and without. No agent. No waiting. The transparency earns the enrollment that every other brand failed to make.</p>
+        <div class="moment-callout">This is the new brand's Enrollment moment made operational — the Medical Record Summary as a live UX surface, not a sales tool.</div>
+      </div>
+    </div>
+    <div class="moment is-opportunity">
+      <div class="moment-node"><div class="moment-dot"></div><div class="moment-connector"></div></div>
+      <div class="moment-body">
+        <span class="moment-phase">The quiet middle</span>
+        <h3 class="moment-heading">Miso is 12. The brand is already watching.</h3>
+        <p class="moment-text">Senior bloodwork window alerts. Kidney function baselines. A reminder about the annual panel — not because it's covered, but because catching it early prevents the $6,000 procedure that is. The brand that understood Miso's health history at enrollment is the brand that proves it at every ordinary interaction after.</p>
+        <div class="moment-callout">The caring loop for senior pet owners is more acute, more specific, and more expensive. The brand that exits that loop for Josh doesn't just earn loyalty — it earns advocacy.</div>
+      </div>
+    </div>
+    <div class="moment is-opportunity">
+      <div class="moment-node"><div class="moment-dot"></div><div class="moment-connector"></div></div>
+      <div class="moment-body">
+        <span class="moment-phase">Moment of truth</span>
+        <h3 class="moment-heading">The diagnosis. The bill. No surprises.</h3>
+        <p class="moment-text">When the expensive moment arrives — and for a twelve-year-old hyperthyroid cat, it will — Josh already knows what's covered. He was told at enrollment, reminded at the annual summary, and he's never had to wonder. He didn't plan to be this person. But he is. The claim isn't a revelation. It's a confirmation.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="design-challenge reveal">
+    <span class="design-challenge-label">The design challenge · Josh</span>
+    <p class="design-challenge-text">Transparency isn't just an acquisition tool. <em>It's the only thing that converts a skeptic.</em></p>
+    <p class="design-challenge-sub">Josh walked because no brand would show him the math. The new brand wins him not by being cheaper or simpler — but by being the first one willing to say clearly what it will and won't do for a cat like Miso. The Medical Record Summary is the product. The enrollment flow is just the container.</p>
+  </div>
+
+
+  <!-- ═══════════════════════════════════ -->
+  <!-- TERRITORY -->
+  <div class="reveal" style="margin-top: 16px;">
+    <div class="section-header">
+      <span class="section-eyebrow">Across all three journeys</span>
+      <h2 class="section-title">Where the work lives.</h2>
+    </div>
+    <div class="territory-grid">
+      <div class="territory-card primary">
+        <span class="territory-card-label">Primary opportunity</span>
+        <h3 class="territory-card-title">Onboarding as <em>trust infrastructure</em></h3>
+        <p class="territory-card-text">Go Home Day is the brand's only uncontested moment and the hinge on which every other phase turns. It's not a CRM trigger — it's the proof point that makes the claim a confirmation and the renewal a conversation. The new brand has no field channel and no 25-year halo. This is the only phase where it can prove itself before it needs to.</p>
+      </div>
+      <div class="territory-card">
+        <span class="territory-card-label">Distribution gap</span>
+        <h3 class="territory-card-title">Present where the question forms</h3>
+        <p class="territory-card-text">For Emily, the first touchpoint is a ChatGPT conversation. For Emily at renewal, it's a comparison tab. For Josh, it's a late-night search after a vet visit. The new brand needs to exist in those moments before anyone is evaluating a quote.</p>
+      </div>
+      <div class="territory-card">
+        <span class="territory-card-label">Whitespace</span>
+        <h3 class="territory-card-title">Identity-affirming, not fear-led</h3>
+        <p class="territory-card-text">Lemonade owns fast and modern. Pets Best owns sensible default. Nobody owns the brand that recognizes the pet parent — at any stage — as someone already doing the right thing. That's the emotional territory across all three stories.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="doc-footer reveal">
+    <div class="doc-footer-left">Huge × Trupanion · New Brand<br>Journey Narratives · May 2026</div>
+    <div class="doc-footer-right">Internal · Not for distribution</div>
+  </div>
+
+</div>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.07, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

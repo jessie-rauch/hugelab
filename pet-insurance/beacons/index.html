@@ -9,7 +9,7 @@
     var key = 'beacon_auth_petinsurance';
     if (sessionStorage.getItem(key) !== '1') {
       var pw = prompt('Password required:');
-      if (pw !== 'huge123') {
+      if (pw !== 'pets123') {
         document.documentElement.innerHTML = '<body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#000;color:#fff;font-size:14px;">Access denied.</body>';
         throw new Error('Access denied');
       }
