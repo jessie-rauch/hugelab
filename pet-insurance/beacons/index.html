@@ -1,0 +1,2181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pet Insurance — UX Beacon Research</title>
+<script>
+  (function() {
+    var key = 'beacon_auth_petinsurance';
+    if (sessionStorage.getItem(key) !== '1') {
+      var pw = prompt('Password required:');
+      if (pw !== 'huge123') {
+        document.documentElement.innerHTML = '<body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#000;color:#fff;font-size:14px;">Access denied.</body>';
+        throw new Error('Access denied');
+      }
+      sessionStorage.setItem(key, '1');
+    }
+  })();
+</script>
+<link href="https://api.fontshare.com/v2/css?f[]=monument-grotesk@400,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sidebar-w: 220px;
+    --gray-0: #FFFFFF;
+    --gray-1: #F2F8FE;
+    --gray-2: #DCEAF7;
+    --gray-3: #CCD5E7;
+    --gray-4: #6D737F;
+    --gray-5: #3B4145;
+    --gray-6: #000000;
+    --accent: #FF0090;
+    --accent-bg: #FFE6F5;
+    --finance: #FF0090;
+    --finance-bg: #FFE6F5;
+    --insurance: #FF0090;
+    --insurance-bg: #FFE6F5;
+    --life: #FF0090;
+    --life-bg: #FFE6F5;
+    --onboarding: #FF0090;
+    --onboarding-bg: #FFE6F5;
+    --tone: #FF0090;
+    --tone-bg: #FFE6F5;
+    --border: rgba(0,0,0,0.1);
+    --font: 'Monument Grotesk', 'Helvetica Neue', sans-serif;
+    --font-serif: 'Monument Grotesk', 'Helvetica Neue', sans-serif;
+    --font-mono: 'DM Mono', 'Courier New', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font);
+    font-size: 14px;
+    color: var(--gray-6);
+    background: var(--gray-0);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: var(--sidebar-w);
+    min-width: var(--sidebar-w);
+    background: var(--gray-1);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  #sidebar-header {
+    padding: 20px 16px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .project-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .project-name {
+    font-family: var(--font-serif);
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--gray-6);
+    line-height: 1.2;
+  }
+
+  .project-sub {
+    font-size: 11px;
+    color: var(--gray-4);
+    margin-top: 2px;
+  }
+
+  .category-group { border-bottom: 1px solid var(--border); }
+
+  .category-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    cursor: pointer;
+    user-select: none;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+  }
+
+  .category-toggle:hover { background: var(--gray-2); }
+
+  .category-toggle-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gray-5);
+  }
+
+  .chevron {
+    font-size: 9px;
+    color: var(--gray-4);
+    transition: transform 0.2s;
+  }
+
+  .category-group.open .chevron { transform: rotate(90deg); }
+
+  .site-list { display: none; }
+  .category-group.open .site-list { display: block; }
+
+  .site-link {
+    display: block;
+    padding: 7px 16px 7px 24px;
+    font-size: 12.5px;
+    color: var(--gray-5);
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    line-height: 1.3;
+  }
+
+  .site-link:hover { background: var(--gray-2); color: var(--gray-6); }
+  .site-link.active { background: #000000; color: #FFFFFF; font-weight: 500; }
+
+  /* ── MAIN ── */
+  #main {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+  }
+
+  /* ── INTRO ── */
+  .intro-section {
+    padding: 64px 52px 56px;
+    background: #000000;
+    color: #FFFFFF;
+    border-bottom: none;
+  }
+
+  .intro-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #FF0090;
+    margin-bottom: 16px;
+  }
+
+  .intro-section h1 {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.4;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 28px;
+    max-width: 560px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  .intro-headline {
+    font-family: var(--font-serif);
+    font-size: 42px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: #FFFFFF;
+    margin-bottom: 48px;
+    max-width: 720px;
+  }
+
+  .tldr-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 40px;
+    max-width: 1100px;
+  }
+
+  .tldr-item {
+    background: rgba(255,255,255,0.04);
+    padding: 22px 26px;
+    transition: background 0.15s;
+  }
+
+  .tldr-item:hover { background: rgba(255,255,255,0.08); }
+
+  .tldr-num {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .tldr-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gray-0);
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .tldr-body {
+    font-size: 14px;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.6;
+  }
+
+  .intro-meta {
+    display: flex;
+    gap: 32px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    flex-wrap: wrap;
+  }
+
+  .meta-item .mi-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 3px;
+  }
+
+  .meta-item .mi-value {
+    font-size: 13px;
+    color: rgba(255,255,255,0.75);
+    font-weight: 500;
+  }
+
+  /* ── CATEGORY SECTION ── */
+  .category-section { border-bottom: 1px solid var(--border); }
+
+  .category-header {
+    padding: 36px 44px 28px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--gray-0);
+    z-index: 10;
+  }
+
+  .section-finance .category-header { border-top: 3px solid var(--finance); }
+  .section-insurance .category-header { border-top: 3px solid var(--insurance); }
+  .section-life .category-header { border-top: 3px solid var(--life); }
+  .section-onboarding .category-header { border-top: 3px solid var(--onboarding); }
+  .section-tone .category-header { border-top: 3px solid var(--tone); }
+
+  .category-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gray-4);
+    margin-bottom: 6px;
+  }
+
+  .section-finance .category-eyebrow { color: var(--finance); }
+  .section-insurance .category-eyebrow { color: var(--insurance); }
+  .section-life .category-eyebrow { color: var(--life); }
+  .section-onboarding .category-eyebrow { color: var(--onboarding); }
+  .section-tone .category-eyebrow { color: var(--tone); }
+
+  .category-title {
+    font-family: var(--font-serif);
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--gray-6);
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+  }
+
+  .category-synthesis {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--gray-5);
+    max-width: 680px;
+  }
+
+  .synthesis-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--gray-5);
+    background: var(--gray-0);
+    border: 1px solid var(--gray-3);
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 5px 12px;
+    margin-top: 12px;
+  }
+
+  .synthesis-toggle:hover { background: var(--gray-2); }
+  .synthesis-toggle .toggle-icon { font-size: 10px; transition: transform 0.2s; }
+  .synthesis-toggle.collapsed .toggle-icon { transform: rotate(-90deg); }
+  .category-synthesis.hidden { display: none; }
+
+  /* ── SITE SECTION ── */
+  .site-section {
+    padding: 32px 44px 36px;
+    border-bottom: 1px solid var(--border);
+    scroll-margin-top: 0;
+  }
+
+  .site-header {
+    margin-bottom: 20px;
+  }
+
+  .site-name {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--gray-6);
+    letter-spacing: -0.015em;
+    margin-bottom: 3px;
+  }
+
+  .site-sub {
+    font-size: 12px;
+    color: var(--gray-4);
+  }
+
+  /* ── FLOW GROUP ── */
+  .flow-group { margin-bottom: 28px; }
+
+  .flow-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gray-4);
+    margin-bottom: 10px;
+  }
+
+  /* ── SCREENSHOT STRIP ── */
+  .screenshot-strip {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gray-3) transparent;
+  }
+
+  .screenshot-strip::-webkit-scrollbar { height: 4px; }
+  .screenshot-strip::-webkit-scrollbar-thumb { background: var(--gray-3); border-radius: 2px; }
+
+  .screenshot-strip img {
+    height: 380px;
+    width: auto;
+    flex-shrink: 0;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    cursor: zoom-in;
+    display: block;
+    transition: opacity 0.15s;
+  }
+
+  .screenshot-strip img:hover { opacity: 0.85; }
+
+  /* ── ANALYSIS ── */
+  .analysis-block { margin-top: 28px; max-width: 1100px; }
+
+  .analysis-header-obs {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--gray-6);
+    line-height: 1.5;
+    margin-bottom: 22px;
+    padding-left: 16px;
+    border-left: 3px solid #000000;
+    max-width: 780px;
+  }
+
+  .analysis-sections {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 28px;
+  }
+
+  .analysis-col-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gray-4);
+    margin-bottom: 12px;
+  }
+
+  .analysis-col ul { list-style: none; }
+
+  .analysis-col ul li {
+    font-size: 15px;
+    color: var(--gray-5);
+    line-height: 1.6;
+    padding-left: 16px;
+    position: relative;
+    margin-bottom: 10px;
+  }
+
+  .analysis-col ul li::before {
+    content: '–';
+    position: absolute;
+    left: 0;
+    color: var(--gray-3);
+  }
+
+  .analysis-col.steal ul li::before { color: var(--accent); }
+  .analysis-col.steal ul li { color: var(--gray-6); }
+
+  /* ── OBSERVATIONS (what to steal) ── */
+  .observations-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gray-4);
+    margin-bottom: 14px;
+    max-width: 1100px;
+  }
+
+  .obs-list { list-style: none; max-width: 1100px; }
+
+  .obs-item {
+    display: flex;
+    gap: 14px;
+    padding: 16px 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .obs-item:last-child { border-bottom: 1px solid var(--border); }
+
+  .obs-n {
+    flex-shrink: 0;
+    width: 22px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray-3);
+    padding-top: 1px;
+  }
+
+  .obs-body {
+    font-size: 15px;
+    color: var(--gray-5);
+    line-height: 1.65;
+  }
+
+  .obs-body strong { color: var(--gray-6); font-weight: 600; }
+
+  /* ── SYNTHESIS CARD ── */
+  .synthesis-card {
+    margin: 0 44px 0;
+    padding: 32px 36px;
+    border: 1px solid var(--border);
+    background: var(--gray-1);
+  }
+
+  .section-finance .synthesis-card { border-left: 3px solid var(--finance); }
+  .section-insurance .synthesis-card { border-left: 3px solid var(--insurance); }
+  .section-life .synthesis-card { border-left: 3px solid var(--life); }
+  .section-onboarding .synthesis-card { border-left: 3px solid var(--onboarding); }
+  .section-tone .synthesis-card { border-left: 3px solid var(--tone); }
+
+  .syn-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .synthesis-card h3 {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--gray-6);
+    letter-spacing: -0.015em;
+    margin-bottom: 24px;
+    line-height: 1.2;
+  }
+
+  .syn-points {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .syn-point {
+    padding: 18px 20px;
+    background: var(--gray-0);
+    border: 1px solid var(--border);
+  }
+
+  .syn-point .spt {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-6);
+    margin-bottom: 6px;
+  }
+
+  .syn-point .spb {
+    font-size: 13.5px;
+    color: var(--gray-4);
+    line-height: 1.6;
+  }
+
+  .synthesis-wrapper {
+    padding: 32px 0 36px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* category landscape screenshots now use default screenshot-strip img sizing */
+
+
+  .tone-intro-block {
+    padding: 32px 44px 36px;
+    border-bottom: 1px solid var(--border);
+    max-width: 1100px;
+  }
+
+  .tone-premise {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--gray-6);
+    line-height: 1.55;
+    padding-left: 16px;
+    border-left: 3px solid var(--tone);
+    margin-bottom: 24px;
+    max-width: 760px;
+  }
+
+  .tone-axis-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-top: 24px;
+    max-width: 1100px;
+  }
+
+  .tone-axis {
+    background: var(--gray-0);
+    padding: 20px 22px;
+  }
+
+  .tone-axis-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--tone);
+    margin-bottom: 8px;
+  }
+
+  .tone-axis-value {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--gray-6);
+    margin-bottom: 6px;
+  }
+
+  .tone-axis-desc {
+    font-size: 13.5px;
+    color: var(--gray-4);
+    line-height: 1.55;
+  }
+
+  .brand-url-link {
+    font-size: 11px;
+    color: var(--gray-4);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+
+  .brand-url-link:hover { color: var(--accent); }
+
+  .tone-palette {
+    display: flex;
+    gap: 8px;
+    margin: 16px 0 20px;
+    flex-wrap: wrap;
+  }
+
+  .tone-swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .tone-swatch-block {
+    width: 44px;
+    height: 44px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+
+  .tone-swatch-name {
+    font-size: 9px;
+    color: var(--gray-4);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .tone-copy-example {
+    background: var(--gray-1);
+    border-left: 3px solid var(--gray-3);
+    padding: 14px 18px;
+    margin: 16px 0;
+    max-width: 640px;
+  }
+
+  .tone-copy-example .tce-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gray-4);
+    margin-bottom: 6px;
+  }
+
+  .tone-copy-example .tce-text {
+    font-size: 15px;
+    color: var(--gray-6);
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  .tone-not-this {
+    background: var(--accent-bg);
+    border-left: 3px solid var(--insurance);
+    padding: 14px 18px;
+    margin: 16px 0;
+    max-width: 640px;
+  }
+
+  .tone-not-this .tce-label { color: var(--insurance); }
+
+
+  #lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.94);
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 60px 40px 80px;
+  }
+
+  #lightbox.open { display: block; }
+
+  #lightbox-img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+    border-radius: 8px;
+  }
+
+  #lightbox-close {
+    position: fixed;
+    top: 16px;
+    right: 24px;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    opacity: 0.7;
+    background: none;
+    border: none;
+    line-height: 1;
+    z-index: 1001;
+  }
+
+  #lightbox-close:hover { opacity: 1; }
+
+  #lightbox-nav {
+    position: fixed;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    padding: 0 16px;
+    pointer-events: none;
+    z-index: 1001;
+  }
+
+  .lightbox-nav-btn {
+    pointer-events: all;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    font-size: 22px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    transition: background 0.15s;
+  }
+
+  .lightbox-nav-btn:hover { background: rgba(255,255,255,0.25); }
+
+  #lightbox-counter {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,255,255,0.5);
+    font-size: 12px;
+    font-family: var(--font);
+    letter-spacing: 0.05em;
+    z-index: 1001;
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div id="sidebar-header">
+    <div class="project-label">Huge Inc. — Pet Insurance</div>
+    <div class="project-name">UX Beacon Research</div>
+    <div class="project-sub">Gen Z D2C Mobile · May 2026</div>
+  </div>
+
+  <button class="site-link active" onclick="jumpTo('intro')" style="padding-left:16px;font-weight:600;border-bottom:1px solid var(--border);margin-bottom:4px;">Intro</button>
+
+  <div class="category-group open" id="nav-category">
+    <button class="category-toggle" onclick="toggleCategory('nav-category')">
+      <span class="category-toggle-label">Category Landscape</span>
+      <span class="chevron">▶</span>
+    </button>
+    <div class="site-list">
+      <button class="site-link" onclick="jumpTo('cat-trupanion')">Trupanion</button>
+      <button class="site-link" onclick="jumpTo('cat-fetch-pet')">Fetch</button>
+      <button class="site-link" onclick="jumpTo('cat-spot-pet')">Spot</button>
+      <button class="site-link" onclick="jumpTo('cat-pets-best')">Pets Best</button>
+      <button class="site-link" onclick="jumpTo('cat-lemonade')">Lemonade</button>
+    </div>
+  </div>
+
+  <div class="category-group open" id="nav-insurance">
+    <button class="category-toggle" onclick="toggleCategory('nav-insurance')">
+      <span class="category-toggle-label">Insurance Apps</span>
+      <span class="chevron">▶</span>
+    </button>
+    <div class="site-list">
+      <button class="site-link" onclick="jumpTo('lemonade')">Lemonade</button>
+    </div>
+  </div>
+
+  <div class="category-group open" id="nav-finance">
+    <button class="category-toggle" onclick="toggleCategory('nav-finance')">
+      <span class="category-toggle-label">Digital Finance</span>
+      <span class="chevron">▶</span>
+    </button>
+    <div class="site-list">
+      <button class="site-link" onclick="jumpTo('chime')">Chime</button>
+      <button class="site-link" onclick="jumpTo('cashapp')">Cash App</button>
+      <button class="site-link" onclick="jumpTo('wealthsimple')">Wealthsimple</button>
+    </div>
+  </div>
+
+  <div class="category-group open" id="nav-life">
+    <button class="category-toggle" onclick="toggleCategory('nav-life')">
+      <span class="category-toggle-label">Life Apps</span>
+      <span class="chevron">▶</span>
+    </button>
+    <div class="site-list">
+      <button class="site-link" onclick="jumpTo('calm')">Calm</button>
+      <button class="site-link" onclick="jumpTo('duolingo')">Duolingo</button>
+      <button class="site-link" onclick="jumpTo('headspace')">Headspace</button>
+      <button class="site-link" onclick="jumpTo('notion')">Notion</button>
+      <button class="site-link" onclick="jumpTo('spotify')">Spotify</button>
+      <button class="site-link" onclick="jumpTo('strava')">Strava</button>
+    </div>
+  </div>
+
+  <div class="category-group open" id="nav-onboarding">
+    <button class="category-toggle" onclick="toggleCategory('nav-onboarding')">
+      <span class="category-toggle-label">Onboarding</span>
+      <span class="chevron">▶</span>
+    </button>
+    <div class="site-list">
+      <button class="site-link" onclick="jumpTo('ob-chime')">Chime</button>
+      <button class="site-link" onclick="jumpTo('ob-cashapp')">Cash App</button>
+      <button class="site-link" onclick="jumpTo('ob-wealthsimple')">Wealthsimple</button>
+      <button class="site-link" onclick="jumpTo('ob-lemonade')">Lemonade</button>
+      <button class="site-link" onclick="jumpTo('ob-calm')">Calm</button>
+      <button class="site-link" onclick="jumpTo('ob-duolingo')">Duolingo</button>
+      <button class="site-link" onclick="jumpTo('ob-headspace')">Headspace</button>
+      <button class="site-link" onclick="jumpTo('ob-notion')">Notion</button>
+      <button class="site-link" onclick="jumpTo('ob-spotify')">Spotify</button>
+      <button class="site-link" onclick="jumpTo('ob-strava')">Strava</button>
+    </div>
+  </div>
+
+  <div class="category-group open" id="nav-tone">
+    <button class="category-toggle" onclick="toggleCategory('nav-tone')">
+      <span class="category-toggle-label">Tone &amp; Aesthetics</span>
+      <span class="chevron">▶</span>
+    </button>
+    <div class="site-list">
+      <button class="site-link" onclick="jumpTo('tone-intro')">The brief</button>
+      <button class="site-link" onclick="jumpTo('tone-glossier')">Glossier</button>
+      <button class="site-link" onclick="jumpTo('tone-graza')">Graza</button>
+      <button class="site-link" onclick="jumpTo('tone-brightland')">Brightland</button>
+      <button class="site-link" onclick="jumpTo('tone-maude')">Maude</button>
+      <button class="site-link" onclick="jumpTo('tone-parachute')">Parachute</button>
+      <button class="site-link" onclick="jumpTo('tone-olipop')">Olipop</button>
+      <button class="site-link" onclick="jumpTo('tone-synthesis')">Synthesis</button>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main id="main">
+
+  <!-- INTRO -->
+  <div class="intro-section" id="intro">
+    <div class="intro-eyebrow">Pet Insurance · UX Beacon Research · Huge Inc. · May 2026</div>
+    <div class="intro-headline">The gap between how Gen Z loves their pets and how the category asks them to protect them.</div>
+
+    <div class="tldr-grid">
+      <div class="tldr-item">
+        <div class="tldr-num">01 — Category Landscape</div>
+        <div class="tldr-title">What we're up against.</div>
+        <div class="tldr-body">Marketing websites for five pet insurance brands. Not beacons — context. Stock photography, fear-based copy, and a lot of blue.</div>
+      </div>
+      <div class="tldr-item">
+        <div class="tldr-num">02 — Insurance Apps</div>
+        <div class="tldr-title">Everyone defaults to fear or price.</div>
+        <div class="tldr-body">This is an actively difficult category to find good work in. Lemonade earned its place here; everything else we've looked at so far hasn't. This section will grow if it should.</div>
+      </div>
+      <div class="tldr-item">
+        <div class="tldr-num">03 — Digital Finance</div>
+        <div class="tldr-title">Fintech figured this out. Insurance hasn't caught up.</div>
+        <div class="tldr-body">Chime, Wealthsimple, Cash App treat financial products like relationships. The number is the hero. Color marks the emotional moments. Transparency is how you earn trust. None of this has landed in pet insurance yet.</div>
+      </div>
+      <div class="tldr-item">
+        <div class="tldr-num">04 — Life Apps</div>
+        <div class="tldr-title">What does the app feel like when nothing is wrong?</div>
+        <div class="tldr-body">Most insurance apps only show up for bad days. The routine moments — a renewal notice, a vet visit summary, a coverage check — need to feel calm and easy. None of the apps we reviewed are doing this. The bar is genuinely low.</div>
+      </div>
+      <div class="tldr-item">
+        <div class="tldr-num">05 — Onboarding</div>
+        <div class="tldr-title">The relationship starts here, not at the claim.</div>
+        <div class="tldr-body">Every strong app in this set leads with the user's goal before it asks for anything. Start with the pet. Ask "who are we protecting?" before you ask for an email.</div>
+      </div>
+      <div class="tldr-item">
+        <div class="tldr-num">06 — Tone &amp; Aesthetics</div>
+        <div class="tldr-title">Real photography. Warm palette. Copy that doesn't perform.</div>
+        <div class="tldr-body">Gen Z responds to being recognized, not entertained. Glossier, Graza, Parachute, Maude — brands that make you feel like the person you already think you are. That's the territory.</div>
+      </div>
+    </div>
+
+    <div class="intro-meta">
+      <div class="meta-item"><div class="mi-label">Brands</div><div class="mi-value">17 reference brands</div></div>
+      <div class="meta-item"><div class="mi-label">Flows</div><div class="mi-value">27 distinct flows</div></div>
+      <div class="meta-item"><div class="mi-label">Category</div><div class="mi-value">Gen Z D2C mobile</div></div>
+      <div class="meta-item"><div class="mi-label">Client</div><div class="mi-value">Pet Insurance / Huge</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 1: CATEGORY LANDSCAPE ═══ -->
+  <div class="category-section section-insurance section-category">
+    <div class="category-header">
+      <div class="category-eyebrow">Section 01</div>
+      <div class="category-title">The Category Landscape</div>
+      <div class="category-synthesis" id="syn-category">Marketing websites for five pet insurance brands. Not beacons — context. This is what the category looks like from the outside, before anyone opens an app.</div>
+      <button class="synthesis-toggle" onclick="toggleSynthesis(this, 'syn-category')"><span class="toggle-icon">▾</span> Hide overview</button>
+    </div>
+
+    <!-- TRUPANION -->
+    <div class="site-section" id="cat-trupanion">
+      <div class="site-header">
+        <div class="site-name">Trupanion <a href="https://trupanion.com" class="brand-url-link" target="_blank">trupanion.com</a></div>
+        <div class="site-sub">Home · Dog Insurance · Cat Insurance · How It Works · Get Quote</div>
+      </div>
+      <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/trupanion/insurance-reimagined__trupanion__home__mobile.png" alt="Trupanion Home" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/trupanion/insurance-reimagined__trupanion__dog-insurance__mobile.png" alt="Trupanion Dog Insurance" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/trupanion/insurance-reimagined__trupanion__cat-insurance__mobile.png" alt="Trupanion Cat Insurance" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/trupanion/insurance-reimagined__trupanion__how-it-works__mobile.png" alt="Trupanion How It Works" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/trupanion/insurance-reimagined__trupanion__get-quote__mobile.png" alt="Trupanion Get Quote" loading="lazy" onclick="openLightbox(this.src)">
+      </div>
+    </div>
+
+    <!-- FETCH PET -->
+    <div class="site-section" id="cat-fetch-pet">
+      <div class="site-header">
+        <div class="site-name">Fetch <a href="https://fetchpet.com" class="brand-url-link" target="_blank">fetchpet.com</a></div>
+        <div class="site-sub">Home · Dog Insurance · Cat Insurance · Coverage · How It Works · App · Wellness</div>
+      </div>
+      <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/fetch-pet/insurance-reimagined__fetch-pet__home__mobile.png" alt="Fetch Home" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/fetch-pet/insurance-reimagined__fetch-pet__dog-insurance__mobile.png" alt="Fetch Dog Insurance" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/fetch-pet/insurance-reimagined__fetch-pet__cat-insurance__mobile.png" alt="Fetch Cat Insurance" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/fetch-pet/insurance-reimagined__fetch-pet__coverage__mobile.png" alt="Fetch Coverage" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/fetch-pet/insurance-reimagined__fetch-pet__how-does-pet-insurance-work__mobile.png" alt="Fetch How It Works" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/fetch-pet/insurance-reimagined__fetch-pet__app__mobile.png" alt="Fetch App" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/fetch-pet/insurance-reimagined__fetch-pet__wellness__mobile.png" alt="Fetch Wellness" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/fetch-pet/insurance-reimagined__fetch-pet__accident-and-illness__mobile.png" alt="Fetch Accident and Illness" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/fetch-pet/insurance-reimagined__fetch-pet__is-pet-insurance-worth-it__mobile.png" alt="Fetch Is It Worth It" loading="lazy" onclick="openLightbox(this.src)">
+      </div>
+    </div>
+
+    <!-- SPOT PET -->
+    <div class="site-section" id="cat-spot-pet">
+      <div class="site-header">
+        <div class="site-name">Spot <a href="https://spotpetins.com" class="brand-url-link" target="_blank">spotpetins.com</a></div>
+        <div class="site-sub">Home · Dog Insurance · Cat Insurance · Puppy · Kitten · Quote · Member Center</div>
+      </div>
+      <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/spot-pet/insurance-reimagined__spot-pet__home__mobile.png" alt="Spot Home" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/spot-pet/insurance-reimagined__spot-pet__dog-insurance__mobile.png" alt="Spot Dog Insurance" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/spot-pet/insurance-reimagined__spot-pet__cat-insurance__mobile.png" alt="Spot Cat Insurance" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/spot-pet/insurance-reimagined__spot-pet__puppy-insurance__mobile.png" alt="Spot Puppy Insurance" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/spot-pet/insurance-reimagined__spot-pet__kitten-insurance__mobile.png" alt="Spot Kitten Insurance" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/spot-pet/insurance-reimagined__spot-pet__quote__mobile.png" alt="Spot Quote" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/spot-pet/insurance-reimagined__spot-pet__member-center__mobile.png" alt="Spot Member Center" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/spot-pet/insurance-reimagined__spot-pet__underwriting__mobile.png" alt="Spot Underwriting" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/spot-pet/insurance-reimagined__spot-pet__why-pet-insurance__mobile.png" alt="Spot Why Pet Insurance" loading="lazy" onclick="openLightbox(this.src)">
+      </div>
+    </div>
+
+    <!-- PETS BEST -->
+    <div class="site-section" id="cat-pets-best">
+      <div class="site-header">
+        <div class="site-name">Pets Best <a href="https://petsbest.com" class="brand-url-link" target="_blank">petsbest.com</a></div>
+        <div class="site-sub">Home · Dog Insurance · Cat Insurance · Coverage · Choose Plan · Cost · Comparison</div>
+      </div>
+      <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/pets-best/insurance-reimagined__pets-best__home__mobile.png" alt="Pets Best Home" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/pets-best/insurance-reimagined__pets-best__dog-insurance__mobile.png" alt="Pets Best Dog Insurance" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/pets-best/insurance-reimagined__pets-best__cat-insurance__mobile.png" alt="Pets Best Cat Insurance" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/pets-best/insurance-reimagined__pets-best__coverage__mobile.png" alt="Pets Best Coverage" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/pets-best/insurance-reimagined__pets-best__choose-plan__mobile.png" alt="Pets Best Choose Plan" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/pets-best/insurance-reimagined__pets-best__pet-insurance-cost__mobile.png" alt="Pets Best Cost" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/pets-best/insurance-reimagined__pets-best__pet-insurance-101__mobile.png" alt="Pets Best 101" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/pets-best/insurance-reimagined__pets-best__pet-insurance-comparison__mobile.png" alt="Pets Best Comparison" loading="lazy" onclick="openLightbox(this.src)">
+      </div>
+    </div>
+
+    <!-- LEMONADE WEBSITE -->
+    <div class="site-section" id="cat-lemonade">
+      <div class="site-header">
+        <div class="site-name">Lemonade <a href="https://lemonade.com" class="brand-url-link" target="_blank">lemonade.com</a></div>
+        <div class="site-sub">Home · Pet · Renters · Homeowners · Car · Life · Giveback</div>
+      </div>
+      <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/lemonade/insurance-reimagined__lemonade__home__mobile.png" alt="Lemonade Home" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/lemonade/insurance-reimagined__lemonade__pet__mobile.png" alt="Lemonade Pet" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/lemonade/insurance-reimagined__lemonade__renters__mobile.png" alt="Lemonade Renters" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/lemonade/insurance-reimagined__lemonade__homeowners__mobile.png" alt="Lemonade Homeowners" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/lemonade/insurance-reimagined__lemonade__car__mobile.png" alt="Lemonade Car" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/lemonade/insurance-reimagined__lemonade__life__mobile.png" alt="Lemonade Life" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/insurance-reimagined/lemonade/insurance-reimagined__lemonade__giveback__mobile.png" alt="Lemonade Giveback" loading="lazy" onclick="openLightbox(this.src)">
+      </div>
+    </div>
+
+    <!-- CATEGORY SYNTHESIS -->
+    <div class="synthesis-wrapper section-insurance">
+      <div class="synthesis-card">
+        <div class="syn-label">Category Landscape — What You're Looking At</div>
+        <h3>The category has a visual problem. Every brand looks like it's selling something you'd rather not think about.</h3>
+        <div class="syn-points">
+          <div class="syn-point"><div class="spt">Stock photography as the default</div><div class="spb">Happy dogs on white backgrounds. Smiling families. None of it feels specific or owned. The photography is interchangeable across brands — you could swap the logos and nothing would break.</div></div>
+          <div class="syn-point"><div class="spt">Blue is the category color</div><div class="spb">Every brand here defaults to blue — trust blue, healthcare blue, authority blue. None of them have figured out that the color itself signals "this is a financial product you'd rather not need."</div></div>
+          <div class="syn-point"><div class="spt">Fear is the acquisition hook</div><div class="spb">The implicit message across all five sites: something bad is coming. Get ready. That's the default register of the category, and exactly what the strategist brief is asking us to leave behind.</div></div>
+          <div class="syn-point"><div class="spt">Lemonade is visually distinct</div><div class="spb">Hot pink, bold type, irreverent copy. It reads differently from everything else here — which is why it earned its place in the beacon section below. But the visual differentiation is doing more work than the product thinking, at least on the marketing site.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- ═══ SECTION 2: INSURANCE APPS ═══ -->
+  <div class="category-section section-insurance">
+    <div class="category-header">
+      <div class="category-eyebrow">Section 02</div>
+      <div class="category-title">Insurance Reimagined</div>
+      <div class="category-synthesis" id="syn-insurance">We looked at the insurance app landscape broadly. Lemonade was the only brand worth designating as a beacon — because it's the only one that treats the claim flow as a design problem rather than a compliance obligation. The chat interface doesn't always hold up under legal copy, but the underlying decision is right. The question for this project is where to go from there.</div>
+      <button class="synthesis-toggle" onclick="toggleSynthesis(this, 'syn-insurance')"><span class="toggle-icon">▾</span> Hide overview</button>
+    </div>
+
+    <!-- LEMONADE -->
+    <div class="site-section" id="lemonade">
+      <div class="site-header">
+        <div class="site-name">Lemonade</div>
+        <div class="site-sub">Multi-line insurance · 2 flows: Filing a Pet Claim, Plans in Progress</div>
+      </div>
+      <div class="flow-group">
+        <div class="flow-label">Filing a Claim (Pet)</div>
+        <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/claim/Lemonade%20Insurance%20iOS%20Filling%20for%20a%20claim%20%28pet%29%200.png" alt="Lemonade Claim 0" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/claim/Lemonade%20Insurance%20iOS%20Filling%20for%20a%20claim%20%28pet%29%201.png" alt="Lemonade Claim 1" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/claim/Lemonade%20Insurance%20iOS%20Filling%20for%20a%20claim%20%28pet%29%203.png" alt="Lemonade Claim 3" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/claim/Lemonade%20Insurance%20iOS%20Filling%20for%20a%20claim%20%28pet%29%206.png" alt="Lemonade Claim 6" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/claim/Lemonade%20Insurance%20iOS%20Filling%20for%20a%20claim%20%28pet%29%208.png" alt="Lemonade Claim 8" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/claim/Lemonade%20Insurance%20iOS%20Filling%20for%20a%20claim%20%28pet%29%2013.png" alt="Lemonade Claim 13" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/claim/Lemonade%20Insurance%20iOS%20Filling%20for%20a%20claim%20%28pet%29%2022.png" alt="Lemonade Claim 22" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/claim/Lemonade%20Insurance%20iOS%20Filling%20for%20a%20claim%20%28pet%29%2031.png" alt="Lemonade Claim 31" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/claim/Lemonade%20Insurance%20iOS%20Filling%20for%20a%20claim%20%28pet%29%2036.png" alt="Lemonade Claim 36" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/claim/Lemonade%20Insurance%20iOS%20Filling%20for%20a%20claim%20%28pet%29%2037.png" alt="Lemonade Claim 37" loading="lazy" onclick="openLightbox(this.src)">
+        </div>
+      </div>
+      <div class="flow-group">
+        <div class="flow-label">Plans in Progress</div>
+        <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/plans/Lemonade%20Insurance%20iOS%20Plans%20in%20progress%200.png" alt="Lemonade Plans 0" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/plans/Lemonade%20Insurance%20iOS%20Plans%20in%20progress%203.png" alt="Lemonade Plans 3" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/plans/Lemonade%20Insurance%20iOS%20Plans%20in%20progress%205.png" alt="Lemonade Plans 5" loading="lazy" onclick="openLightbox(this.src)">
+        </div>
+      </div>
+      <div class="analysis-block">
+        <div class="analysis-header-obs">The claim flow runs long — but it's a chat, so each screen is just one question. It feels specific and conversational rather than heavy.</div>
+        <div class="observations-label" style="margin-top:0;">What to steal</div>
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">1</span><span class="obs-body"><strong>One question at a time, in a chat thread.</strong> What would be a 15-field form becomes a conversation. The cognitive load is the same. The felt experience isn't. The key is routing logic written around the pet's situation, not the claim category.</span></li>
+          <li class="obs-item"><span class="obs-n">2</span><span class="obs-body"><strong>The pet's name appears constantly.</strong> Not "your pet" or "the covered animal." Hiromi. "How is Hiromi doing now?" Every question is about Hiromi specifically. It's a small thing that changes the register of the whole flow.</span></li>
+          <li class="obs-item"><span class="obs-n">3</span><span class="obs-body"><strong>"I promise to claim only what I truly deserve."</strong> Before any details are entered. An honesty commitment upfront — reduces fraud and also signals that the brand trusts you. Worth the friction.</span></li>
+          <li class="obs-item"><span class="obs-n">4</span><span class="obs-body"><strong>No progress bar, no step counter.</strong> Progress is the accumulating chat thread. Milestone labels — "DOCS SUBMITTED," "IN REVIEW" — appear inline. Forward momentum without a tracker.</span></li>
+          <li class="obs-item"><span class="obs-n">5</span><span class="obs-body"><strong>"$1.8M donated to 59 charities this year" lives on the product dashboard.</strong> Not in a marketing email. In the app. That number doing trust work where the policy is already paid for is worth noticing.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- INSURANCE SYNTHESIS -->
+    <div class="synthesis-wrapper section-insurance">
+      <div class="synthesis-card">
+        <div class="syn-label">Category Synthesis — Insurance Reimagined</div>
+        <h3>The claim flow is where trust is made or broken.</h3>
+        <div class="syn-points">
+          <div class="syn-point"><div class="spt">The claim is the product, not the exception</div><div class="spb">When a pet needs care, the experience of filing a claim is the most important thing the app will ever do. Design it accordingly. Most insurance apps treat it like a legal obligation.</div></div>
+          <div class="syn-point"><div class="spt">Voice recording is an open lane</div><div class="spb">Lemonade asks for a voice note describing what happened. Gen Z communicates by voice DM. No other insurance app in the category has picked this up.</div></div>
+          <div class="syn-point"><div class="spt">The disclosure doesn't have to break the design</div><div class="spb">The fraud warning in Lemonade's flow is jarring because it's unstyled — it looks like a different app. Legal requirements can still be designed.</div></div>
+          <div class="syn-point"><div class="spt">Color as a category signal</div><div class="spb">Lemonade's hot pink says "this isn't your parents' insurance" before a word is read. The new brand needs something that does the same work against the parent brand's clinical palette.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 3: DIGITAL FINANCE ═══ -->
+  <div class="category-section section-finance">
+    <div class="category-header">
+      <div class="category-eyebrow">Section 03</div>
+      <div class="category-title">Digital Finance for Gen Z</div>
+      <div class="category-synthesis" id="syn-finance">The design logic across these apps is consistent enough to read as a shared philosophy: the number belongs to you, color signals meaning, plain language lives where you need it most. None of it is complicated. None of it has made it into insurance yet — which is the gap this project is working in.</div>
+      <button class="synthesis-toggle" onclick="toggleSynthesis(this, 'syn-finance')"><span class="toggle-icon">▾</span> Hide overview</button>
+    </div>
+
+    <!-- CHIME -->
+    <div class="site-section" id="chime">
+      <div class="site-header">
+        <div class="site-name">Chime</div>
+        <div class="site-sub">Neobank · 2 flows: Home, Paying Someone</div>
+      </div>
+      <div class="flow-group">
+        <div class="flow-label">Home</div>
+        <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/home/Chime%20iOS%20Home%200.png" alt="Chime Home 0" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/home/Chime%20iOS%20Home%201.png" alt="Chime Home 1" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/home/Chime%20iOS%20Home%203.png" alt="Chime Home 3" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/home/Chime%20iOS%20Home%205.png" alt="Chime Home 5" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/home/Chime%20iOS%20Home%207.png" alt="Chime Home 7" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/home/Chime%20iOS%20Home%209.png" alt="Chime Home 9" loading="lazy" onclick="openLightbox(this.src)">
+        </div>
+      </div>
+      <div class="flow-group">
+        <div class="flow-label">Paying Someone</div>
+        <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/send-money/Chime%20iOS%20Paying%20someone%200.png" alt="Chime Pay 0" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/send-money/Chime%20iOS%20Paying%20someone%202.png" alt="Chime Pay 2" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/send-money/Chime%20iOS%20Paying%20someone%204.png" alt="Chime Pay 4" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/send-money/Chime%20iOS%20Paying%20someone%206.png" alt="Chime Pay 6" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/send-money/Chime%20iOS%20Paying%20someone%208.png" alt="Chime Pay 8" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/send-money/Chime%20iOS%20Paying%20someone%2010.png" alt="Chime Pay 10" loading="lazy" onclick="openLightbox(this.src)">
+        </div>
+      </div>
+      <div class="analysis-block">
+        <div class="analysis-header-obs">Chime reads like it's on your side. That's a small thing that most financial apps don't bother with. Worth paying attention to how they do it.</div>
+        <div class="observations-label" style="margin-top:0;">What to steal</div>
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">1</span><span class="obs-body"><strong>The balance owns the home screen.</strong> Nothing competes with it. Just the number, huge, at the top. The premium amount or coverage limit in an insurance app could take the same position.</span></li>
+          <li class="obs-item"><span class="obs-n">2</span><span class="obs-body"><strong>The Next button stays gray until the input is valid, then snaps to green.</strong> No error state, no warning copy — just color doing the work. Clean pattern for quote flows and claim forms.</span></li>
+          <li class="obs-item"><span class="obs-n">3</span><span class="obs-body"><strong>"Let's review" instead of "Review your payment."</strong> One word. The first version sounds like a person. The second sounds like a system. That gap matters in a claims context — "Let's make sure everything looks right" versus "Review and submit."</span></li>
+          <li class="obs-item"><span class="obs-n">4</span><span class="obs-body"><strong>The fraud warning gets a full dedicated screen.</strong> Plain language, not fine print. A hard stop before the action completes. Insurance has the same opportunity before a large claim submission — design the disclosure instead of dumping it at the bottom of a form.</span></li>
+          <li class="obs-item"><span class="obs-n">5</span><span class="obs-body"><strong>The "What's this for?" field has a curated emoji tray — ❤️ 💸 🔥 🎉.</strong> It renders inline in the confirmation. The equivalent in a claim flow: "What happened?" with 🐾 🏥 💊 turns a required field into something a bit more human.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- CASH APP -->
+    <div class="site-section" id="cashapp">
+      <div class="site-header">
+        <div class="site-name">Cash App</div>
+        <div class="site-sub">Peer-to-peer payments · 2 flows: Home, Transferring Money</div>
+      </div>
+      <div class="flow-group">
+        <div class="flow-label">Home</div>
+        <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/home/Cash%20App%20iOS%20Home%200.png" alt="Cash App Home 0" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/home/Cash%20App%20iOS%20Home%201.png" alt="Cash App Home 1" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/home/Cash%20App%20iOS%20Home%204.png" alt="Cash App Home 4" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/home/Cash%20App%20iOS%20Home%205.png" alt="Cash App Home 5" loading="lazy" onclick="openLightbox(this.src)">
+        </div>
+      </div>
+      <div class="flow-group">
+        <div class="flow-label">Transferring Money</div>
+        <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/transfer-money/Cash%20App%20iOS%20Transferring%20money%200.png" alt="Cash App Transfer 0" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/transfer-money/Cash%20App%20iOS%20Transferring%20money%202.png" alt="Cash App Transfer 2" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/transfer-money/Cash%20App%20iOS%20Transferring%20money%203.png" alt="Cash App Transfer 3" loading="lazy" onclick="openLightbox(this.src)">
+        </div>
+      </div>
+      <div class="analysis-block">
+        <div class="analysis-header-obs">Cash App has a specific visual personality and doesn't apologize for it. Color is doing brand work here, not just decoration.</div>
+        <div class="observations-label" style="margin-top:0;">What to steal</div>
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">1</span><span class="obs-body"><strong>The green is streetwear green, not fintech green.</strong> It communicates something about who uses this app before a word is read. Whatever color system this brand chooses, it should do the same — not default to the category's visual language.</span></li>
+          <li class="obs-item"><span class="obs-n">2</span><span class="obs-body"><strong>"Turn spending into status."</strong> The rewards promo doesn't say "earn points." It's making a statement about identity. The equivalent for insurance isn't hard to find — covering your pet says something about who you are.</span></li>
+          <li class="obs-item"><span class="obs-n">3</span><span class="obs-body"><strong>When you send money, the entire screen turns green.</strong> Chrome, keypad, buttons — all one color. The action becomes an event. The enrollment confirmation screen in an insurance app could do the same thing. Right now it's usually a gray form summary.</span></li>
+          <li class="obs-item"><span class="obs-n">4</span><span class="obs-body"><strong>"Sent! Will be deposited once [name] accepts."</strong> It says what's actually happening. Not "Transaction submitted." For claims: "Claim received. We'll review within 2 business days." Don't claim resolution that hasn't happened.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- WEALTHSIMPLE -->
+    <div class="site-section" id="wealthsimple">
+      <div class="site-header">
+        <div class="site-name">Wealthsimple</div>
+        <div class="site-sub">Investment platform · 2 flows: Home, Buying Crypto</div>
+      </div>
+      <div class="flow-group">
+        <div class="flow-label">Home</div>
+        <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/home/Wealthsimple%20iOS%20Home%200.png" alt="Wealthsimple Home 0" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/home/Wealthsimple%20iOS%20Home%201.png" alt="Wealthsimple Home 1" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/home/Wealthsimple%20iOS%20Home%205.png" alt="Wealthsimple Home 5" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/home/Wealthsimple%20iOS%20Home%206.png" alt="Wealthsimple Home 6" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/home/Wealthsimple%20iOS%20Home%207.png" alt="Wealthsimple Home 7" loading="lazy" onclick="openLightbox(this.src)">
+        </div>
+      </div>
+      <div class="flow-group">
+        <div class="flow-label">Buying Crypto</div>
+        <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/buy-crypto/Wealthsimple%20iOS%20Buying%20crypto%203.png" alt="Wealthsimple Crypto 3" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/buy-crypto/Wealthsimple%20iOS%20Buying%20crypto%205.png" alt="Wealthsimple Crypto 5" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/buy-crypto/Wealthsimple%20iOS%20Buying%20crypto%208.png" alt="Wealthsimple Crypto 8" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/buy-crypto/Wealthsimple%20iOS%20Buying%20crypto%2012.png" alt="Wealthsimple Crypto 12" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/buy-crypto/Wealthsimple%20iOS%20Buying%20crypto%2014.png" alt="Wealthsimple Crypto 14" loading="lazy" onclick="openLightbox(this.src)">
+        </div>
+      </div>
+      <div class="analysis-block">
+        <div class="analysis-header-obs">The most thoughtful financial app in this set about how money feels, not just how it works.</div>
+        <div class="observations-label" style="margin-top:0;">What to steal</div>
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">1</span><span class="obs-body"><strong>There's an eye icon next to the balance.</strong> Tap it and the number disappears. Discretion as a first-class feature. Coverage amounts carry the same emotional weight — worth acknowledging that not everyone wants them on screen all the time.</span></li>
+          <li class="obs-item"><span class="obs-n">2</span><span class="obs-body"><strong>The Crypto section has a different header color.</strong> Lavender, not green. It says "you're somewhere else now" without a full redesign. If this app ever adds wellness or a different coverage tier, that's a pattern worth borrowing.</span></li>
+          <li class="obs-item"><span class="obs-n">3</span><span class="obs-body"><strong>The risk disclosure is a full screen with an illustration and plain language.</strong> "Our advice? Do your research." Brand voice in a compliance moment. Pre-existing conditions and exclusions in an insurance app don't need to read like a terms of service page.</span></li>
+          <li class="obs-item"><span class="obs-n">4</span><span class="obs-body"><strong>The confirmation screen shows "$0.09 CAD — 2% of order amount."</strong> Not buried, not in a tooltip. Right there. Gen Z specifically doesn't trust products that hide how they make money. Show the math.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- DIGITAL FINANCE SYNTHESIS -->
+    <div class="synthesis-wrapper section-finance">
+      <div class="synthesis-card">
+        <div class="syn-label">Category Synthesis — Digital Finance</div>
+        <h3>What these apps are doing that insurance isn't.</h3>
+        <div class="syn-points">
+          <div class="syn-point"><div class="spt">The number is the hero</div><div class="spb">Premium amount, deductible, claim payout — these should sit at display scale with nothing competing. Not in a form row. Not in a table. Just the number.</div></div>
+          <div class="syn-point"><div class="spt">Color changes when something important happens</div><div class="spb">Enrollment, first coverage activation, claim approved — these screens should look different from everything else. Color as an event signal, not just branding.</div></div>
+          <div class="syn-point"><div class="spt">Copy that sounds like a person</div><div class="spb">"Let's review." "Turn spending into status." Writing toward the feeling, not the function. Every anxiety moment in the insurance flow has an equivalent opportunity.</div></div>
+          <div class="syn-point"><div class="spt">Trust copy at the moment of friction</div><div class="spb">Not in a privacy policy. Not linked. Right there, next to the field causing the hesitation. When someone pauses at the vet history question, that's where the plain language goes.</div></div>
+          <div class="syn-point"><div class="spt">The next step is visible after completion</div><div class="spb">Post-enrollment: "View your policy" and "Add another pet." Post-claim: "Track this" and "File another." The success screen is already the next entry point.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 4: LIFE APPS ═══ -->
+  <div class="category-section section-life">
+    <div class="category-header">
+      <div class="category-eyebrow">Section 04</div>
+      <div class="category-title">Delight-Driven Life Apps</div>
+      <div class="category-synthesis" id="syn-life">These apps were built for the in-between moments — after the initial decision, before anything goes wrong. That's the design challenge most relevant here: what does the app feel like on a Tuesday when nothing is happening? None of the insurance apps we looked at have a good answer to that. These do.</div>
+      <button class="synthesis-toggle" onclick="toggleSynthesis(this, 'syn-life')"><span class="toggle-icon">▾</span> Hide overview</button>
+    </div>
+
+    <!-- CALM -->
+    <div class="site-section" id="calm">
+      <div class="site-header">
+        <div class="site-name">Calm</div>
+        <div class="site-sub">Mindfulness · 2 flows: Home, Playing Sleep Content</div>
+      </div>
+      <div class="flow-group">
+        <div class="flow-label">Home</div>
+        <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/calm/home/Calm%20iOS%20Home%200.png" alt="Calm Home 0" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/calm/home/Calm%20iOS%20Home%203.png" alt="Calm Home 3" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/calm/home/Calm%20iOS%20Home%205.png" alt="Calm Home 5" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/calm/home/Calm%20iOS%20Home%207.png" alt="Calm Home 7" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/calm/home/Calm%20iOS%20Home%208.png" alt="Calm Home 8" loading="lazy" onclick="openLightbox(this.src)">
+        </div>
+      </div>
+      <div class="flow-group">
+        <div class="flow-label">Playing Sleep Content</div>
+        <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/calm/sleep/Calm%20iOS%20Playing%20sleep%20content%201.png" alt="Calm Sleep 1" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/calm/sleep/Calm%20iOS%20Playing%20sleep%20content%202.png" alt="Calm Sleep 2" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/calm/sleep/Calm%20iOS%20Playing%20sleep%20content%204.png" alt="Calm Sleep 4" loading="lazy" onclick="openLightbox(this.src)">
+        </div>
+      </div>
+      <div class="analysis-block">
+        <div class="analysis-header-obs">Calm's home screen is a mountain lake. Nothing is happening. You haven't done anything yet. It still feels like something worth opening.</div>
+        <div class="observations-label" style="margin-top:0;">What to steal</div>
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">1</span><span class="obs-body"><strong>The mountain lake photo is the first thing you see.</strong> Not a headline. Not a CTA. Just the image. It says something before any copy has to. For an insurance brand, leading with a photo of the pet — just the pet, at home — would do the same work.</span></li>
+          <li class="obs-item"><span class="obs-n">2</span><span class="obs-body"><strong>"Still awake?"</strong> After a sleep story ends, Calm asks a human question. No form, no system message. Just a check-in. The equivalent after a claim submits: "Still have questions?" beats "Claim received — reference #82847."</span></li>
+          <li class="obs-item"><span class="obs-n">3</span><span class="obs-body"><strong>When you're in a session, the chrome disappears.</strong> Just the audio and the sky. For the claim filing flow, the same principle applies — the moment is stressful enough. Strip everything that isn't necessary to get through it.</span></li>
+          <li class="obs-item"><span class="obs-n">4</span><span class="obs-body"><strong>"Get lazy."</strong> A card that meets you where you actually are, not where you're supposed to be. That's the tone. Not aspirational. Not therapeutic. Just honest about the moment.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- DUOLINGO -->
+    <div class="site-section" id="duolingo">
+      <div class="site-header">
+        <div class="site-name">Duolingo</div>
+        <div class="site-sub">Language learning · 2 flows: Completing a Lesson, Streak</div>
+      </div>
+      <div class="flow-group">
+        <div class="flow-label">Completing a Radio Lesson</div>
+        <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/lesson/Duolingo%20iOS%20Completing%20a%20radio%20lesson%200.png" alt="Duolingo Lesson 0" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/lesson/Duolingo%20iOS%20Completing%20a%20radio%20lesson%202.png" alt="Duolingo Lesson 2" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/lesson/Duolingo%20iOS%20Completing%20a%20radio%20lesson%2010.png" alt="Duolingo Lesson 10" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/lesson/Duolingo%20iOS%20Completing%20a%20radio%20lesson%2013.png" alt="Duolingo Lesson 13" loading="lazy" onclick="openLightbox(this.src)">
+        </div>
+      </div>
+      <div class="flow-group">
+        <div class="flow-label">Streak</div>
+        <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/streak/Duolingo%20iOS%20Streak%201.png" alt="Duolingo Streak 1" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/streak/Duolingo%20iOS%20Streak%203.png" alt="Duolingo Streak 3" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/streak/Duolingo%20iOS%20Streak%204.png" alt="Duolingo Streak 4" loading="lazy" onclick="openLightbox(this.src)">
+        </div>
+      </div>
+      <div class="analysis-block">
+        <div class="analysis-header-obs">Duolingo makes repetition feel like it's working in your favor. Worth studying for how it handles the gap between doing a thing once and making it a habit.</div>
+        <div class="observations-label" style="margin-top:0;">What to steal</div>
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">1</span><span class="obs-body"><strong>The "+15 XP" is visible before you enter the lesson.</strong> The reward is surfaced at the entry point, not held back as a surprise. Any recurring action in this app — logging a vet visit, checking coverage, submitting a wellness receipt — could show the payoff upfront.</span></li>
+          <li class="obs-item"><span class="obs-n">2</span><span class="obs-body"><strong>When you get a streak of correct answers, the bar label changes to "COMBO x2" and turns green.</strong> One copy and color swap. The bar goes from passive tracker to live feedback. A wellness streak in an insurance app could do the same.</span></li>
+          <li class="obs-item"><span class="obs-n">3</span><span class="obs-body"><strong>The streak is a calendar, not just a number.</strong> Months of marked days turn the habit into a record you actually own. A monthly view of vet visits and check-ins would work the same way — absence reads as motivation, not failure.</span></li>
+          <li class="obs-item"><span class="obs-n">4</span><span class="obs-body"><strong>Friend streaks show a name and a flame count, no ranking.</strong> It's ambient, not competitive. "Your friend logged a vet visit this week" is a soft nudge.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- HEADSPACE -->
+    <div class="site-section" id="headspace">
+      <div class="site-header">
+        <div class="site-name">Headspace</div>
+        <div class="site-sub">Mindfulness · 2 flows: Today, Completing a Session</div>
+      </div>
+      <div class="flow-group">
+        <div class="flow-label">Today</div>
+        <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/today/Headspace%20iOS%20Today%200.png" alt="Headspace Today 0" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/today/Headspace%20iOS%20Today%201.png" alt="Headspace Today 1" loading="lazy" onclick="openLightbox(this.src)">
+        </div>
+      </div>
+      <div class="flow-group">
+        <div class="flow-label">Completing a Session</div>
+        <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/session/Headspace%20iOS%20Completing%20a%20session%201.png" alt="Headspace Session 1" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/session/Headspace%20iOS%20Completing%20a%20session%202.png" alt="Headspace Session 2" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/session/Headspace%20iOS%20Completing%20a%20session%203.png" alt="Headspace Session 3" loading="lazy" onclick="openLightbox(this.src)">
+        </div>
+      </div>
+      <div class="analysis-block">
+        <div class="analysis-header-obs">There's a dotted timeline in the session view. Three dots: one checked, one active, one empty. It shouldn't work as well as it does.</div>
+        <div class="observations-label" style="margin-top:0;">What to steal</div>
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">1</span><span class="obs-body"><strong>There's a dotted timeline in the session view — completed step gets a green check, active step gets the only orange dot on screen, upcoming step is empty.</strong> Three dots, one color. A simple path showing where someone is in coverage setup, or what's coming up for their pet this month. The anxiety it quiets is "am I doing this right?"</span></li>
+          <li class="obs-item"><span class="obs-n">2</span><span class="obs-body"><strong>When you finish a session, a checkmark appears on the timeline. That's it.</strong> No confetti, no modal, no points. The check is the confirmation. When a claim is approved, a check and a dollar amount. That's the whole screen.</span></li>
+          <li class="obs-item"><span class="obs-n">3</span><span class="obs-body"><strong>"457 meditating" — and the number changes mid-session.</strong> It goes to 447. That's how you know it's live. "847 claims processed today" would be operationally credible in a way "trusted by millions" never is.</span></li>
+          <li class="obs-item"><span class="obs-n">4</span><span class="obs-body"><strong>The feed is organized by time of day, not content category.</strong> "Start your day." "Your afternoon lift." "At night." No data required — just an acknowledgment of where you are in the day. Headers like "Right now," "This week," "Coming up" would do the same work in an insurance home screen.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- NOTION -->
+    <div class="site-section" id="notion">
+      <div class="site-header">
+        <div class="site-name">Notion</div>
+        <div class="site-sub">Productivity · 2 flows: Home, Creating a Page</div>
+      </div>
+      <div class="flow-group">
+        <div class="flow-label">Home</div>
+        <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/notion/home/Notion%20iOS%20Home%200.png" alt="Notion Home 0" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/notion/home/Notion%20iOS%20Home%201.png" alt="Notion Home 1" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/notion/home/Notion%20iOS%20Home%202.png" alt="Notion Home 2" loading="lazy" onclick="openLightbox(this.src)">
+        </div>
+      </div>
+      <div class="flow-group">
+        <div class="flow-label">Creating a Page</div>
+        <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/notion/new-page/Notion%20iOS%20Creating%20a%20page%200.png" alt="Notion New Page 0" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/notion/new-page/Notion%20iOS%20Creating%20a%20page%202.png" alt="Notion New Page 2" loading="lazy" onclick="openLightbox(this.src)">
+        </div>
+      </div>
+      <div class="analysis-block">
+        <div class="analysis-header-obs">Notion solves the blank-canvas problem. A new user lands with something already there — structure, suggestions, a place to start. Worth thinking about for what happens right after enrollment.</div>
+        <div class="observations-label" style="margin-top:0;">What to steal</div>
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">1</span><span class="obs-body"><strong>The home screen leads with "Jump back in" — the last thing you touched, as a visual bookmark.</strong> Not a dashboard. Not a summary. Your context, immediately. The equivalent in an insurance app: last vet visit, last claim status, next renewal.</span></li>
+          <li class="obs-item"><span class="obs-n">2</span><span class="obs-body"><strong>The header says "Alex's Notion."</strong> Not "Your Dashboard." Not "Welcome back." Just a name. For this app: "Biscuit's Plan." The app belongs to the pet.</span></li>
+          <li class="obs-item"><span class="obs-n">3</span><span class="obs-body"><strong>Everything is gray and off-white except the cover images users add.</strong> Those stop the eye. One expressive element in an otherwise minimal UI. The pet's profile photo could do exactly this.</span></li>
+          <li class="obs-item"><span class="obs-n">4</span><span class="obs-body"><strong>After you create a page, it just appears in "Jump back in." No confirmation screen.</strong> The action confirmed itself by being visible. A submitted claim appearing in the activity feed works the same way.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SPOTIFY -->
+    <div class="site-section" id="spotify">
+      <div class="site-header">
+        <div class="site-name">Spotify</div>
+        <div class="site-sub">Music streaming · 2 flows: Home, 2025 Wrapped</div>
+      </div>
+      <div class="flow-group">
+        <div class="flow-label">Home</div>
+        <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/home/Spotify%20iOS%20Home%200.png" alt="Spotify Home 0" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/home/Spotify%20iOS%20Home%201.png" alt="Spotify Home 1" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/home/Spotify%20iOS%20Home%204.png" alt="Spotify Home 4" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/home/Spotify%20iOS%20Home%2010.png" alt="Spotify Home 10" loading="lazy" onclick="openLightbox(this.src)">
+        </div>
+      </div>
+      <div class="flow-group">
+        <div class="flow-label">2025 Wrapped</div>
+        <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/2025-wrapped/Spotify%20iOS%202025%20Wrapped%201.png" alt="Wrapped 1" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/2025-wrapped/Spotify%20iOS%202025%20Wrapped%203.png" alt="Wrapped 3" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/2025-wrapped/Spotify%20iOS%202025%20Wrapped%205.png" alt="Wrapped 5" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/2025-wrapped/Spotify%20iOS%202025%20Wrapped%209.png" alt="Wrapped 9" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/2025-wrapped/Spotify%20iOS%202025%20Wrapped%2016.png" alt="Wrapped 16" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/2025-wrapped/Spotify%20iOS%202025%20Wrapped%2021.png" alt="Wrapped 21" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/2025-wrapped/Spotify%20iOS%202025%20Wrapped%2023.png" alt="Wrapped 23" loading="lazy" onclick="openLightbox(this.src)">
+        </div>
+      </div>
+      <div class="analysis-block">
+        <div class="analysis-header-obs">Wrapped turns annual billing into something people look forward to. The insurance annual renewal is the same moment — a recurring billing event — and it's currently the most dreaded communication in the category.</div>
+        <div class="observations-label" style="margin-top:0;">What to steal</div>
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">1</span><span class="obs-body"><strong>Wrapped opens with "You listened. We counted."</strong> One screen, no data. Just copy. Then the numbers arrive. The staging makes each one land harder. An annual insurance review could work the same way — start with "You had a big year, Biscuit" before you show anything.</span></li>
+          <li class="obs-item"><span class="obs-n">2</span><span class="obs-body"><strong>"Cloud State Society."</strong> Spotify takes listening data and gives you a fictional tribe membership. The insurance version isn't hard to imagine: "The Overprotective Optimist — 0 claims filed, coverage checked 14 times." Or applied to the pet: "Biscuit is a Chaos Specialist. She's in good company."</span></li>
+          <li class="obs-item"><span class="obs-n">3</span><span class="obs-body"><strong>Every number gets an editorial voice.</strong> "12 albums. Long live the album." "Nice." after 8 days of listening. One word. The data reveal has an opinion. "Biscuit used her plan twice this year. That's two fewer things you had to worry about" is the equivalent.</span></li>
+          <li class="obs-item"><span class="obs-n">4</span><span class="obs-body"><strong>Each chapter has its own color.</strong> The palette shifts as you move through the data. It feels like turning pages, not navigating screens. An annual review organized by coverage, claims, and wellness — each with its own color temperature — would do the same.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- STRAVA -->
+    <div class="site-section" id="strava">
+      <div class="site-header">
+        <div class="site-name">Strava</div>
+        <div class="site-sub">Fitness tracking · 2 flows: Home, You (Profile)</div>
+      </div>
+      <div class="flow-group">
+        <div class="flow-label">Home</div>
+        <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/home/Strava%20iOS%20Home%200.png" alt="Strava Home 0" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/home/Strava%20iOS%20Home%202.png" alt="Strava Home 2" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/home/Strava%20iOS%20Home%204.png" alt="Strava Home 4" loading="lazy" onclick="openLightbox(this.src)">
+        </div>
+      </div>
+      <div class="flow-group">
+        <div class="flow-label">You (Profile &amp; Progress)</div>
+        <div class="screenshot-strip">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/you/Strava%20iOS%20You%201.png" alt="Strava You 1" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/you/Strava%20iOS%20You%202.png" alt="Strava You 2" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/you/Strava%20iOS%20You%203.png" alt="Strava You 3" loading="lazy" onclick="openLightbox(this.src)">
+          <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/you/Strava%20iOS%20You%205.png" alt="Strava You 5" loading="lazy" onclick="openLightbox(this.src)">
+        </div>
+      </div>
+      <div class="analysis-block">
+        <div class="analysis-header-obs">Strava shows you what your progress will look like before you've made any. The structure is there on day one. Worth borrowing for the post-enrollment empty state.</div>
+        <div class="observations-label" style="margin-top:0;">What to steal</div>
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">1</span><span class="obs-body"><strong>"🥇 Kudos on your first activity!" appears as a card in the feed, not a modal.</strong> It stays there. Inline, permanent. First claim filed, first year of continuous coverage, first wellness check — these could all live as cards in the pet's timeline rather than screens that pop up and disappear.</span></li>
+          <li class="obs-item"><span class="obs-n">2</span><span class="obs-body"><strong>"Up from 0 at this point last month."</strong> The stat is compared to the same point in the prior period, not just displayed on its own. "You've logged 3 vet visits this year — 2 more than this time last year" reads as progress even when the number is small.</span></li>
+          <li class="obs-item"><span class="obs-n">3</span><span class="obs-body"><strong>The Weekly Snapshot card shows zeros with arrows on day one.</strong> The structure exists before any data does. A new user's pet dashboard shouldn't be blank — show the shape of what will be there, with dashes holding the space.</span></li>
+          <li class="obs-item"><span class="obs-n">4</span><span class="obs-body"><strong>The Progress tab stacks this week, this month, relative effort, and fitness trend in one scroll.</strong> Different time scales next to each other build a sense of direction over time. The equivalent: this week's check-ins, this month's vet visits, this year's claims, lifetime since enrollment.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- LIFE APPS SYNTHESIS -->
+    <div class="synthesis-wrapper section-life">
+      <div class="synthesis-card">
+        <div class="syn-label">Category Synthesis — Life Apps</div>
+        <h3>What these apps understand that insurance doesn't.</h3>
+        <div class="syn-points">
+          <div class="syn-point"><div class="spt">Start with an image, not a headline</div><div class="spb">Calm's mountain lake does emotional work before any copy appears. For this brand: lead with the pet. A photo of someone's actual dog at home says more than any tagline.</div></div>
+          <div class="syn-point"><div class="spt">Strip the UI at stressful moments</div><div class="spb">Calm removes its chrome during a session. Filing a claim is already stressful. Remove the nav, the banners, the extras. Just the flow.</div></div>
+          <div class="syn-point"><div class="spt">Progress can be quiet</div><div class="spb">Headspace's three dots and Duolingo's streak calendar show where you are without making it a performance. A simple path — here, next, done — works better than a progress bar.</div></div>
+          <div class="syn-point"><div class="spt">Copy that meets you where you actually are</div><div class="spb">"Get lazy." "Still awake?" These are honest about the moment rather than aspirational about it. The insurance equivalent: "Filing a claim is stressful. Here's how it works."</div></div>
+          <div class="syn-point"><div class="spt">Data can describe identity</div><div class="spb">Wrapped doesn't report your listening habits — it tells you who you are as a listener. An annual insurance review could do the same: what kind of pet parent are you, based on how you've actually used this.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 5: ONBOARDING ═══ -->
+  <div class="category-section section-onboarding">
+    <div class="category-header">
+      <div class="category-eyebrow">Section 05</div>
+      <div class="category-title">Onboarding Reference</div>
+      <div class="category-synthesis" id="syn-onboarding">Ten different first-time experiences, and a clear pattern across the strong ones: they ask for something before they ask for anything. Goal first, information second. The user's commitment builds before their patience runs out. The sequencing matters more than the number of steps.</div>
+      <button class="synthesis-toggle" onclick="toggleSynthesis(this, 'syn-onboarding')"><span class="toggle-icon">▾</span> Hide overview</button>
+    </div>
+
+    <!-- CHIME ONBOARDING -->
+    <div class="site-section" id="ob-chime">
+      <div class="site-header">
+        <div class="site-name">Chime</div>
+        <div class="site-sub">Banking that has your back</div>
+      </div>
+      <div class="screenshot-strip">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%200.png" alt="Chime Onboarding 0" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%201.png" alt="Chime Onboarding 1" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%202.png" alt="Chime Onboarding 2" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%203.png" alt="Chime Onboarding 3" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%204.png" alt="Chime Onboarding 4" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%205.png" alt="Chime Onboarding 5" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%206.png" alt="Chime Onboarding 6" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%207.png" alt="Chime Onboarding 7" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%208.png" alt="Chime Onboarding 8" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%209.png" alt="Chime Onboarding 9" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%2010.png" alt="Chime Onboarding 10" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%2011.png" alt="Chime Onboarding 11" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%2012.png" alt="Chime Onboarding 12" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%2013.png" alt="Chime Onboarding 13" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%2014.png" alt="Chime Onboarding 14" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%2015.png" alt="Chime Onboarding 15" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%2016.png" alt="Chime Onboarding 16" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%2017.png" alt="Chime Onboarding 17" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%2018.png" alt="Chime Onboarding 18" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%2019.png" alt="Chime Onboarding 19" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%2020.png" alt="Chime Onboarding 20" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%2021.png" alt="Chime Onboarding 21" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%2022.png" alt="Chime Onboarding 22" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%2023.png" alt="Chime Onboarding 23" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%2024.png" alt="Chime Onboarding 24" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%2025.png" alt="Chime Onboarding 25" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%2026.png" alt="Chime Onboarding 26" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/chime/onboarding/Chime%20iOS%20Onboarding%2027.png" alt="Chime Onboarding 27" loading="lazy" onclick="openLightbox(this.src)">
+      </div>
+      <div class="analysis-block" style="margin-top:20px;">
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>Every input is a question, not a label.</strong> "What's your legal first name?" instead of a field called "First Name." Across 34 screens that accumulates into something that feels less like a form.</span></li>
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>Trust copy lives where the hesitation lives.</strong> The pattern throughout this flow: reassurance text sits adjacent to sensitive fields, not in a footer or linked policy page. Right there, at the moment someone pauses.</span></li>
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>The feature carousels come after you've signed up, not before.</strong> SpotMe, Credit Builder — introduced once you're already in. Build some trust before asking someone to care about features.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- CASH APP ONBOARDING -->
+    <div class="site-section" id="ob-cashapp">
+      <div class="site-header">
+        <div class="site-name">Cash App</div>
+        <div class="site-sub">Identity creation, not account creation</div>
+      </div>
+      <div class="screenshot-strip">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/onboarding/Cash%20App%20iOS%20Onboarding%200.png" alt="Cash App Onboarding 0" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/onboarding/Cash%20App%20iOS%20Onboarding%201.png" alt="Cash App Onboarding 1" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/onboarding/Cash%20App%20iOS%20Onboarding%202.png" alt="Cash App Onboarding 2" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/onboarding/Cash%20App%20iOS%20Onboarding%203.png" alt="Cash App Onboarding 3" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/onboarding/Cash%20App%20iOS%20Onboarding%204.png" alt="Cash App Onboarding 4" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/onboarding/Cash%20App%20iOS%20Onboarding%205.png" alt="Cash App Onboarding 5" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/onboarding/Cash%20App%20iOS%20Onboarding%206.png" alt="Cash App Onboarding 6" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/onboarding/Cash%20App%20iOS%20Onboarding%207.png" alt="Cash App Onboarding 7" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/onboarding/Cash%20App%20iOS%20Onboarding%208.png" alt="Cash App Onboarding 8" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/onboarding/Cash%20App%20iOS%20Onboarding%209.png" alt="Cash App Onboarding 9" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/onboarding/Cash%20App%20iOS%20Onboarding%2010.png" alt="Cash App Onboarding 10" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/onboarding/Cash%20App%20iOS%20Onboarding%2011.png" alt="Cash App Onboarding 11" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/onboarding/Cash%20App%20iOS%20Onboarding%2012.png" alt="Cash App Onboarding 12" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/onboarding/Cash%20App%20iOS%20Onboarding%2013.png" alt="Cash App Onboarding 13" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/onboarding/Cash%20App%20iOS%20Onboarding%2014.png" alt="Cash App Onboarding 14" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/onboarding/Cash%20App%20iOS%20Onboarding%2015.png" alt="Cash App Onboarding 15" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/onboarding/Cash%20App%20iOS%20Onboarding%2016.png" alt="Cash App Onboarding 16" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/onboarding/Cash%20App%20iOS%20Onboarding%2017.png" alt="Cash App Onboarding 17" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/onboarding/Cash%20App%20iOS%20Onboarding%2018.png" alt="Cash App Onboarding 18" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/onboarding/Cash%20App%20iOS%20Onboarding%2019.png" alt="Cash App Onboarding 19" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/onboarding/Cash%20App%20iOS%20Onboarding%2020.png" alt="Cash App Onboarding 20" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/cashapp/onboarding/Cash%20App%20iOS%20Onboarding%2021.png" alt="Cash App Onboarding 21" loading="lazy" onclick="openLightbox(this.src)">
+      </div>
+      <div class="analysis-block" style="margin-top:20px;">
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>Creating your $Cashtag feels like making a social profile, not opening an account.</strong> Enrolling a pet in insurance is the same reframe — not "create a policy," but "create a profile for someone you love."</span></li>
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>The Cash Card screen lets you customize a physical Visa card mid-onboarding.</strong> It makes the product feel real and owned before you've used it. A coverage card or pet profile card could do the same thing for insurance.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- WEALTHSIMPLE ONBOARDING -->
+    <div class="site-section" id="ob-wealthsimple">
+      <div class="site-header">
+        <div class="site-name">Wealthsimple</div>
+        <div class="site-sub">Intent-first, portfolio reveal as payoff</div>
+      </div>
+      <div class="screenshot-strip">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/onboarding/Wealthsimple%20iOS%20Onboarding%200.png" alt="Wealthsimple Onboarding 0" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/onboarding/Wealthsimple%20iOS%20Onboarding%201.png" alt="Wealthsimple Onboarding 1" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/onboarding/Wealthsimple%20iOS%20Onboarding%202.png" alt="Wealthsimple Onboarding 2" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/onboarding/Wealthsimple%20iOS%20Onboarding%203.png" alt="Wealthsimple Onboarding 3" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/onboarding/Wealthsimple%20iOS%20Onboarding%204.png" alt="Wealthsimple Onboarding 4" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/onboarding/Wealthsimple%20iOS%20Onboarding%205.png" alt="Wealthsimple Onboarding 5" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/onboarding/Wealthsimple%20iOS%20Onboarding%206.png" alt="Wealthsimple Onboarding 6" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/onboarding/Wealthsimple%20iOS%20Onboarding%207.png" alt="Wealthsimple Onboarding 7" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/onboarding/Wealthsimple%20iOS%20Onboarding%208.png" alt="Wealthsimple Onboarding 8" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/onboarding/Wealthsimple%20iOS%20Onboarding%209.png" alt="Wealthsimple Onboarding 9" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/onboarding/Wealthsimple%20iOS%20Onboarding%2010.png" alt="Wealthsimple Onboarding 10" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/onboarding/Wealthsimple%20iOS%20Onboarding%2011.png" alt="Wealthsimple Onboarding 11" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/onboarding/Wealthsimple%20iOS%20Onboarding%2012.png" alt="Wealthsimple Onboarding 12" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/onboarding/Wealthsimple%20iOS%20Onboarding%2013.png" alt="Wealthsimple Onboarding 13" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/onboarding/Wealthsimple%20iOS%20Onboarding%2014.png" alt="Wealthsimple Onboarding 14" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/onboarding/Wealthsimple%20iOS%20Onboarding%2015.png" alt="Wealthsimple Onboarding 15" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/onboarding/Wealthsimple%20iOS%20Onboarding%2016.png" alt="Wealthsimple Onboarding 16" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/wealthsimple/onboarding/Wealthsimple%20iOS%20Onboarding%2017.png" alt="Wealthsimple Onboarding 17" loading="lazy" onclick="openLightbox(this.src)">
+      </div>
+      <div class="analysis-block" style="margin-top:20px;">
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>The flow is structured around your goal, not the compliance checklist.</strong> Personal information comes after intent is established. The equivalent for insurance: ask what the user is worried about before asking for vet history or payment details.</span></li>
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>The data collection builds toward something visible.</strong> Questions accumulate into a personalized output — not a generic summary screen. The quote reveal should feel the same way: "here's what we built for your specific dog," not a premium on a gray form.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- LEMONADE ONBOARDING -->
+    <div class="site-section" id="ob-lemonade">
+      <div class="site-header">
+        <div class="site-name">Lemonade</div>
+        <div class="site-sub">Maya, conversation UI, quote as relief not bill</div>
+      </div>
+      <div class="screenshot-strip">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/onboarding/Lemonade%20Insurance%20iOS%20Onboarding%200.png" alt="Lemonade Onboarding 0" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/onboarding/Lemonade%20Insurance%20iOS%20Onboarding%201.png" alt="Lemonade Onboarding 1" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/onboarding/Lemonade%20Insurance%20iOS%20Onboarding%202.png" alt="Lemonade Onboarding 2" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/onboarding/Lemonade%20Insurance%20iOS%20Onboarding%203.png" alt="Lemonade Onboarding 3" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/onboarding/Lemonade%20Insurance%20iOS%20Onboarding%204.png" alt="Lemonade Onboarding 4" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/onboarding/Lemonade%20Insurance%20iOS%20Onboarding%205.png" alt="Lemonade Onboarding 5" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/onboarding/Lemonade%20Insurance%20iOS%20Onboarding%206.png" alt="Lemonade Onboarding 6" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/onboarding/Lemonade%20Insurance%20iOS%20Onboarding%207.png" alt="Lemonade Onboarding 7" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/onboarding/Lemonade%20Insurance%20iOS%20Onboarding%208.png" alt="Lemonade Onboarding 8" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/onboarding/Lemonade%20Insurance%20iOS%20Onboarding%209.png" alt="Lemonade Onboarding 9" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/onboarding/Lemonade%20Insurance%20iOS%20Onboarding%2010.png" alt="Lemonade Onboarding 10" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/onboarding/Lemonade%20Insurance%20iOS%20Onboarding%2011.png" alt="Lemonade Onboarding 11" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/lemonade/onboarding/Lemonade%20Insurance%20iOS%20Onboarding%2012.png" alt="Lemonade Onboarding 12" loading="lazy" onclick="openLightbox(this.src)">
+      </div>
+      <div class="analysis-block" style="margin-top:20px;">
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>"Hi, I'm Maya."</strong> An AI avatar named Maya. It reframes data collection as talking to someone. The question for this brand isn't whether to do this — it's how the character behaves at the moments when someone is stressed.</span></li>
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>The quote is designed as a reveal, not a form output.</strong> The price arrives after a conversational flow, not at the top of a comparison table. That sequencing changes how the number lands.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- CALM ONBOARDING -->
+    <div class="site-section" id="ob-calm">
+      <div class="site-header">
+        <div class="site-name">Calm</div>
+        <div class="site-sub">The product before the pitch</div>
+      </div>
+      <div class="screenshot-strip">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/calm/onboarding/Calm%20iOS%20Onboarding%200.png" alt="Calm Onboarding 0" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/calm/onboarding/Calm%20iOS%20Onboarding%201.png" alt="Calm Onboarding 1" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/calm/onboarding/Calm%20iOS%20Onboarding%202.png" alt="Calm Onboarding 2" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/calm/onboarding/Calm%20iOS%20Onboarding%203.png" alt="Calm Onboarding 3" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/calm/onboarding/Calm%20iOS%20Onboarding%204.png" alt="Calm Onboarding 4" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/calm/onboarding/Calm%20iOS%20Onboarding%205.png" alt="Calm Onboarding 5" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/calm/onboarding/Calm%20iOS%20Onboarding%206.png" alt="Calm Onboarding 6" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/calm/onboarding/Calm%20iOS%20Onboarding%207.png" alt="Calm Onboarding 7" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/calm/onboarding/Calm%20iOS%20Onboarding%208.png" alt="Calm Onboarding 8" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/calm/onboarding/Calm%20iOS%20Onboarding%209.png" alt="Calm Onboarding 9" loading="lazy" onclick="openLightbox(this.src)">
+      </div>
+      <div class="analysis-block" style="margin-top:20px;">
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>The first screen is a breathing animation. No account creation, no pitch.</strong> You experience the thing before you're asked to sign up for it. Every other app explains what it does. Calm just does it.</span></li>
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>The trial paywall is explicit about the timeline.</strong> What you get, when the reminder comes, when it ends — laid out plainly. The insurance equivalent: "Today: you're covered. Day 14: first bill. Cancel any time before that."</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- DUOLINGO ONBOARDING -->
+    <div class="site-section" id="ob-duolingo">
+      <div class="site-header">
+        <div class="site-name">Duolingo</div>
+        <div class="site-sub">Goal-first, commitment language, no account until the end</div>
+      </div>
+      <div class="screenshot-strip">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/onboarding/Duolingo%20iOS%20Onboarding%200.png" alt="Duolingo Onboarding 0" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/onboarding/Duolingo%20iOS%20Onboarding%201.png" alt="Duolingo Onboarding 1" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/onboarding/Duolingo%20iOS%20Onboarding%202.png" alt="Duolingo Onboarding 2" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/onboarding/Duolingo%20iOS%20Onboarding%203.png" alt="Duolingo Onboarding 3" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/onboarding/Duolingo%20iOS%20Onboarding%204.png" alt="Duolingo Onboarding 4" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/onboarding/Duolingo%20iOS%20Onboarding%205.png" alt="Duolingo Onboarding 5" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/onboarding/Duolingo%20iOS%20Onboarding%206.png" alt="Duolingo Onboarding 6" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/onboarding/Duolingo%20iOS%20Onboarding%207.png" alt="Duolingo Onboarding 7" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/onboarding/Duolingo%20iOS%20Onboarding%208.png" alt="Duolingo Onboarding 8" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/onboarding/Duolingo%20iOS%20Onboarding%209.png" alt="Duolingo Onboarding 9" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/onboarding/Duolingo%20iOS%20Onboarding%2010.png" alt="Duolingo Onboarding 10" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/onboarding/Duolingo%20iOS%20Onboarding%2011.png" alt="Duolingo Onboarding 11" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/onboarding/Duolingo%20iOS%20Onboarding%2012.png" alt="Duolingo Onboarding 12" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/onboarding/Duolingo%20iOS%20Onboarding%2013.png" alt="Duolingo Onboarding 13" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/onboarding/Duolingo%20iOS%20Onboarding%2014.png" alt="Duolingo Onboarding 14" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/onboarding/Duolingo%20iOS%20Onboarding%2015.png" alt="Duolingo Onboarding 15" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/onboarding/Duolingo%20iOS%20Onboarding%2016.png" alt="Duolingo Onboarding 16" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/onboarding/Duolingo%20iOS%20Onboarding%2017.png" alt="Duolingo Onboarding 17" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/onboarding/Duolingo%20iOS%20Onboarding%2018.png" alt="Duolingo Onboarding 18" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/duolingo/onboarding/Duolingo%20iOS%20Onboarding%2019.png" alt="Duolingo Onboarding 19" loading="lazy" onclick="openLightbox(this.src)">
+      </div>
+      <div class="analysis-block" style="margin-top:20px;">
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>Account creation comes at the end, not the beginning.</strong> By then you've set goals, picked a level, practiced. You have something to protect. Abandonment at the sign-up screen drops because you've already invested.</span></li>
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>The daily goal screen says "I'm committed," not "Next."</strong> A small declaration. For insurance enrollment: "Protect Biscuit" works better than "Continue."</span></li>
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>"10 min/day = 50 words in your first week."</strong> An abstract commitment translated into a concrete outcome. For insurance: "Dogs like Biscuit need emergency care about 1.4× in their first year. Your plan covers it."</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- HEADSPACE ONBOARDING -->
+    <div class="site-section" id="ob-headspace">
+      <div class="site-header">
+        <div class="site-name">Headspace</div>
+        <div class="site-sub">Breathing first, personality reveal as post-paywall payoff</div>
+      </div>
+      <div class="screenshot-strip">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/onboarding/Headspace%20iOS%20Onboarding%200.png" alt="Headspace Onboarding 0" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/onboarding/Headspace%20iOS%20Onboarding%201.png" alt="Headspace Onboarding 1" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/onboarding/Headspace%20iOS%20Onboarding%202.png" alt="Headspace Onboarding 2" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/onboarding/Headspace%20iOS%20Onboarding%203.png" alt="Headspace Onboarding 3" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/onboarding/Headspace%20iOS%20Onboarding%204.png" alt="Headspace Onboarding 4" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/onboarding/Headspace%20iOS%20Onboarding%205.png" alt="Headspace Onboarding 5" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/onboarding/Headspace%20iOS%20Onboarding%206.png" alt="Headspace Onboarding 6" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/onboarding/Headspace%20iOS%20Onboarding%207.png" alt="Headspace Onboarding 7" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/onboarding/Headspace%20iOS%20Onboarding%208.png" alt="Headspace Onboarding 8" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/onboarding/Headspace%20iOS%20Onboarding%209.png" alt="Headspace Onboarding 9" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/onboarding/Headspace%20iOS%20Onboarding%2010.png" alt="Headspace Onboarding 10" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/onboarding/Headspace%20iOS%20Onboarding%2011.png" alt="Headspace Onboarding 11" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/onboarding/Headspace%20iOS%20Onboarding%2012.png" alt="Headspace Onboarding 12" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/onboarding/Headspace%20iOS%20Onboarding%2013.png" alt="Headspace Onboarding 13" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/onboarding/Headspace%20iOS%20Onboarding%2014.png" alt="Headspace Onboarding 14" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/onboarding/Headspace%20iOS%20Onboarding%2015.png" alt="Headspace Onboarding 15" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/onboarding/Headspace%20iOS%20Onboarding%2016.png" alt="Headspace Onboarding 16" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/onboarding/Headspace%20iOS%20Onboarding%2017.png" alt="Headspace Onboarding 17" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/onboarding/Headspace%20iOS%20Onboarding%2018.png" alt="Headspace Onboarding 18" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/onboarding/Headspace%20iOS%20Onboarding%2019.png" alt="Headspace Onboarding 19" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/headspace/onboarding/Headspace%20iOS%20Onboarding%2020.png" alt="Headspace Onboarding 20" loading="lazy" onclick="openLightbox(this.src)">
+      </div>
+      <div class="analysis-block" style="margin-top:20px;">
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>"Thinking carefully about which course is right for you…"</strong> Full-screen cobalt. White type. No spinner. A loading state treated as a moment. "Building Biscuit's plan…" with a simple full-bleed treatment is the same move.</span></li>
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>The quiz produces "Calm Explorer" — a named identity type with an illustration.</strong> Your answers describe who you are, not just what you want. Answering questions about your pet and how you care for them could produce the same thing: a pet parent type that feels real and shareable.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- NOTION ONBOARDING -->
+    <div class="site-section" id="ob-notion">
+      <div class="site-header">
+        <div class="site-name">Notion</div>
+        <div class="site-sub">"Think it. Make it." — short, direct, pre-populated home</div>
+      </div>
+      <div class="screenshot-strip">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/notion/onboarding/Notion%20iOS%20Onboarding%200.png" alt="Notion Onboarding 0" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/notion/onboarding/Notion%20iOS%20Onboarding%201.png" alt="Notion Onboarding 1" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/notion/onboarding/Notion%20iOS%20Onboarding%202.png" alt="Notion Onboarding 2" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/notion/onboarding/Notion%20iOS%20Onboarding%203.png" alt="Notion Onboarding 3" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/notion/onboarding/Notion%20iOS%20Onboarding%204.png" alt="Notion Onboarding 4" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/notion/onboarding/Notion%20iOS%20Onboarding%205.png" alt="Notion Onboarding 5" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/notion/onboarding/Notion%20iOS%20Onboarding%206.png" alt="Notion Onboarding 6" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/notion/onboarding/Notion%20iOS%20Onboarding%207.png" alt="Notion Onboarding 7" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/notion/onboarding/Notion%20iOS%20Onboarding%208.png" alt="Notion Onboarding 8" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/notion/onboarding/Notion%20iOS%20Onboarding%209.png" alt="Notion Onboarding 9" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/notion/onboarding/Notion%20iOS%20Onboarding%2010.png" alt="Notion Onboarding 10" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/notion/onboarding/Notion%20iOS%20Onboarding%2011.png" alt="Notion Onboarding 11" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/notion/onboarding/Notion%20iOS%20Onboarding%2012.png" alt="Notion Onboarding 12" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/notion/onboarding/Notion%20iOS%20Onboarding%2013.png" alt="Notion Onboarding 13" loading="lazy" onclick="openLightbox(this.src)">
+      </div>
+      <div class="analysis-block" style="margin-top:20px;">
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>"Think it. Make it."</strong> Two verbs. No adjectives. It makes a promise and assumes you're capable. The copywriting goal for this brand is somewhere in this register — not "protection for what matters most," something that treats the user as already competent.</span></li>
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>New users land with content already there.</strong> A Getting Started template, four pre-built pages. The dashboard isn't blank. For insurance: a wellness checklist, a sample claim path, an upcoming reminders placeholder — the shape of the thing before any data exists.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SPOTIFY ONBOARDING -->
+    <div class="site-section" id="ob-spotify">
+      <div class="site-header">
+        <div class="site-name">Spotify</div>
+        <div class="site-sub">Brand restraint, the artist grid reveal</div>
+      </div>
+      <div class="screenshot-strip">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/onboarding/Spotify%20iOS%20Onboarding%200.png" alt="Spotify Onboarding 0" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/onboarding/Spotify%20iOS%20Onboarding%201.png" alt="Spotify Onboarding 1" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/onboarding/Spotify%20iOS%20Onboarding%202.png" alt="Spotify Onboarding 2" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/onboarding/Spotify%20iOS%20Onboarding%203.png" alt="Spotify Onboarding 3" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/onboarding/Spotify%20iOS%20Onboarding%204.png" alt="Spotify Onboarding 4" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/onboarding/Spotify%20iOS%20Onboarding%205.png" alt="Spotify Onboarding 5" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/onboarding/Spotify%20iOS%20Onboarding%206.png" alt="Spotify Onboarding 6" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/onboarding/Spotify%20iOS%20Onboarding%207.png" alt="Spotify Onboarding 7" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/onboarding/Spotify%20iOS%20Onboarding%208.png" alt="Spotify Onboarding 8" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/onboarding/Spotify%20iOS%20Onboarding%209.png" alt="Spotify Onboarding 9" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/onboarding/Spotify%20iOS%20Onboarding%2010.png" alt="Spotify Onboarding 10" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/onboarding/Spotify%20iOS%20Onboarding%2011.png" alt="Spotify Onboarding 11" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/onboarding/Spotify%20iOS%20Onboarding%2012.png" alt="Spotify Onboarding 12" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/onboarding/Spotify%20iOS%20Onboarding%2013.png" alt="Spotify Onboarding 13" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/onboarding/Spotify%20iOS%20Onboarding%2014.png" alt="Spotify Onboarding 14" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/spotify/onboarding/Spotify%20iOS%20Onboarding%2015.png" alt="Spotify Onboarding 15" loading="lazy" onclick="openLightbox(this.src)">
+      </div>
+      <div class="analysis-block" style="margin-top:20px;">
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>The artist grid going from gray placeholders to real photos.</strong> A functional loading moment becomes a small reveal — the grid transforms from abstract to personal as images populate. The equivalent for insurance: the pet profile building from fields to a full card with the pet's photo.</span></li>
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>"Millions of songs. Free on Spotify."</strong> Three things in one sentence: abundance, price barrier removal, brand name. The tightest value prop sentence structure in this set. The equivalent for this brand needs to be this economical.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- STRAVA ONBOARDING -->
+    <div class="site-section" id="ob-strava">
+      <div class="site-header">
+        <div class="site-name">Strava</div>
+        <div class="site-sub">Photography over illustration, "first month's on us"</div>
+      </div>
+      <div class="screenshot-strip">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/onboarding/Strava%20iOS%20Onboarding%200.png" alt="Strava Onboarding 0" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/onboarding/Strava%20iOS%20Onboarding%201.png" alt="Strava Onboarding 1" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/onboarding/Strava%20iOS%20Onboarding%202.png" alt="Strava Onboarding 2" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/onboarding/Strava%20iOS%20Onboarding%203.png" alt="Strava Onboarding 3" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/onboarding/Strava%20iOS%20Onboarding%204.png" alt="Strava Onboarding 4" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/onboarding/Strava%20iOS%20Onboarding%205.png" alt="Strava Onboarding 5" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/onboarding/Strava%20iOS%20Onboarding%206.png" alt="Strava Onboarding 6" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/onboarding/Strava%20iOS%20Onboarding%207.png" alt="Strava Onboarding 7" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/onboarding/Strava%20iOS%20Onboarding%208.png" alt="Strava Onboarding 8" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/onboarding/Strava%20iOS%20Onboarding%209.png" alt="Strava Onboarding 9" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/onboarding/Strava%20iOS%20Onboarding%2010.png" alt="Strava Onboarding 10" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/onboarding/Strava%20iOS%20Onboarding%2011.png" alt="Strava Onboarding 11" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/onboarding/Strava%20iOS%20Onboarding%2012.png" alt="Strava Onboarding 12" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/onboarding/Strava%20iOS%20Onboarding%2013.png" alt="Strava Onboarding 13" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/onboarding/Strava%20iOS%20Onboarding%2014.png" alt="Strava Onboarding 14" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/onboarding/Strava%20iOS%20Onboarding%2015.png" alt="Strava Onboarding 15" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/onboarding/Strava%20iOS%20Onboarding%2016.png" alt="Strava Onboarding 16" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/onboarding/Strava%20iOS%20Onboarding%2017.png" alt="Strava Onboarding 17" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/strava/onboarding/Strava%20iOS%20Onboarding%2018.png" alt="Strava Onboarding 18" loading="lazy" onclick="openLightbox(this.src)">
+      </div>
+      <div class="analysis-block" style="margin-top:20px;">
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>"First month's on us."</strong> Not "Start your free trial." The word "us" implies there's a relationship here, not just a promotional mechanic. "First month on us" changes the dynamic the same way.</span></li>
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>Non-binary and "Prefer not to say" sit at the same visual weight as Man/Woman.</strong> No call-out, no badge. Just there.</span></li>
+          <li class="obs-item"><span class="obs-n">→</span><span class="obs-body"><strong>Real athletes, real moments, no sets.</strong> The photography is alive. A golden retriever mid-leap does more brand work than a color system or an illustration style.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ONBOARDING SYNTHESIS -->
+    <div class="synthesis-wrapper section-onboarding">
+      <div class="synthesis-card">
+        <div class="syn-label">Cross-Brand Onboarding Synthesis</div>
+        <h3>What the first screen should do.</h3>
+        <div class="syn-points">
+          <div class="syn-point"><div class="spt">Start with the pet</div><div class="spb">Every strong flow leads with the user's goal. First screen: "Who are we protecting?" Then the pet's name on every screen after that. "What's Luna's birthday?" "Has Luna seen a vet this year?" "Luna is covered." The app belongs to the pet.</div></div>
+          <div class="syn-point"><div class="spt">Make the quote reveal feel like something</div><div class="spb">After collecting breed, age, health history — show "Dogs like Luna have a 1-in-3 chance of emergency care this year. Your plan covers up to $X of that." The price lands differently when it follows a forecast, not a form.</div></div>
+          <div class="syn-point"><div class="spt">Trust copy lives next to the thing causing anxiety</div><div class="spb">Not linked. Not in a footer. Right there, adjacent to the field. At payment: "Your info is never sold." At vet history: "This helps us quote accurately, not deny claims." At paywall: "Cancel any time before [date]."</div></div>
+          <div class="syn-point"><div class="spt">The collected data should build something visible</div><div class="spb">After 5 questions, Wealthsimple shows you a real personalized portfolio. The quote reveal should feel the same way: "here's what we built for your specific dog" — not a generic premium on a gray screen.</div></div>
+          <div class="syn-point"><div class="spt">Show the product before asking for an account</div><div class="spb">Calm opens with a breathing exercise. Duolingo asks what language you want to learn before you sign up. By the time the user is asked to commit, they're already invested.</div></div>
+          <div class="syn-point"><div class="spt">No insurance app opens with full-bleed pet photography</div><div class="spb">Most look like health insurance with a dog illustration. The gap is closer to what Strava does: real animals, real moments, alive. Not stock, not illustrated — someone's actual phone roll. That, combined with a pet-name-first conversational flow, would already be different from everything else in the category.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 6: TONE & AESTHETICS ═══ -->
+  <div class="category-section section-tone">
+    <div class="category-header">
+      <div class="category-eyebrow">Section 06</div>
+      <div class="category-title">Tone &amp; Aesthetics</div>
+      <div class="category-synthesis" id="syn-tone">Not apps. Brands. Six references for what this product should feel like when nothing is happening and the user has no reason to open it — and opens it anyway.</div>
+      <button class="synthesis-toggle" onclick="toggleSynthesis(this, 'syn-tone')"><span class="toggle-icon">▾</span> Hide overview</button>
+    </div>
+
+    <!-- INTRO / THE BRIEF -->
+    <div class="site-section" id="tone-intro">
+      <div class="site-header">
+        <div class="site-name">The Brief</div>
+        <div class="site-sub">Why Gen Z sincerity, not Millennial sarcasm</div>
+      </div>
+      <div class="tone-premise">
+        The target user has already made the decision emotionally — they're not shopping, they're confirming. That's a different brief than acquisition. The brands in this section don't sell to their users; they reflect them back. Gen Z specifically tends to respond to that register better than to irony or aspiration. The reference point isn't "we'll take care of you" — it's closer to "you already know what you're doing, here's a product that agrees."
+      </div>
+      <div class="tone-axis-grid">
+        <div class="tone-axis">
+          <div class="tone-axis-label">Visual feel</div>
+          <div class="tone-axis-value">Warm, editorial, lived-in</div>
+          <div class="tone-axis-desc">Real photography. Animals in actual homes. Unposed. Not stock, not hero shots — closer to someone's phone roll.</div>
+        </div>
+        <div class="tone-axis">
+          <div class="tone-axis-label">Copy register</div>
+          <div class="tone-axis-value">Direct, sincere, no winking</div>
+          <div class="tone-axis-desc">Short sentences. Present tense. Names the real thing without euphemism. Assumes the user is already capable and already cares.</div>
+        </div>
+        <div class="tone-axis">
+          <div class="tone-axis-label">Color world</div>
+          <div class="tone-axis-value">Warm neutrals + one confident accent</div>
+          <div class="tone-axis-desc">Cream, warm white, sage or terracotta as the base. One accent color that marks key moments. Not clinical blue. Not a full system.</div>
+        </div>
+      </div>
+      <div class="analysis-block" style="margin-top: 28px;">
+        <div class="tone-copy-example">
+          <div class="tce-label">The register to avoid</div>
+          <div class="tce-text">Fear-based, transactional, or ironic. Most insurance brands default to the worst-case scenario as the acquisition hook. This brand shouldn't.</div>
+        </div>
+        <div class="tone-copy-example">
+          <div class="tce-label">The register we're after</div>
+          <div class="tce-text">Warm, direct, no performance. The user is already invested. The product's job is to be easy to trust — not to convince them they made the right call.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GLOSSIER -->
+    <div class="site-section" id="tone-glossier">
+      <div class="site-header">
+        <div class="site-name">Glossier <a href="https://glossier.com" class="brand-url-link" target="_blank">glossier.com</a></div>
+        <div class="site-sub">Beauty · "Skin first. Makeup second."</div>
+      </div>
+      <div class="screenshot-strip">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/moods/glossier.png" alt="Glossier homepage" loading="lazy" onclick="openLightbox(this.src)" style="height:500px;width:auto;border-radius:8px;">
+      </div>
+      <div class="tone-palette">
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#F7F3EF;"></div><div class="tone-swatch-name">Milk</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#EDCFC9;"></div><div class="tone-swatch-name">Cloud</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#D4B5B0;"></div><div class="tone-swatch-name">Blush</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#1A1A18;"></div><div class="tone-swatch-name">Ink</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#D8EAE3;"></div><div class="tone-swatch-name">Sage</div></div>
+      </div>
+        <div class="analysis-header-obs">Glossier's pitch is "you but better" — but the emphasis is on you. The product isn't a transformation. You're already doing it right. They just make it easier.</div>
+        <div class="observations-label" style="margin-top:0;">What to steal</div>
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">1</span><span class="obs-body"><strong>"Skin first. Makeup second."</strong> The product isn't about becoming something. It's about your relationship with what you already are. The equivalent for insurance: not "protect your pet" but something closer to "you already love them this much — this is just what that looks like."</span></li>
+          <li class="obs-item"><span class="obs-n">2</span><span class="obs-body"><strong>Real customers, close-up, no retouching.</strong> The signal is recognition, not aspiration. For this brand: real pets, real owners, real moments. Not posed. The same aesthetic Strava's onboarding uses for athletes.</span></li>
+          <li class="obs-item"><span class="obs-n">3</span><span class="obs-body"><strong>The palette says "I take care of myself and I'm not embarrassed about it."</strong> Whatever color this brand chooses, it should carry the same feeling — confident without being clinical, warm without being childish.</span></li>
+          <li class="obs-item"><span class="obs-n">4</span><span class="obs-body"><strong>Glossier built a community before it had a product to sell.</strong> The early customers were advocates, not buyers. Go Home Day occupies a similar moment in the pet ownership arc — a new puppy is a social event before it's a purchase decision.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- GRAZA -->
+    <div class="site-section" id="tone-graza">
+      <div class="site-header">
+        <div class="site-name">Graza <a href="https://graza.co" class="brand-url-link" target="_blank">graza.co</a></div>
+        <div class="site-sub">Olive oil · "Fancy oil in a decidedly un-fancy format"</div>
+      </div>
+      <div class="screenshot-strip">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/moods/graza.png" alt="Graza homepage" loading="lazy" onclick="openLightbox(this.src)" style="height:500px;width:auto;border-radius:8px;">
+      </div>
+      <div class="tone-palette">
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#7AB648;"></div><div class="tone-swatch-name">Drizzle</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#AACF6B;"></div><div class="tone-swatch-name">Sizzle</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#FBF7EF;"></div><div class="tone-swatch-name">Cream</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#2C2C1E;"></div><div class="tone-swatch-name">Grove</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#F2C94C;"></div><div class="tone-swatch-name">Harvest</div></div>
+      </div>
+      <div class="analysis-block">
+        <div class="analysis-header-obs">Graza is a premium product that doesn't act like one. High quality, low seriousness. It gives you permission to use the good stuff without making a thing of it.</div>
+        <div class="observations-label" style="margin-top:0;">What to steal</div>
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">1</span><span class="obs-body"><strong>"Meant to be sizzled, drizzled, and squeezed, but never saved."</strong> It gives you permission to use the thing you bought. For insurance: this product shouldn't feel like something you file away and hope you never need.</span></li>
+          <li class="obs-item"><span class="obs-n">2</span><span class="obs-body"><strong>Graza's copy is warm and funny without being sarcastic.</strong> "A chicken can live for MONTHS with its head cut off. Isn't that crazy??" It's delight, not snark.</span></li>
+          <li class="obs-item"><span class="obs-n">3</span><span class="obs-body"><strong>Every other premium olive oil comes in dark glass with Italian typography. Graza uses a chartreuse squeeze bottle.</strong> That's not just packaging — it's a personality statement. The new brand's visual identity should do the same thing against the parent brand's clinical palette.</span></li>
+          <li class="obs-item"><span class="obs-n">4</span><span class="obs-body"><strong>Graza explains what Extra Virgin means, why single-origin matters, how to use each oil — in exactly the same voice they use for everything else.</strong> Knowledge doesn't have to change the register. Explaining deductibles and VetDirect Pay should feel the same way.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- BRIGHTLAND -->
+    <div class="site-section" id="tone-brightland">
+      <div class="site-header">
+        <div class="site-name">Brightland <a href="https://brightland.co" class="brand-url-link" target="_blank">brightland.co</a></div>
+        <div class="site-sub">Pantry goods · Beautiful domestic objects for a considered life</div>
+      </div>
+      <div class="screenshot-strip">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/moods/brightland.png" alt="Brightland homepage" loading="lazy" onclick="openLightbox(this.src)" style="height:500px;width:auto;border-radius:8px;">
+      </div>
+      <div class="tone-palette">
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#F5EDD9;"></div><div class="tone-swatch-name">Parchment</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#E8C17A;"></div><div class="tone-swatch-name">Harvest</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#C65B3A;"></div><div class="tone-swatch-name">Arise</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#3D6B4F;"></div><div class="tone-swatch-name">Grove</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#1A1A18;"></div><div class="tone-swatch-name">Ink</div></div>
+      </div>
+      <div class="analysis-block">
+        <div class="analysis-header-obs">Brightland looks like it belongs to someone. Warm terracotta, sage, parchment. Objects in actual kitchens. No models, no sets. It's the visual world of a person who has thought carefully about how they live.</div>
+        <div class="observations-label" style="margin-top:0;">What to steal</div>
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">1</span><span class="obs-body"><strong>The palette — terracotta, sage, cream — is the closest color world this brand needs.</strong> It says: someone who has their life together in a low-key way. That's who this brand's user believes themselves to be.</span></li>
+          <li class="obs-item"><span class="obs-n">2</span><span class="obs-body"><strong>The product is always in a real kitchen, a real meal, a real moment.</strong> Never on white. The emotional signal is "this belongs to someone's life." Pets in actual homes, not posed against neutral backgrounds.</span></li>
+          <li class="obs-item"><span class="obs-n">3</span><span class="obs-body"><strong>The copy is sparse. It names the thing. It doesn't oversell.</strong> One product description, no explaining what it means that you care about olive oil.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- MAUDE -->
+    <div class="site-section" id="tone-maude">
+      <div class="site-header">
+        <div class="site-name">Maude <a href="https://getmaude.com" class="brand-url-link" target="_blank">getmaude.com</a></div>
+        <div class="site-sub">Intimate care · Radical normalcy for an anxiety-prone category</div>
+      </div>
+      <div class="screenshot-strip">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/moods/maude.png" alt="Maude homepage" loading="lazy" onclick="openLightbox(this.src)" style="height:500px;width:auto;border-radius:8px;">
+      </div>
+      <div class="tone-palette">
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#F4EFE8;"></div><div class="tone-swatch-name">Stone</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#C9C0B3;"></div><div class="tone-swatch-name">Linen</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#7D6E5E;"></div><div class="tone-swatch-name">Bark</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#E8DDD0;"></div><div class="tone-swatch-name">Warm White</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#2A2521;"></div><div class="tone-swatch-name">Ink</div></div>
+      </div>
+      <div class="analysis-block">
+        <div class="analysis-header-obs">Maude has the same category problem this brand has: how do you talk about something that makes people anxious without leaning into the anxiety? Their answer is normalcy. Just say the thing. No euphemism, no embarrassment.</div>
+        <div class="observations-label" style="margin-top:0;">What to steal</div>
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">1</span><span class="obs-body"><strong>Intimate care is normal, and treating it as taboo is the problem.</strong> Maude's entire brand posture is built on that premise — not clinical, not embarrassed, just direct. Insurance occupies similar anxious territory. Pet loss, vet debt, the worst-case scenario as the acquisition hook. Maude's answer is to not lead with any of it.</span></li>
+          <li class="obs-item"><span class="obs-n">2</span><span class="obs-body"><strong>The stone-and-linen palette is settled.</strong> Not clinical, not loud. It's the visual equivalent of a brand that doesn't need to convince you of anything. It's just there, doing its job.</span></li>
+          <li class="obs-item"><span class="obs-n">3</span><span class="obs-body"><strong>The copy never hedges.</strong> It says exactly what the product does. "We pay your vet directly. In seconds. You walk out paying your share." No "peace of mind." No "protection for what matters most."</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- PARACHUTE -->
+    <div class="site-section" id="tone-parachute">
+      <div class="site-header">
+        <div class="site-name">Parachute <a href="https://parachutehome.com" class="brand-url-link" target="_blank">parachutehome.com</a></div>
+        <div class="site-sub">Home goods · The feeling of being taken care of</div>
+      </div>
+      <div class="screenshot-strip">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/moods/parachute.png" alt="Parachute homepage" loading="lazy" onclick="openLightbox(this.src)" style="height:500px;width:auto;border-radius:8px;">
+      </div>
+      <div class="tone-palette">
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#F5F0E8;"></div><div class="tone-swatch-name">Ecru</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#E2D9CC;"></div><div class="tone-swatch-name">Linen</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#C4B8A8;"></div><div class="tone-swatch-name">Flax</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#8B7355;"></div><div class="tone-swatch-name">Sand</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#2D2925;"></div><div class="tone-swatch-name">Charcoal</div></div>
+      </div>
+      <div class="analysis-block">
+        <div class="analysis-header-obs">Parachute is the best reference for what this brand should feel like when nothing is happening. Someone took care of this for you. You don't have to think about it. It's already good.</div>
+        <div class="observations-label" style="margin-top:0;">What to steal</div>
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">1</span><span class="obs-body"><strong>You don't think about Parachute sheets after you buy them.</strong> They're just there, making everything slightly better. That's the goal for this app between emergencies — not something you have to manage, just something that's already handled.</span></li>
+          <li class="obs-item"><span class="obs-n">2</span><span class="obs-body"><strong>The photography is always still.</strong> A Sunday morning. A nap. A quiet moment. For this brand: a dog asleep on a bed. A cat in a patch of sun. The thing you're protecting, at rest.</span></li>
+          <li class="obs-item"><span class="obs-n">3</span><span class="obs-body"><strong>Nice things, attainably.</strong> Parachute makes you feel like you can have good things without being the kind of person who makes a point of having good things. A 24-year-old in a studio apartment with a puppy should feel exactly right with this brand.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- OLIPOP -->
+    <div class="site-section" id="tone-olipop">
+      <div class="site-header">
+        <div class="site-name">Olipop <a href="https://drinkolipop.com" class="brand-url-link" target="_blank">drinkolipop.com</a></div>
+        <div class="site-sub">Wellness soda · Taking care of yourself can be a joy, not a chore</div>
+      </div>
+      <div class="screenshot-strip">
+        <img src="https://raw.githubusercontent.com/jessie-rauch/beacons-pet_insurance/main/moods/olipop.png" alt="Olipop homepage" loading="lazy" onclick="openLightbox(this.src)" style="height:500px;width:auto;border-radius:8px;">
+      </div>
+      <div class="tone-palette">
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#F9E4C8;"></div><div class="tone-swatch-name">Cream</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#A8C5A0;"></div><div class="tone-swatch-name">Sage</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#E8956D;"></div><div class="tone-swatch-name">Ginger</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#6B9BC3;"></div><div class="tone-swatch-name">Sky</div></div>
+        <div class="tone-swatch"><div class="tone-swatch-block" style="background:#C17B5C;"></div><div class="tone-swatch-name">Root Beer</div></div>
+      </div>
+      <div class="analysis-block">
+        <div class="analysis-header-obs">Olipop leads with the flavor, then the fiber grams. The health claim is real — it just comes second. That sequencing matters for any product that has a functional reason to exist but wants to be more than functional.</div>
+        <div class="observations-label" style="margin-top:0;">What to steal</div>
+        <ul class="obs-list">
+          <li class="obs-item"><span class="obs-n">1</span><span class="obs-body"><strong>The flavor and the nostalgia come before the prebiotic content.</strong> The functional claim is real — it just comes second. For this brand: lead with the pet, then the protection. The emotional entry point carries the functional one.</span></li>
+          <li class="obs-item"><span class="obs-n">2</span><span class="obs-body"><strong>Each SKU has its own color — Orange Squeeze is warm orange, Vintage Cola is deep caramel — inside a consistent system.</strong> For a multi-pet household: each pet could carry its own color within the brand. Bear is sage. Olive is terracotta. Bea is cream.</span></li>
+          <li class="obs-item"><span class="obs-n">3</span><span class="obs-body"><strong>It doesn't feel like you have to earn the right to drink it.</strong> Warm, inclusive, not clinical. Not for people who are serious about gut health — for people who want to feel good. The equivalent for this brand: not "for serious pet parents" — just "for people who love their pets."</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- TONE SYNTHESIS -->
+    <div class="synthesis-wrapper section-tone" id="tone-synthesis">
+      <div class="synthesis-card">
+        <div class="syn-label">Tone &amp; Aesthetics Synthesis</div>
+        <h3>The brand that's already there, before anything goes wrong.</h3>
+        <div class="syn-points">
+          <div class="syn-point">
+            <div class="spt">Don't perform sincerity — just be direct</div>
+            <div class="spb">These brands don't try to seem warm. They just say the thing plainly. No hedging, no exclamation points, no "we're here for you." The directness is what feels warm.</div>
+          </div>
+          <div class="syn-point">
+            <div class="spt">Terracotta, cream, sage — one accent</div>
+            <div class="spb">The palette of someone who takes good care of things. One specific color that activates at enrollment, claim approval, and annual review. Everything else stays neutral.</div>
+          </div>
+          <div class="syn-point">
+            <div class="spt">Recognition over aspiration</div>
+            <div class="spb">These brands make you feel like the person you already are, not the person you could become. The user is already a good pet parent. The product just makes it visible.</div>
+          </div>
+          <div class="syn-point">
+            <div class="spt">The quiet moments are the brand</div>
+            <div class="spb">Parachute works best when nothing is happening. So does this app. The space between emergencies — a renewal notice, a vet visit summary — needs to feel like a Sunday morning, not a health portal.</div>
+          </div>
+          <div class="syn-point">
+            <div class="spt">Real photography, no sets</div>
+            <div class="spb">A golden retriever asleep on a bed. A cat on a kitchen counter. Unposed, alive, from someone's phone. Every brand in this section uses real photography in actual contexts. This one should too.</div>
+          </div>
+          <div class="syn-point">
+            <div class="spt">Copy that trusts you</div>
+            <div class="spb">Graza, Maude, Brightland — none of them over-explain. They name the thing and move on. "We pay your vet directly. In seconds." That's the register. Not "peace of mind." Not "protection for what matters most." Just the fact.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+  <div id="lightbox-nav">
+    <button class="lightbox-nav-btn" onclick="lightboxStep(-1)">‹</button>
+    <button class="lightbox-nav-btn" onclick="lightboxStep(1)">›</button>
+  </div>
+  <img src="" alt="" id="lightbox-img">
+  <div id="lightbox-counter"></div>
+</div>
+
+<script>
+  // ── Sidebar category toggle ──
+  function toggleCategory(id) {
+    document.getElementById(id).classList.toggle('open');
+  }
+
+  // ── Jump to section ──
+  function jumpTo(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    document.getElementById('main').scrollTo({ top: el.offsetTop - 1, behavior: 'smooth' });
+    document.querySelectorAll('.site-link').forEach(l => l.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+  }
+
+  // ── Synthesis toggle ──
+  function toggleSynthesis(btn, id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('hidden');
+    btn.innerHTML = '<span class="toggle-icon">▾</span> ' + (el.classList.contains('hidden') ? 'Show overview' : 'Hide overview');
+    if (el.classList.contains('hidden')) btn.classList.add('collapsed');
+    else btn.classList.remove('collapsed');
+  }
+
+  // ── Lightbox ──
+  let lightboxImages = [];
+  let lightboxIndex = 0;
+
+  function openLightbox(src) {
+    lightboxImages = Array.from(document.querySelectorAll('.screenshot-strip img')).map(i => i.src);
+    lightboxIndex = lightboxImages.indexOf(src);
+    if (lightboxIndex === -1) { lightboxImages = [src]; lightboxIndex = 0; }
+    document.getElementById('lightbox-img').src = lightboxImages[lightboxIndex];
+    document.getElementById('lightbox-counter').textContent = (lightboxIndex + 1) + ' / ' + lightboxImages.length;
+    document.getElementById('lightbox').classList.add('open');
+  }
+
+  function lightboxStep(dir) {
+    lightboxIndex = (lightboxIndex + dir + lightboxImages.length) % lightboxImages.length;
+    document.getElementById('lightbox-img').src = lightboxImages[lightboxIndex];
+    document.getElementById('lightbox-counter').textContent = (lightboxIndex + 1) + ' / ' + lightboxImages.length;
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.getElementById('lightbox-img').src = '';
+  }
+
+  document.getElementById('lightbox').addEventListener('click', function(e) {
+    if (e.target === this) closeLightbox();
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (!document.getElementById('lightbox').classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowRight') lightboxStep(1);
+    if (e.key === 'ArrowLeft') lightboxStep(-1);
+  });
+
+  // ── Active sidebar tracking on scroll ──
+  const main = document.getElementById('main');
+  const sections = document.querySelectorAll('.site-section');
+
+  main.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+      if (main.scrollTop >= section.offsetTop - 80) current = section.id;
+    });
+    if (current) {
+      document.querySelectorAll('.site-link').forEach(l => {
+        l.classList.remove('active');
+        if (l.getAttribute('onclick') && l.getAttribute('onclick').includes("'" + current + "'")) {
+          l.classList.add('active');
+        }
+      });
+    }
+  });
+</script>
+</body>
+</html>

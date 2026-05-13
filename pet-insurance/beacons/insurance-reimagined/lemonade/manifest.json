@@ -1,0 +1,156 @@
+[
+  {
+    "filename": "insurance-reimagined__lemonade__home__desktop.png",
+    "url": "https://www.lemonade.com",
+    "viewport": "desktop",
+    "category": "insurance-reimagined",
+    "site": "lemonade",
+    "page_type": "home",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__lemonade__home__mobile.png",
+    "url": "https://www.lemonade.com",
+    "viewport": "mobile",
+    "category": "insurance-reimagined",
+    "site": "lemonade",
+    "page_type": "home",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__lemonade__renters__desktop.png",
+    "url": "https://www.lemonade.com/renters",
+    "viewport": "desktop",
+    "category": "insurance-reimagined",
+    "site": "lemonade",
+    "page_type": "renters",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__lemonade__renters__mobile.png",
+    "url": "https://www.lemonade.com/renters",
+    "viewport": "mobile",
+    "category": "insurance-reimagined",
+    "site": "lemonade",
+    "page_type": "renters",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__lemonade__homeowners__desktop.png",
+    "url": "https://www.lemonade.com/homeowners",
+    "viewport": "desktop",
+    "category": "insurance-reimagined",
+    "site": "lemonade",
+    "page_type": "homeowners",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__lemonade__homeowners__mobile.png",
+    "url": "https://www.lemonade.com/homeowners",
+    "viewport": "mobile",
+    "category": "insurance-reimagined",
+    "site": "lemonade",
+    "page_type": "homeowners",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__lemonade__car__desktop.png",
+    "url": "https://www.lemonade.com/car",
+    "viewport": "desktop",
+    "category": "insurance-reimagined",
+    "site": "lemonade",
+    "page_type": "car",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__lemonade__car__mobile.png",
+    "url": "https://www.lemonade.com/car",
+    "viewport": "mobile",
+    "category": "insurance-reimagined",
+    "site": "lemonade",
+    "page_type": "car",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__lemonade__pet__desktop.png",
+    "url": "https://www.lemonade.com/pet",
+    "viewport": "desktop",
+    "category": "insurance-reimagined",
+    "site": "lemonade",
+    "page_type": "pet",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__lemonade__pet__mobile.png",
+    "url": "https://www.lemonade.com/pet",
+    "viewport": "mobile",
+    "category": "insurance-reimagined",
+    "site": "lemonade",
+    "page_type": "pet",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__lemonade__life__desktop.png",
+    "url": "https://www.lemonade.com/life",
+    "viewport": "desktop",
+    "category": "insurance-reimagined",
+    "site": "lemonade",
+    "page_type": "life",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__lemonade__life__mobile.png",
+    "url": "https://www.lemonade.com/life",
+    "viewport": "mobile",
+    "category": "insurance-reimagined",
+    "site": "lemonade",
+    "page_type": "life",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__lemonade__giveback__desktop.png",
+    "url": "https://www.lemonade.com/giveback",
+    "viewport": "desktop",
+    "category": "insurance-reimagined",
+    "site": "lemonade",
+    "page_type": "giveback",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__lemonade__giveback__mobile.png",
+    "url": "https://www.lemonade.com/giveback",
+    "viewport": "mobile",
+    "category": "insurance-reimagined",
+    "site": "lemonade",
+    "page_type": "giveback",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  }
+]

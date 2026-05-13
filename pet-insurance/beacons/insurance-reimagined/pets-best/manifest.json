@@ -1,0 +1,200 @@
+[
+  {
+    "filename": "insurance-reimagined__pets-best__home__desktop.png",
+    "url": "https://www.petsbest.com",
+    "viewport": "desktop",
+    "category": "insurance-reimagined",
+    "site": "pets-best",
+    "page_type": "home",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__pets-best__home__mobile.png",
+    "url": "https://www.petsbest.com",
+    "viewport": "mobile",
+    "category": "insurance-reimagined",
+    "site": "pets-best",
+    "page_type": "home",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__pets-best__dog-insurance__desktop.png",
+    "url": "https://www.petsbest.com/dog-insurance",
+    "viewport": "desktop",
+    "category": "insurance-reimagined",
+    "site": "pets-best",
+    "page_type": "dog insurance",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__pets-best__dog-insurance__mobile.png",
+    "url": "https://www.petsbest.com/dog-insurance",
+    "viewport": "mobile",
+    "category": "insurance-reimagined",
+    "site": "pets-best",
+    "page_type": "dog insurance",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__pets-best__cat-insurance__desktop.png",
+    "url": "https://www.petsbest.com/cat-insurance",
+    "viewport": "desktop",
+    "category": "insurance-reimagined",
+    "site": "pets-best",
+    "page_type": "cat insurance",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__pets-best__cat-insurance__mobile.png",
+    "url": "https://www.petsbest.com/cat-insurance",
+    "viewport": "mobile",
+    "category": "insurance-reimagined",
+    "site": "pets-best",
+    "page_type": "cat insurance",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__pets-best__routine-care__desktop.png",
+    "url": "https://www.petsbest.com/routine-care",
+    "viewport": "desktop",
+    "category": "insurance-reimagined",
+    "site": "pets-best",
+    "page_type": "routine care",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__pets-best__routine-care__mobile.png",
+    "url": "https://www.petsbest.com/routine-care",
+    "viewport": "mobile",
+    "category": "insurance-reimagined",
+    "site": "pets-best",
+    "page_type": "routine care",
+    "status": "error",
+    "captured_via": null,
+    "error": "read ETIMEDOUT"
+  },
+  {
+    "filename": "insurance-reimagined__pets-best__coverage__desktop.png",
+    "url": "https://www.petsbest.com/coverage",
+    "viewport": "desktop",
+    "category": "insurance-reimagined",
+    "site": "pets-best",
+    "page_type": "coverage",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__pets-best__coverage__mobile.png",
+    "url": "https://www.petsbest.com/coverage",
+    "viewport": "mobile",
+    "category": "insurance-reimagined",
+    "site": "pets-best",
+    "page_type": "coverage",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__pets-best__pet-insurance-101__desktop.png",
+    "url": "https://www.petsbest.com/pet-insurance-101",
+    "viewport": "desktop",
+    "category": "insurance-reimagined",
+    "site": "pets-best",
+    "page_type": "pet insurance 101",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__pets-best__pet-insurance-101__mobile.png",
+    "url": "https://www.petsbest.com/pet-insurance-101",
+    "viewport": "mobile",
+    "category": "insurance-reimagined",
+    "site": "pets-best",
+    "page_type": "pet insurance 101",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__pets-best__choose-plan__desktop.png",
+    "url": "https://www.petsbest.com/choose-plan",
+    "viewport": "desktop",
+    "category": "insurance-reimagined",
+    "site": "pets-best",
+    "page_type": "choose plan",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__pets-best__choose-plan__mobile.png",
+    "url": "https://www.petsbest.com/choose-plan",
+    "viewport": "mobile",
+    "category": "insurance-reimagined",
+    "site": "pets-best",
+    "page_type": "choose plan",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__pets-best__pet-insurance-cost__desktop.png",
+    "url": "https://www.petsbest.com/pet-insurance-cost",
+    "viewport": "desktop",
+    "category": "insurance-reimagined",
+    "site": "pets-best",
+    "page_type": "pet insurance cost",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__pets-best__pet-insurance-cost__mobile.png",
+    "url": "https://www.petsbest.com/pet-insurance-cost",
+    "viewport": "mobile",
+    "category": "insurance-reimagined",
+    "site": "pets-best",
+    "page_type": "pet insurance cost",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__pets-best__pet-insurance-comparison__desktop.png",
+    "url": "https://www.petsbest.com/pet-insurance-comparison",
+    "viewport": "desktop",
+    "category": "insurance-reimagined",
+    "site": "pets-best",
+    "page_type": "pet insurance comparison",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__pets-best__pet-insurance-comparison__mobile.png",
+    "url": "https://www.petsbest.com/pet-insurance-comparison",
+    "viewport": "mobile",
+    "category": "insurance-reimagined",
+    "site": "pets-best",
+    "page_type": "pet insurance comparison",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  }
+]

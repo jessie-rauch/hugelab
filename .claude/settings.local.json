@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:bellagio.mgmresorts.com)",
+      "WebFetch(domain:www.cosmopolitanlasvegas.com)",
+      "WebFetch(domain:www.mohegansun.com)",
+      "WebFetch(domain:cosmopolitanlasvegas.mgmresorts.com)",
+      "WebFetch(domain:www.marriott.com)",
+      "Bash(python3 -c ' *)",
+      "WebFetch(domain:www.rosewoodhotels.com)",
+      "WebFetch(domain:screenshotone.com)",
+      "Bash(git add *)",
+      "Bash(rm -rf /Users/jessie/Documents/beacons/goldstrike/casino-resort/.git)",
+      "Bash(git -C /Users/jessie/Documents/beacons/goldstrike rm --cached casino-resort)",
+      "Bash(git -C /Users/jessie/Documents/beacons/goldstrike add casino-resort)",
+      "Bash(git -C /Users/jessie/Documents/beacons/goldstrike status --short)",
+      "Bash(git rm *)",
+      "Bash(git -C /Users/jessie/Documents/beacons/goldstrike rm --cached -f casino-resort)",
+      "Bash(git -C /Users/jessie/Documents/beacons/goldstrike add casino-resort/)",
+      "Bash(git -C /Users/jessie/Documents/beacons/goldstrike ls-files --cached --stage)",
+      "Bash(git -C /Users/jessie/Documents/beacons/goldstrike remote add origin https://github.com/jrauch-hugeinc/goldstrike-beacons.git)",
+      "Bash(git -C /Users/jessie/Documents/beacons/goldstrike push -u origin main)",
+      "Bash(git -C /Users/jessie/Documents/beacons/goldstrike pull origin main --allow-unrelated-histories)",
+      "Bash(git -C /Users/jessie/Documents/beacons/goldstrike pull origin main --allow-unrelated-histories --no-rebase)",
+      "Bash(git -C /Users/jessie/Documents/beacons/goldstrike add booking-reservation-ux/)",
+      "Bash(git -C /Users/jessie/Documents/beacons/goldstrike commit -m ' *)",
+      "Bash(git -C /Users/jessie/Documents/beacons/goldstrike push)"
+    ]
+  }
+}

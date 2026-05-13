@@ -1,0 +1,112 @@
+[
+  {
+    "filename": "insurance-reimagined__trupanion__home__desktop.png",
+    "url": "https://www.trupanion.com",
+    "viewport": "desktop",
+    "category": "insurance-reimagined",
+    "site": "trupanion",
+    "page_type": "home",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__trupanion__home__mobile.png",
+    "url": "https://www.trupanion.com",
+    "viewport": "mobile",
+    "category": "insurance-reimagined",
+    "site": "trupanion",
+    "page_type": "home",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__trupanion__dog-insurance__desktop.png",
+    "url": "https://www.trupanion.com/dog-insurance",
+    "viewport": "desktop",
+    "category": "insurance-reimagined",
+    "site": "trupanion",
+    "page_type": "dog insurance",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__trupanion__dog-insurance__mobile.png",
+    "url": "https://www.trupanion.com/dog-insurance",
+    "viewport": "mobile",
+    "category": "insurance-reimagined",
+    "site": "trupanion",
+    "page_type": "dog insurance",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__trupanion__cat-insurance__desktop.png",
+    "url": "https://www.trupanion.com/cat-insurance",
+    "viewport": "desktop",
+    "category": "insurance-reimagined",
+    "site": "trupanion",
+    "page_type": "cat insurance",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__trupanion__cat-insurance__mobile.png",
+    "url": "https://www.trupanion.com/cat-insurance",
+    "viewport": "mobile",
+    "category": "insurance-reimagined",
+    "site": "trupanion",
+    "page_type": "cat insurance",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__trupanion__how-it-works__desktop.png",
+    "url": "https://www.trupanion.com/pet-insurance/how-it-works",
+    "viewport": "desktop",
+    "category": "insurance-reimagined",
+    "site": "trupanion",
+    "page_type": "how it works",
+    "status": "captured",
+    "captured_via": "playwright",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__trupanion__how-it-works__mobile.png",
+    "url": "https://www.trupanion.com/pet-insurance/how-it-works",
+    "viewport": "mobile",
+    "category": "insurance-reimagined",
+    "site": "trupanion",
+    "page_type": "how it works",
+    "status": "captured",
+    "captured_via": "playwright",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__trupanion__get-quote__desktop.png",
+    "url": "https://www.trupanion.com/quote",
+    "viewport": "desktop",
+    "category": "insurance-reimagined",
+    "site": "trupanion",
+    "page_type": "get quote",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  },
+  {
+    "filename": "insurance-reimagined__trupanion__get-quote__mobile.png",
+    "url": "https://www.trupanion.com/quote",
+    "viewport": "mobile",
+    "category": "insurance-reimagined",
+    "site": "trupanion",
+    "page_type": "get quote",
+    "status": "captured",
+    "captured_via": "screenshotone",
+    "error": null
+  }
+]
