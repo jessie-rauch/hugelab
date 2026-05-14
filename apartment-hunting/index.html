@@ -1093,7 +1093,54 @@ function runSequence() {
   }, 7800);
 }
 
-window.addEventListener('load', runSequence);
+// Password gate — blocks runSequence until auth passes
+(function() {
+  const correct = 'renting123';
+  const stored = sessionStorage.getItem('hugelab_auth');
+
+  if (stored === correct) {
+    // Already authenticated — run normally
+    window.addEventListener('load', runSequence);
+    return;
+  }
+
+  // Not authenticated — show gate, hold animation
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+    position:fixed;inset:0;background:#0a0a0a;z-index:9999;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+    font-family:'Courier Prime','Courier New',monospace;
+  `;
+  overlay.innerHTML = `
+    <div style="font-size:11px;letter-spacing:0.12em;color:#5a5a5a;text-transform:uppercase;margin-bottom:8px;">Huge — Prototype Access</div>
+    <input id="pwInput" type="password" placeholder="enter password"
+      style="background:#1a1a1a;border:1px solid #2e2e2e;color:#fff;padding:10px 16px;
+             font-family:inherit;font-size:14px;letter-spacing:0.06em;outline:none;width:220px;text-align:center;"
+      autocomplete="off" />
+    <div id="pwError" style="font-size:11px;color:#ff4d4d;letter-spacing:0.06em;height:14px;"></div>
+  `;
+  document.body.appendChild(overlay);
+
+  const input = overlay.querySelector('#pwInput');
+  const error = overlay.querySelector('#pwError');
+
+  // Focus after DOM is ready
+  window.addEventListener('load', () => input.focus());
+
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      if (input.value === correct) {
+        sessionStorage.setItem('hugelab_auth', correct);
+        overlay.remove();
+        runSequence(); // fire animation only now
+      } else {
+        error.textContent = 'incorrect password';
+        input.value = '';
+        setTimeout(() => { error.textContent = ''; }, 2000);
+      }
+    }
+  });
+})();
 </script>
 </body>
 </html>
