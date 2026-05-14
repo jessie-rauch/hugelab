@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cortland — AI Discovery / M1</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: #fff;
+  color: #0a0a0a;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── TOKENS ── */
+:root {
+  --black:    #0a0a0a;
+  --gray-1:   #1a1a1a;
+  --gray-2:   #2e2e2e;
+  --gray-3:   #5a5a5a;
+  --gray-4:   #8a8a8a;
+  --gray-5:   #c4c4c4;
+  --gray-6:   #e8e8e8;
+  --gray-7:   #f4f4f4;
+  --white:    #ffffff;
+  --mono:     'Courier Prime', 'Courier New', monospace;
+  --sans:     'Inter', sans-serif;
+}
+
+/* ── TOP NAV ── */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 52px;
+  border-bottom: 1px solid var(--gray-6);
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  z-index: 100;
+}
+.nav-wordmark {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--black);
+}
+.nav-journey {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.nav-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  height: 52px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-4);
+  border-bottom: 2px solid transparent;
+  text-decoration: none;
+  transition: color 0.2s;
+  cursor: default;
+}
+.nav-step.active {
+  color: var(--black);
+  border-bottom-color: var(--black);
+}
+.nav-step.complete {
+  color: var(--gray-3);
+}
+.nav-step-num {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: inherit;
+}
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.nav-link {
+  font-size: 12px;
+  color: var(--gray-4);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+}
+
+/* ── MAIN LAYOUT ── */
+.main {
+  min-height: 100vh;
+  padding-top: 52px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+/* ── LEFT PANEL ── */
+.left {
+  padding: clamp(28px, 6vh, 56px) 56px clamp(28px, 4vh, 48px) 64px;
+  border-right: 1px solid var(--gray-6);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: calc(100vh - 52px);
+}
+
+.moment-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--gray-4);
+  letter-spacing: 0.12em;
+  margin-bottom: clamp(20px, 3vh, 40px);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.moment-label::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: var(--gray-5);
+}
+
+.headline {
+  font-size: clamp(24px, 3.2vw, 44px);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: var(--black);
+  margin-bottom: clamp(12px, 1.5vh, 20px);
+  max-width: 480px;
+}
+.headline em {
+  font-style: normal;
+  font-weight: 600;
+}
+
+.subhead {
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--gray-3);
+  line-height: 1.65;
+  max-width: 400px;
+  margin-bottom: clamp(24px, 3.5vh, 48px);
+}
+
+/* ── CONTEXT BLOCK ── */
+.context-block {
+  background: var(--gray-7);
+  border: 1px solid var(--gray-6);
+  border-left: 3px solid var(--black);
+  padding: 16px 20px;
+  margin-bottom: clamp(20px, 3vh, 32px);
+  max-width: 460px;
+}
+.context-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gray-4);
+  margin-bottom: 12px;
+}
+.context-text {
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--gray-2);
+}
+.context-text strong {
+  color: var(--black);
+  font-weight: 700;
+}
+
+/* ── CHIPS ── */
+.chips-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-4);
+  margin-bottom: 14px;
+  max-width: 460px;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 460px;
+  margin-bottom: clamp(24px, 3.5vh, 40px);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: var(--white);
+  border: 1px solid var(--gray-5);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--gray-2);
+  cursor: pointer;
+  transition: all 0.15s;
+  user-select: none;
+}
+.chip:hover {
+  border-color: var(--gray-3);
+  color: var(--black);
+}
+.chip.confirmed {
+  background: var(--black);
+  border-color: var(--black);
+  color: var(--white);
+}
+.chip-icon {
+  font-size: 12px;
+  opacity: 0.7;
+}
+.chip-edit {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--gray-4);
+  margin-left: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.chip:hover .chip-edit { opacity: 1; }
+.chip.confirmed .chip-edit { display: none; }
+
+/* ── CORRECTION ROW ── */
+.correction-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 460px;
+  margin-bottom: 40px;
+}
+.correction-input {
+  flex: 1;
+  padding: 9px 14px;
+  border: 1px solid var(--gray-5);
+  background: var(--white);
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--black);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.correction-input:focus {
+  border-color: var(--black);
+}
+.correction-input::placeholder {
+  color: var(--gray-5);
+}
+.correction-btn {
+  padding: 9px 18px;
+  background: var(--white);
+  border: 1px solid var(--gray-5);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--gray-3);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.correction-btn:hover {
+  border-color: var(--black);
+  color: var(--black);
+}
+
+/* ── CTA ── */
+.cta-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  max-width: 460px;
+}
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+}
+.btn-primary:hover {
+  background: var(--gray-1);
+}
+.btn-primary svg {
+  transition: transform 0.2s;
+}
+.btn-primary:hover svg {
+  transform: translateX(3px);
+}
+.btn-sub {
+  font-size: 12px;
+  color: var(--gray-4);
+  line-height: 1.5;
+  max-width: 160px;
+}
+
+/* ── RIGHT PANEL ── */
+.right {
+  padding: clamp(28px, 6vh, 56px) 64px clamp(28px, 4vh, 48px) 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background: var(--gray-7);
+  min-height: calc(100vh - 52px);
+}
+
+.system-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gray-4);
+  margin-bottom: clamp(16px, 2.5vh, 28px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.system-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--black);
+  border-radius: 50%;
+  animation: pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.inference-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-bottom: clamp(20px, 3vh, 40px);
+}
+.inference-item {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 0;
+  background: var(--gray-6);
+}
+.inference-key {
+  padding: 14px 16px;
+  background: var(--white);
+  border-right: 1px solid var(--gray-6);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--gray-4);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+}
+.inference-val {
+  padding: 14px 16px;
+  background: var(--white);
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--gray-2);
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.inference-val strong {
+  color: var(--black);
+  font-weight: 700;
+}
+/* ── CONFIDENCE CHIP ── */
+.conf-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: default;
+  position: relative;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+/* confirmed */
+.conf-chip.conf-confirmed {
+  background: transparent;
+  border: 1px solid var(--black);
+  color: var(--black);
+}
+/* inferred */
+.conf-chip.conf-inferred {
+  background: transparent;
+  border: 1px solid var(--gray-3);
+  color: var(--gray-3);
+}
+/* estimated */
+.conf-chip.conf-estimated {
+  background: transparent;
+  border: 1px dashed var(--gray-4);
+  color: var(--gray-4);
+}
+/* missing */
+.conf-chip.conf-missing {
+  background: var(--gray-7);
+  border: 1px solid transparent;
+  color: var(--gray-4);
+}
+
+/* Tooltip reason — hidden, read by JS only */
+.conf-chip .conf-reason { display: none; }
+
+/* Portalled tooltip — appended to body by JS */
+#conf-tooltip {
+  position: fixed;
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.6;
+  padding: 12px 16px;
+  width: 260px;
+  letter-spacing: 0.03em;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+#conf-tooltip.visible { opacity: 1; }
+#conf-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--black);
+}
+
+/* Mobile inline expand */
+.conf-inline-reason {
+  display: none;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--gray-3);
+  padding: 10px 16px 14px 16px;
+  background: var(--gray-7);
+  border-top: 1px solid var(--gray-6);
+  letter-spacing: 0.02em;
+  grid-column: 1 / -1;
+}
+.conf-inline-reason.open { display: block; }
+
+/* Mobile: chip gets tap affordance */
+@media (hover: none) {
+  .conf-chip { cursor: pointer; }
+  .conf-chip.tapped {
+    background: var(--black);
+    color: var(--white);
+    border-color: var(--black);
+  }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 860px) {
+  .main {
+    grid-template-columns: 1fr;
+  }
+  .left {
+    border-right: none;
+    border-bottom: 1px solid var(--gray-6);
+    padding: 48px 24px 48px 24px;
+    min-height: unset;
+    justify-content: flex-start;
+  }
+  .right {
+    padding: 48px 24px 80px 24px;
+    min-height: unset;
+    justify-content: flex-start;
+  }
+  .nav-journey { display: none; }
+  .inference-item { grid-template-columns: 96px 1fr; }
+  .headline { font-size: clamp(24px, 7vw, 36px); }
+  .chips { gap: 6px; }
+  .context-block, .chips, .cta-row, .chips-label { max-width: 100%; }
+  .subhead { max-width: 100%; }
+}
+
+/* ── SIGNAL NOTE ── */
+.signal-note {
+  border-top: 1px solid var(--gray-6);
+  padding-top: 28px;
+}
+.signal-note-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gray-4);
+  margin-bottom: 12px;
+}
+.signal-note-text {
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.75;
+  color: var(--gray-3);
+  max-width: 380px;
+}
+.signal-note-text a {
+  color: var(--gray-2);
+  text-decoration: underline;
+  text-decoration-color: var(--gray-5);
+}
+
+/* ── FOOTER ── */
+.footer {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 40px;
+  border-top: 1px solid var(--gray-6);
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  z-index: 100;
+}
+.footer-meta {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--gray-5);
+  letter-spacing: 0.08em;
+}
+.footer-nav {
+  display: flex;
+  gap: 24px;
+}
+.footer-nav a {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--gray-4);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.footer-nav a:hover { color: var(--black); }
+.footer-nav a.next-moment {
+  color: var(--black);
+  font-weight: 700;
+}
+
+/* ── EDIT MODAL ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+.modal {
+  background: var(--white);
+  border: 1px solid var(--gray-5);
+  padding: 32px;
+  width: 400px;
+  transform: translateY(8px);
+  transition: transform 0.2s;
+}
+.modal-overlay.open .modal {
+  transform: translateY(0);
+}
+.modal-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.modal-sub {
+  font-size: 12px;
+  color: var(--gray-3);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+.modal-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--gray-5);
+  font-family: var(--mono);
+  font-size: 13px;
+  outline: none;
+  margin-bottom: 16px;
+}
+.modal-input:focus { border-color: var(--black); }
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.modal-cancel {
+  padding: 8px 18px;
+  background: var(--white);
+  border: 1px solid var(--gray-5);
+  font-size: 12px;
+  cursor: pointer;
+}
+.modal-save {
+  padding: 8px 18px;
+  background: var(--black);
+  color: var(--white);
+  border: none;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* inferred chip — system made a bet, user can refine */
+.chip.chip-inferred {
+  border-style: dashed;
+  border-color: var(--gray-4);
+  color: var(--gray-2);
+  background: var(--gray-7);
+}
+.chip.chip-inferred:hover {
+  border-color: var(--black);
+  border-style: solid;
+  background: var(--white);
+  color: var(--black);
+}
+
+/* ── VIBE MODAL ── */
+.vibe-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.vibe-modal-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+.vibe-modal {
+  background: var(--white);
+  border: 1px solid var(--gray-5);
+  padding: 32px;
+  width: 480px;
+  max-width: calc(100vw - 32px);
+  transform: translateY(8px);
+  transition: transform 0.2s;
+}
+.vibe-modal-overlay.open .vibe-modal {
+  transform: translateY(0);
+}
+.vibe-modal-eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gray-4);
+  margin-bottom: 8px;
+}
+.vibe-modal-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+.vibe-modal-sub {
+  font-size: 13px;
+  color: var(--gray-3);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+.vibe-section-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-4);
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+.vibe-section-label:first-of-type { margin-top: 0; }
+.vibe-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.vibe-option {
+  padding: 8px 14px;
+  border: 1px solid var(--gray-5);
+  font-size: 13px;
+  color: var(--gray-2);
+  cursor: pointer;
+  transition: all 0.15s;
+  user-select: none;
+  background: var(--white);
+}
+.vibe-option:hover {
+  border-color: var(--gray-3);
+  color: var(--black);
+}
+.vibe-option.selected {
+  background: var(--black);
+  border-color: var(--black);
+  color: var(--white);
+}
+.vibe-modal-note {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--gray-4);
+  line-height: 1.6;
+  margin: 20px 0 24px;
+  padding: 12px 14px;
+  background: var(--gray-7);
+  border-left: 2px solid var(--gray-5);
+}
+.vibe-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.vibe-cancel {
+  padding: 9px 18px;
+  background: var(--white);
+  border: 1px solid var(--gray-5);
+  font-size: 12px;
+  cursor: pointer;
+  font-family: var(--sans);
+}
+.vibe-save {
+  padding: 9px 20px;
+  background: var(--black);
+  color: var(--white);
+  border: none;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: var(--sans);
+  font-weight: 500;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up {
+  opacity: 0;
+  animation: fadeUp 0.4s ease-out forwards;
+}
+.fade-up:nth-child(1) { animation-delay: 0.1s; }
+.fade-up:nth-child(2) { animation-delay: 0.2s; }
+.fade-up:nth-child(3) { animation-delay: 0.3s; }
+.fade-up:nth-child(4) { animation-delay: 0.4s; }
+.fade-up:nth-child(5) { animation-delay: 0.5s; }
+.fade-up:nth-child(6) { animation-delay: 0.6s; }
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-wordmark">Cortland</div>
+  <div class="nav-journey">
+    <a href="cortland-m0a.html" class="nav-step complete">
+      <span class="nav-step-num">00</span> Discovery
+    </a>
+    <div class="nav-step active">
+      <span class="nav-step-num">01</span> Context
+    </div>
+    <div class="nav-step">
+      <span class="nav-step-num">02</span> Matches
+    </div>
+    <div class="nav-step">
+      <span class="nav-step-num">03</span> Unit
+    </div>
+    <div class="nav-step">
+      <span class="nav-step-num">04</span> Hold
+    </div>
+  </div>
+  <div class="nav-actions">
+    <a href="#" class="nav-link">Sign in</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- LEFT -->
+  <div class="left">
+    <div class="moment-label fade-up">M1 — Context</div>
+
+    <h1 class="headline fade-up">
+      Before you search,<br>
+      <em>we already know<br>where to start.</em>
+    </h1>
+
+    <p class="subhead fade-up">
+      We picked up some context from how you arrived. Confirm what's right, correct what isn't. Then we'll find your match.
+    </p>
+
+    <div class="context-block fade-up">
+      <div class="context-label">What we heard</div>
+      <div class="context-text">
+        <strong>Relocating to Charlotte.</strong> New job, starts June 2.<br>
+        Looking for a 1-bed, flexible on neighborhood.<br>
+        Dog — medium size. Move-in window: late May.
+      </div>
+    </div>
+
+    <div class="chips-label fade-up">Confirm or correct</div>
+    <div class="chips fade-up" id="chip-container">
+      <div class="chip confirmed" data-key="city" onclick="toggleChip(this)">
+        <span class="chip-icon">📍</span> Charlotte
+        <span class="chip-edit">edit</span>
+      </div>
+      <div class="chip confirmed" data-key="timing" onclick="toggleChip(this)">
+        <span class="chip-icon">📅</span> Late May move-in
+        <span class="chip-edit">edit</span>
+      </div>
+      <div class="chip confirmed" data-key="size" onclick="toggleChip(this)">
+        <span class="chip-icon">🏠</span> 1 bed
+        <span class="chip-edit">edit</span>
+      </div>
+      <div class="chip confirmed" data-key="pet" onclick="toggleChip(this)">
+        <span class="chip-icon">🐕</span> Dog — Thor
+        <span class="chip-edit">edit</span>
+      </div>
+      <div class="chip chip-inferred" data-key="vibe" onclick="openVibeModal()">
+        <span class="chip-icon">🏙</span> SouthEnd / NoDa
+        <span class="chip-edit">refine</span>
+      </div>
+      <div class="chip" data-key="commute" onclick="toggleChip(this)">
+        <span class="chip-icon">🚗</span> Add commute address
+        <span class="chip-edit">add</span>
+      </div>
+    </div>
+
+    <div class="cta-row fade-up">
+      <a href="cortland-m2.html" class="btn-primary">
+        Find my matches
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <div class="btn-sub">We'll show you 3–5 units. Not 200.</div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right">
+    <div class="system-label fade-up">
+      <div class="system-dot"></div>
+      System inference log
+    </div>
+
+    <div class="inference-stack fade-up">
+
+      <div class="inference-item">
+        <div class="inference-key">Source</div>
+        <div class="inference-val">
+          <span>AI referral — <strong>ChatGPT</strong></span>
+          <span class="conf-chip conf-confirmed">
+            confirmed
+            <span class="conf-reason">You arrived via a structured Cortland result in a ChatGPT conversation. The link carried your search context directly.</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="inference-item">
+        <div class="inference-key">City</div>
+        <div class="inference-val">
+          <span><strong>Charlotte, NC</strong></span>
+          <span class="conf-chip conf-confirmed">
+            confirmed
+            <span class="conf-reason">Stated explicitly in your ChatGPT query: "apartments in Charlotte near Uptown."</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="inference-item">
+        <div class="inference-key">Job start</div>
+        <div class="inference-val">
+          <span><strong>June 2, 2026</strong></span>
+          <span class="conf-chip conf-confirmed">
+            confirmed
+            <span class="conf-reason">Passed via URL parameter from the referral link. Exact date, no inference needed.</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="inference-item">
+        <div class="inference-key">Move window</div>
+        <div class="inference-val">
+          <span>Late May — <strong>22–31 days out</strong></span>
+          <span class="conf-chip conf-inferred">
+            inferred
+            <span class="conf-reason">Derived from your job start date of June 2. Most relocating renters move in 5–10 days before their start. We can narrow this once you confirm.</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="inference-item">
+        <div class="inference-key">Unit need</div>
+        <div class="inference-val">
+          <span>1 bed</span>
+          <span class="conf-chip conf-inferred">
+            inferred
+            <span class="conf-reason">Your ChatGPT query mentioned "1-bedroom" but didn't confirm it. We're treating this as likely but not locked.</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="inference-item">
+        <div class="inference-key">Pet</div>
+        <div class="inference-val">
+          <span>Dog — <strong>Thor</strong>, medium</span>
+          <span class="conf-chip conf-confirmed">
+            confirmed
+            <span class="conf-reason">Pulled from a prior session. You entered Thor's details when browsing Cortland Austin in March. We're applying breed-eligible filter automatically.</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="inference-item">
+        <div class="inference-key">Budget</div>
+        <div class="inference-val">
+          <span>~$1,400–1,800</span>
+          <span class="conf-chip conf-estimated">
+            estimated
+            <span class="conf-reason">Estimated from your prior browsing — units you spent time on ranged $1,380–$1,820. You haven't stated a number. Confirming this tightens your matches significantly.</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="inference-item">
+        <div class="inference-key">Commute</div>
+        <div class="inference-val">
+          <span style="color: var(--gray-4); font-style: italic;">Not provided</span>
+          <span class="conf-chip conf-missing">
+            missing
+            <span class="conf-reason">Without a workplace address we can't calculate commute time. Add it on the left and we'll rank matches by how close they are to your office.</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="inference-item">
+        <div class="inference-key">Neighborhood</div>
+        <div class="inference-val">
+          <span><strong>SouthEnd, NoDa</strong></span>
+          <span class="conf-chip conf-inferred">
+            inferred
+            <span class="conf-reason">Based on your age, solo move, and browsing history we're suggesting SouthEnd and NoDa — walkable, nightlife-adjacent, skew young professional. You can override this with a specific priority on the left.</span>
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="signal-note fade-up">
+      <div class="signal-note-label">How we got here</div>
+      <div class="signal-note-text">
+        Your ChatGPT session asked about "1-bedroom apartments in Charlotte near Uptown, pet-friendly, available June." Cortland was surfaced as a structured result. This context traveled with the link — no form required.
+        <br><br>
+        Budget and commute are still estimated. Confirming them sharpens the match.
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-meta">Cortland × Huge — DXP Vision — M1 of 4</div>
+  <div class="footer-nav">
+    <a href="cortland-m0b.html">← Discovery</a>
+    <a href="cortland-m2.html" class="next-moment">Next: Matches →</a>
+  </div>
+</footer>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Edit context</div>
+    <div class="modal-sub" id="modal-sub">Update this detail and we'll refine your matches.</div>
+    <input type="text" class="modal-input" id="modal-input" placeholder="">
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-save" onclick="saveModal()">Update</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── PORTALLED TOOLTIP (desktop hover) ──────────────────────────────────
+const tooltip = document.createElement('div');
+tooltip.id = 'conf-tooltip';
+document.body.appendChild(tooltip);
+
+const isTouchDevice = () => window.matchMedia('(hover: none)').matches;
+
+document.querySelectorAll('.conf-chip').forEach(chip => {
+  const reasonEl = chip.querySelector('.conf-reason');
+  if (!reasonEl) return;
+  const reasonText = reasonEl.textContent.trim();
+
+  // Desktop: hover
+  chip.addEventListener('mouseenter', (e) => {
+    if (isTouchDevice()) return;
+    tooltip.textContent = reasonText;
+    tooltip.classList.add('visible');
+    positionTooltip(chip);
+  });
+  chip.addEventListener('mousemove', () => {
+    if (isTouchDevice()) return;
+    positionTooltip(chip);
+  });
+  chip.addEventListener('mouseleave', () => {
+    tooltip.classList.remove('visible');
+  });
+
+  // Mobile: tap to expand inline
+  chip.addEventListener('click', (e) => {
+    if (!isTouchDevice()) return;
+    const row = chip.closest('.inference-item');
+    if (!row) return;
+
+    // toggle
+    const existing = row.parentElement.querySelector('.conf-inline-reason.open');
+    if (existing && existing.dataset.forRow === row.dataset.rowId) {
+      existing.classList.remove('open');
+      chip.classList.remove('tapped');
+      return;
+    }
+    // close any other open
+    document.querySelectorAll('.conf-inline-reason.open').forEach(el => {
+      el.classList.remove('open');
+    });
+    document.querySelectorAll('.conf-chip.tapped').forEach(el => {
+      el.classList.remove('tapped');
+    });
+
+    // inject inline reason after this row
+    let inlineEl = row.nextElementSibling;
+    if (!inlineEl || !inlineEl.classList.contains('conf-inline-reason')) {
+      inlineEl = document.createElement('div');
+      inlineEl.className = 'conf-inline-reason';
+      row.after(inlineEl);
+    }
+    inlineEl.textContent = reasonText;
+    inlineEl.dataset.forRow = row.dataset.rowId;
+    inlineEl.classList.add('open');
+    chip.classList.add('tapped');
+  });
+});
+
+// Give each inference-item a unique id for mobile tracking
+document.querySelectorAll('.inference-item').forEach((row, i) => {
+  row.dataset.rowId = i;
+});
+
+function positionTooltip(chip) {
+  const rect = chip.getBoundingClientRect();
+  const tw = 260;
+  let left = rect.left + rect.width / 2 - tw / 2;
+  // clamp to viewport
+  left = Math.max(12, Math.min(left, window.innerWidth - tw - 12));
+  const top = rect.top - 8; // JS will subtract tooltip height
+  tooltip.style.width = tw + 'px';
+  tooltip.style.left = left + 'px';
+  // position above chip
+  const th = tooltip.offsetHeight;
+  tooltip.style.top = (rect.top - th - 10) + 'px';
+  // reposition arrow
+  const arrowLeft = rect.left + rect.width / 2 - left;
+  tooltip.style.setProperty('--arrow-left', arrowLeft + 'px');
+}
+
+// Dynamic arrow position via pseudo-element workaround
+const style = document.createElement('style');
+style.textContent = `#conf-tooltip::after { left: var(--arrow-left, 50%); transform: translateX(-50%); }`;
+document.head.appendChild(style);
+
+
+// ── LEFT PANEL CHIP EDIT (modal) ───────────────────────────────────────
+const editMeta = {
+  city:    { title: 'Edit destination city',   placeholder: 'e.g. Charlotte, NC',          sub: 'We\'ll recalibrate your matches around this market.' },
+  timing:  { title: 'Edit move-in window',     placeholder: 'e.g. Late May, early June',   sub: 'Affects which units are available when you need them.' },
+  size:    { title: 'Edit unit size',           placeholder: 'e.g. Studio, 1 bed, 2 bed',  sub: 'We\'ll filter matches to units that fit.' },
+  pet:     { title: 'Edit pet details',         placeholder: 'e.g. Dog, medium, 45 lbs',   sub: 'Breed and weight affect which communities are eligible.' },
+  commute: { title: 'Add commute address',      placeholder: 'e.g. 500 S Tryon St, Charlotte', sub: 'We\'ll calculate drive and transit time from each match.' },
+};
+
+let activeChip = null;
+
+function toggleChip(el) {
+  activeChip = el;
+  const meta = editMeta[el.dataset.key];
+  document.getElementById('modal-title').textContent = meta.title;
+  document.getElementById('modal-sub').textContent = meta.sub;
+  document.getElementById('modal-input').placeholder = meta.placeholder;
+  document.getElementById('modal-input').value = '';
+  document.getElementById('modal').classList.add('open');
+  setTimeout(() => document.getElementById('modal-input').focus(), 200);
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  activeChip = null;
+}
+
+function saveModal() {
+  const val = document.getElementById('modal-input').value.trim();
+  if (val && activeChip) {
+    const icon = activeChip.querySelector('.chip-icon');
+    const iconText = icon ? icon.textContent : '';
+    activeChip.innerHTML = `<span class="chip-icon">${iconText}</span> ${val} <span class="chip-edit">edit</span>`;
+    activeChip.classList.add('confirmed');
+    activeChip.onclick = function() { toggleChip(this); };
+  }
+  closeModal();
+}
+
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+// ── VIBE MODAL ────────────────────────────────────────────────────────
+const vibeNotes = {
+  default: "Based on what you select, we'll suggest Charlotte neighborhoods that fit — SouthEnd, NoDa, Plaza Midwood, Dilworth, and others. You don't need to know the city.",
+  walkable: "SouthEnd and Plaza Midwood will likely top your list — both have dense walkable strips with coffee, food, and bars within a few blocks.",
+  quiet: "Dilworth and Myers Park tend to fit renters who want a residential feel while staying close to Uptown.",
+  dog: "NoDa and SouthEnd both have off-leash dog parks within easy walking distance. We'll filter to communities within 10 minutes of one.",
+  commute: "We'll rank your matches primarily by commute time once you add your office address.",
+  nightlife: "NoDa and SouthEnd are Charlotte's most active neighborhood strips. Expect weekend noise — worth knowing before you sign.",
+};
+
+function openVibeModal() {
+  document.getElementById('vibe-modal').classList.add('open');
+}
+function closeVibeModal() {
+  document.getElementById('vibe-modal').classList.remove('open');
+}
+
+function toggleVibe(el) {
+  el.classList.toggle('selected');
+  updateVibeNote();
+}
+
+function updateVibeNote() {
+  const selected = [...document.querySelectorAll('.vibe-option.selected')].map(el => el.textContent.trim());
+  let note = vibeNotes.default;
+  if (selected.some(s => s.includes('coffee'))) note = vibeNotes.walkable;
+  else if (selected.some(s => s.includes('Quiet'))) note = vibeNotes.quiet;
+  else if (selected.some(s => s.includes('dog park'))) note = vibeNotes.dog;
+  else if (selected.some(s => s.includes('work above'))) note = vibeNotes.commute;
+  else if (selected.some(s => s.includes('nightlife'))) note = vibeNotes.nightlife;
+  document.getElementById('vibe-note').textContent = note;
+}
+
+function saveVibeModal() {
+  const selected = [...document.querySelectorAll('.vibe-option.selected')].map(el => el.textContent.trim());
+  const vibeChip = document.querySelector('[data-key="vibe"]');
+  if (vibeChip) {
+    let label = 'SouthEnd / NoDa'; // default
+    if (selected.some(s => s.includes('Quiet'))) label = 'Dilworth / Myers Park';
+    else if (selected.some(s => s.includes('work above'))) label = 'Commute-first';
+    else if (selected.some(s => s.includes('coffee')) || selected.some(s => s.includes('nightlife'))) label = 'SouthEnd / Plaza Midwood';
+    else if (selected.some(s => s.includes('dog park'))) label = 'NoDa / SouthEnd';
+    vibeChip.innerHTML = `<span class="chip-icon">🏙</span> ${label} <span class="chip-edit">refine</span>`;
+    vibeChip.classList.remove('chip-inferred');
+    vibeChip.classList.add('confirmed');
+  }
+  closeVibeModal();
+}
+
+document.getElementById('vibe-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeVibeModal();
+});
+</script>
+<!-- VIBE MODAL -->
+<div class="vibe-modal-overlay" id="vibe-modal">
+  <div class="vibe-modal">
+    <div class="vibe-modal-eyebrow">Neighborhood fit</div>
+    <div class="vibe-modal-title">What matters most to you in a neighborhood?</div>
+    <div class="vibe-modal-sub">You're new to Charlotte — so we'll translate your priorities into the right areas. Pick what resonates. You can choose more than one.</div>
+
+    <div class="vibe-section-label">Daily life</div>
+    <div class="vibe-options" id="vibe-daily">
+      <div class="vibe-option" data-group="daily" onclick="toggleVibe(this)">Walkable coffee & restaurants</div>
+      <div class="vibe-option" data-group="daily" onclick="toggleVibe(this)">Bars & nightlife nearby</div>
+      <div class="vibe-option" data-group="daily" onclick="toggleVibe(this)">Quiet, residential feel</div>
+      <div class="vibe-option" data-group="daily" onclick="toggleVibe(this)">Green space & parks</div>
+    </div>
+
+    <div class="vibe-section-label">For Thor</div>
+    <div class="vibe-options" id="vibe-dog">
+      <div class="vibe-option selected" data-group="dog" onclick="toggleVibe(this)">Dog park within 10 min walk</div>
+      <div class="vibe-option" data-group="dog" onclick="toggleVibe(this)">Dog-friendly patios & shops</div>
+    </div>
+
+    <div class="vibe-section-label">Commute priority</div>
+    <div class="vibe-options" id="vibe-commute">
+      <div class="vibe-option" data-group="commute" onclick="toggleVibe(this)">Close to work above all else</div>
+      <div class="vibe-option" data-group="commute" onclick="toggleVibe(this)">Flexible — neighborhood first</div>
+      <div class="vibe-option" data-group="commute" onclick="toggleVibe(this)">On a transit line</div>
+    </div>
+
+    <div class="vibe-modal-note" id="vibe-note">
+      Based on what you select, we'll suggest Charlotte neighborhoods that fit — SouthEnd, NoDa, Plaza Midwood, Dilworth, and others. You don't need to know the city.
+    </div>
+
+    <div class="vibe-modal-actions">
+      <button class="vibe-cancel" onclick="closeVibeModal()">Cancel</button>
+      <button class="vibe-save" onclick="saveVibeModal()">Update neighborhood fit</button>
+    </div>
+  </div>
+</div>
+
+

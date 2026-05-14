@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cortland — AI Discovery / M2</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body { font-family: 'Inter', sans-serif; background: #fff; color: #0a0a0a; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+:root {
+  --black:#0a0a0a; --gray-1:#1a1a1a; --gray-2:#2e2e2e; --gray-3:#5a5a5a;
+  --gray-4:#8a8a8a; --gray-5:#c4c4c4; --gray-6:#e8e8e8; --gray-7:#f4f4f4;
+  --white:#ffffff; --mono:'Courier Prime','Courier New',monospace; --sans:'Inter',sans-serif;
+}
+
+/* NAV */
+.nav {
+  position:fixed; top:0; left:0; right:0; height:52px;
+  border-bottom:1px solid var(--gray-6); background:var(--white);
+  display:flex; align-items:center; justify-content:space-between; padding:0 32px; z-index:100;
+}
+.nav-wordmark { font-size:13px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; }
+.nav-journey { display:flex; align-items:center; }
+.nav-step {
+  display:flex; align-items:center; gap:8px; padding:0 16px; height:52px;
+  font-size:11px; font-weight:500; letter-spacing:0.08em; text-transform:uppercase;
+  color:var(--gray-4); border-bottom:2px solid transparent; text-decoration:none; cursor:default;
+}
+.nav-step.complete { color:var(--gray-3); }
+.nav-step.active   { color:var(--black); border-bottom-color:var(--black); }
+.nav-step-num { font-family:var(--mono); font-size:10px; color:inherit; }
+.nav-link { font-size:12px; color:var(--gray-4); text-decoration:none; }
+
+/* PAGE */
+.page { padding-top:52px; padding-bottom:60px; }
+
+/* CONTEXT STRIP */
+.context-strip {
+  border-bottom:1px solid var(--gray-6); padding:14px 64px;
+  display:flex; align-items:center; justify-content:space-between; gap:24px;
+  background:var(--gray-7);
+}
+.context-chips { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+.context-label { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--gray-4); margin-right:4px; }
+.ctx-chip { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; background:var(--white); border:1px solid var(--gray-5); font-family:var(--mono); font-size:11px; color:var(--gray-2); }
+.ctx-chip.confirmed { background:var(--black); border-color:var(--black); color:var(--white); }
+.ctx-chip.inferred  { border-style:dashed; color:var(--gray-3); background:transparent; }
+.context-edit { font-family:var(--mono); font-size:11px; color:var(--gray-4); text-decoration:underline; text-decoration-style:dashed; text-decoration-color:var(--gray-5); cursor:pointer; white-space:nowrap; transition:color 0.15s; }
+.context-edit:hover { color:var(--black); }
+
+/* CONTROLS */
+.controls-bar {
+  padding:clamp(20px,3vh,32px) 64px clamp(16px,2.5vh,28px);
+  display:flex; align-items:flex-start; justify-content:space-between; gap:32px;
+}
+.summary-block { flex:1; }
+.summary-eyebrow { font-family:var(--mono); font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:var(--gray-4); margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+.summary-dot { width:6px; height:6px; background:var(--black); border-radius:50%; animation:pulse 2.4s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.summary-text { font-family:var(--mono); font-size:13px; line-height:1.75; color:var(--gray-2); max-width:560px; }
+.summary-text strong { color:var(--black); font-weight:700; }
+
+.sort-block { display:flex; flex-direction:column; align-items:flex-end; gap:8px; flex-shrink:0; }
+.sort-label { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--gray-4); }
+.toggle-row { display:flex; border:1px solid var(--gray-5); }
+.toggle-btn {
+  padding:8px 16px; font-family:var(--mono); font-size:11px; letter-spacing:0.06em;
+  color:var(--gray-3); background:var(--white); border:none; border-right:1px solid var(--gray-5);
+  cursor:pointer; transition:all 0.15s; white-space:nowrap; position:relative;
+}
+.toggle-btn:last-child { border-right:none; }
+.toggle-btn.active { background:var(--black); color:var(--white); }
+.toggle-btn:hover:not(.active):not(.disabled) { background:var(--gray-7); color:var(--black); }
+.toggle-btn.disabled { color:var(--gray-5); cursor:not-allowed; background:var(--gray-7); }
+.toggle-btn.disabled .tip {
+  display:none; position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%);
+  background:var(--black); color:var(--white); font-family:var(--mono); font-size:10px;
+  line-height:1.55; padding:8px 12px; width:210px; white-space:normal; letter-spacing:0.03em;
+  pointer-events:none; z-index:50; text-align:left;
+}
+.toggle-btn.disabled .tip::after { content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%); border:5px solid transparent; border-top-color:var(--black); }
+.toggle-btn.disabled:hover .tip { display:block; }
+.sort-note { font-family:var(--mono); font-size:10px; color:var(--gray-4); letter-spacing:0.04em; text-align:right; max-width:300px; line-height:1.5; }
+
+/* CARD GRID — 3 across, gutters, natural scroll */
+.card-grid {
+  padding: 0 64px 40px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+/* match legend */
+.match-legend {
+  padding: 0 64px 16px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--gray-3);
+  text-transform: uppercase;
+}
+.legend-swatch {
+  width: 20px; height: 14px;
+  border: 1px solid;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px;
+}
+.legend-swatch.match { border-color: var(--black); background: var(--black); color: var(--white); }
+.legend-swatch.info  { border-color: var(--gray-5); background: var(--white); color: var(--gray-4); }
+.legend-swatch.weak  { border-color: var(--gray-5); background: var(--gray-7); color: var(--gray-4); }
+
+/* MATCH CARD */
+.match-card {
+  background: var(--white);
+  display: flex; flex-direction: column;
+  cursor: pointer; position: relative;
+  transition: background 0.15s;
+  border: 1px solid var(--gray-6);
+}
+.match-card:hover { background: var(--gray-7); }
+.match-card.expanded { background: var(--white); outline: 2px solid var(--black); outline-offset: -1px; z-index: 2; }
+
+/* viewed */
+.match-card.viewed::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--black); }
+
+/* IMAGE */
+.card-image { width:100%; aspect-ratio:4/3; background:var(--gray-6); overflow:hidden; position:relative; }
+.card-image img { width:100%; height:100%; object-fit:cover; display:block; filter:grayscale(100%); opacity:0.8; transition:opacity 0.2s, filter 0.3s; }
+.match-card:hover .card-image img { opacity:1; filter:grayscale(30%); }
+.card-rank-badge { position:absolute; top:12px; left:12px; background:var(--black); color:var(--white); font-family:var(--mono); font-size:10px; letter-spacing:0.1em; padding:4px 10px; }
+.card-viewed-badge { position:absolute; top:12px; right:12px; background:rgba(255,255,255,0.92); color:var(--gray-2); font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; padding:3px 8px; display:none; }
+.match-card.viewed .card-viewed-badge { display:block; }
+
+/* BODY */
+.card-body { padding: 18px 18px 0; flex:1; display:flex; flex-direction:column; }
+.card-header-row { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:3px; }
+.card-name { font-size: 15px; font-weight:600; letter-spacing:-0.01em; color:var(--black); }
+.card-unit { font-family:var(--mono); font-size:11px; color:var(--gray-4); letter-spacing:0.08em; }
+.card-neighborhood { font-family:var(--mono); font-size:12px; color:var(--gray-3); margin-bottom:12px; line-height:1.4; }
+.card-neighborhood-char { color:var(--gray-4); display:block; font-size:11px; margin-top:2px; }
+.card-rationale { font-family:var(--mono); font-size:12px; line-height:1.75; color:var(--gray-2); margin-bottom:14px; flex:1; }
+.card-rationale strong { color:var(--black); font-weight:700; }
+
+/* TAGS — three clear states */
+.card-tags { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:14px; }
+.card-tag {
+  font-family:var(--mono); font-size:10px; letter-spacing:0.07em;
+  padding:3px 8px; text-transform:uppercase;
+}
+/* match = Marcus's stated preference is satisfied */
+.card-tag.match {
+  border: 1px solid var(--black);
+  background: var(--black);
+  color: var(--white);
+}
+/* info = relevant context, neither positive nor negative */
+.card-tag.info {
+  border: 1px solid var(--gray-5);
+  background: var(--white);
+  color: var(--gray-3);
+}
+/* weak = preference is not met — shown transparently */
+.card-tag.weak {
+  border: 1px solid var(--gray-5);
+  background: var(--gray-7);
+  color: var(--gray-4);
+}
+
+/* FOOTER */
+.card-footer { border-top:1px solid var(--gray-6); padding:14px 18px; display:flex; align-items:flex-end; justify-content:space-between; gap:8px; }
+.card-price { display:flex; flex-direction:column; gap:2px; }
+.card-price-amount { font-size: 20px; font-weight:600; letter-spacing:-0.02em; color:var(--black); line-height:1; }
+.card-price-label { font-family:var(--mono); font-size:10px; color:var(--gray-4); letter-spacing:0.06em; text-transform:uppercase; }
+.card-price-fees { font-family:var(--mono); font-size:10px; color:var(--gray-4); line-height:1.5; margin-top:3px; }
+.card-actions { display:flex; flex-direction:column; gap:6px; align-items:flex-end; }
+.btn-view { display:inline-flex; align-items:center; gap:6px; padding:9px 14px; background:var(--black); color:var(--white); font-family:var(--sans); font-size:12px; font-weight:500; border:none; cursor:pointer; text-decoration:none; transition:background 0.15s; white-space:nowrap; }
+.btn-view:hover { background:var(--gray-1); }
+.btn-save { padding:8px 14px; background:var(--white); color:var(--gray-3); font-family:var(--mono); font-size:10px; letter-spacing:0.06em; border:1px solid var(--gray-5); cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+.btn-save:hover { border-color:var(--black); color:var(--black); }
+.btn-save.saved { background:var(--black); color:var(--white); border-color:var(--black); }
+
+/* EXPANDED PANEL */
+.expanded-panel { display:none; background:var(--gray-7); border-top:2px solid var(--black); border-bottom:1px solid var(--gray-6); padding:28px 64px; }
+.expanded-panel.open { display:block; }
+.exp-header { font-family:var(--mono); font-size:12px; font-weight:700; color:var(--black); margin-bottom:20px; letter-spacing:0.04em; }
+.expanded-inner { display:grid; grid-template-columns:repeat(3,1fr); gap:32px; }
+.exp-section-label { font-family:var(--mono); font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--gray-4); margin-bottom:10px; }
+.exp-row { display:flex; justify-content:space-between; align-items:baseline; padding:6px 0; border-bottom:1px solid var(--gray-6); font-family:var(--mono); font-size:11px; gap:8px; }
+.exp-row:last-child { border-bottom:none; }
+.exp-row-label { color:var(--gray-3); }
+.exp-row-val { color:var(--black); font-weight:700; text-align:right; }
+.exp-close { margin-top:20px; font-family:var(--mono); font-size:10px; color:var(--gray-4); cursor:pointer; letter-spacing:0.08em; text-transform:uppercase; display:inline-block; transition:color 0.15s; text-decoration:underline; text-decoration-color:var(--gray-5); }
+.exp-close:hover { color:var(--black); }
+
+/* END NOTE */
+.end-note { padding:24px 64px; display:flex; align-items:center; justify-content:space-between; gap:24px; }
+.end-note-text { font-family:var(--mono); font-size:11px; color:var(--gray-4); line-height:1.75; max-width:520px; }
+.end-note-text strong { color:var(--gray-2); }
+
+/* FOOTER */
+.footer { position:fixed; bottom:0; left:0; right:0; height:40px; border-top:1px solid var(--gray-6); background:var(--white); display:flex; align-items:center; justify-content:space-between; padding:0 32px; z-index:100; }
+.footer-meta { font-family:var(--mono); font-size:10px; color:var(--gray-5); letter-spacing:0.08em; }
+.footer-nav { display:flex; gap:24px; }
+.footer-nav a { font-family:var(--mono); font-size:10px; letter-spacing:0.08em; color:var(--gray-4); text-decoration:none; transition:color 0.15s; }
+.footer-nav a:hover, .footer-nav a.next { color:var(--black); font-weight:700; }
+
+/* ANIM */
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.fade-up { opacity:0; animation:fadeUp 0.35s ease-out forwards; }
+.fade-up:nth-child(1){animation-delay:0.05s} .fade-up:nth-child(2){animation-delay:0.1s}
+.fade-up:nth-child(3){animation-delay:0.15s} .fade-up:nth-child(4){animation-delay:0.2s}
+
+/* RESPONSIVE */
+@media(max-width:1100px){ .card-grid{ grid-template-columns:repeat(2,1fr); } }
+@media(max-width:700px){
+  .card-grid{ grid-template-columns:1fr; padding:0 20px 40px; }
+  .controls-bar,.context-strip,.end-note,.expanded-panel,.match-legend{ padding-left:20px; padding-right:20px; }
+  .expanded-inner{ grid-template-columns:1fr; gap:20px; }
+  .nav-journey{ display:none; }
+  .sort-block{ align-items:flex-start; }
+  .controls-bar{ flex-direction:column; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-wordmark">Cortland</div>
+  <div class="nav-journey">
+    <a href="cortland-m0a.html" class="nav-step complete"><span class="nav-step-num">00</span> Discovery</a>
+    <a href="cortland-m1.html" class="nav-step complete"><span class="nav-step-num">01</span> Context</a>
+    <div class="nav-step active"><span class="nav-step-num">02</span> Matches</div>
+    <div class="nav-step"><span class="nav-step-num">03</span> Unit</div>
+    <div class="nav-step"><span class="nav-step-num">04</span> Hold</div>
+  </div>
+  <div><a href="#" class="nav-link">Sign in</a></div>
+</nav>
+
+<div class="page">
+
+  <div class="context-strip">
+    <div class="context-chips">
+      <span class="context-label">Matching on</span>
+      <span class="ctx-chip confirmed">📍 Charlotte</span>
+      <span class="ctx-chip confirmed">📅 Late May</span>
+      <span class="ctx-chip confirmed">🏠 1 bed</span>
+      <span class="ctx-chip confirmed">🐕 Thor</span>
+      <span class="ctx-chip inferred">🏙 SouthEnd / NoDa</span>
+      <span class="ctx-chip inferred">💰 ~$1,400–1,800</span>
+    </div>
+    <a class="context-edit" href="cortland-m1.html">← Edit context</a>
+  </div>
+
+  <div class="controls-bar">
+    <div class="summary-block">
+      <div class="summary-eyebrow"><div class="summary-dot"></div> Match summary</div>
+      <div class="summary-text">
+        Found <strong>4 units</strong> across 3 neighborhoods — all pet-eligible for Thor, all available in your move window.
+        Prices are <strong>all-in monthly</strong>: base rent plus every mandatory fee.
+      </div>
+    </div>
+    <div class="sort-block">
+      <div class="sort-label">Sort by</div>
+      <div class="toggle-row">
+        <button class="toggle-btn active" id="btn-neighborhood" onclick="reorder('neighborhood')">Neighborhood fit</button>
+        <button class="toggle-btn" id="btn-price" onclick="reorder('price')">Price</button>
+        <button class="toggle-btn disabled" id="btn-commute">
+          Commute
+          <span class="tip">Add your office address in Context to enable commute sorting.</span>
+        </button>
+      </div>
+      <div class="sort-note" id="sort-note">Ranked by neighborhood character — SouthEnd and NoDa first, based on your vibe selection.</div>
+    </div>
+  </div>
+
+  <div class="match-legend">
+    <div class="legend-item">
+      <div class="legend-swatch match">✓</div>
+      Matches your criteria
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch info">&nbsp;</div>
+      Context
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch weak">—</div>
+      Preference not met
+    </div>
+  </div>
+
+  <div class="card-grid" id="card-grid">
+
+    <div class="match-card viewed fade-up" id="card-0" data-price="1724" onclick="toggleExpand(0)">
+      <div class="card-image">
+        <img src="https://lh3.googleusercontent.com/p/AF1QipO8RZIEpXK7MDicgtYgXD3wREHplQ_lhSXOvA72=s1360-w1360-h1020-rw" alt="" onerror="this.style.display='none'">
+        <div class="card-rank-badge" id="rank-0">#1 · neighborhood fit</div>
+        <div class="card-viewed-badge">Viewed</div>
+      </div>
+      <div class="card-body">
+        <div class="card-header-row">
+          <div class="card-name">Cortland South End</div>
+          <div class="card-unit">Unit 412</div>
+        </div>
+        <div class="card-neighborhood">SouthEnd
+          <span class="card-neighborhood-char">Walkable · bars & coffee · young professional</span>
+        </div>
+        <div class="card-rationale"><strong>Dog park 6 min walk.</strong> Light rail 4 blocks. Dog wash on L1. <strong>Available May 24</strong> — 9 days before your June 2 start.</div>
+        <div class="card-tags">
+          <span class="card-tag match">Dog park 6 min</span>
+          <span class="card-tag match">May 24</span>
+          <span class="card-tag match">Light rail</span>
+          <span class="card-tag info">In-unit W/D</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-price">
+          <div class="card-price-amount">$1,724</div>
+          <div class="card-price-label">/mo all-in</div>
+          <div class="card-price-fees">$1,595 + $75 pet + $54 fees</div>
+        </div>
+        <div class="card-actions">
+          <a href="cortland-m3.html" class="btn-view" onclick="event.stopPropagation()">See unit →</a>
+          <button class="btn-save" onclick="toggleSave(event,this)">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="match-card fade-up" id="card-1" data-price="1612" onclick="toggleExpand(1)">
+      <div class="card-image">
+        <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&q=80" alt="" onerror="this.style.display='none'">
+        <div class="card-rank-badge" id="rank-1">#2 · neighborhood fit</div>
+      </div>
+      <div class="card-body">
+        <div class="card-header-row">
+          <div class="card-name">Cortland NoDa</div>
+          <div class="card-unit">Unit 208</div>
+        </div>
+        <div class="card-neighborhood">NoDa
+          <span class="card-neighborhood-char">Arts district · music venues · independent restaurants</span>
+        </div>
+        <div class="card-rationale"><strong>Dog park 8 min walk.</strong> Under budget. Ground floor courtyard — <strong>private outdoor space</strong>, great for Thor. NoDa skews more creative than SouthEnd.</div>
+        <div class="card-tags">
+          <span class="card-tag match">Under budget</span>
+          <span class="card-tag match">Private patio</span>
+          <span class="card-tag match">Dog park 8 min</span>
+          <span class="card-tag info">Arts district</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-price">
+          <div class="card-price-amount">$1,612</div>
+          <div class="card-price-label">/mo all-in</div>
+          <div class="card-price-fees">$1,495 + $75 pet + $42 fees</div>
+        </div>
+        <div class="card-actions">
+          <button class="btn-view" onclick="event.stopPropagation()">See unit →</button>
+          <button class="btn-save" onclick="toggleSave(event,this)">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="match-card fade-up" id="card-2" data-price="1810" onclick="toggleExpand(2)">
+      <div class="card-image">
+        <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=70" alt="" onerror="this.style.display='none'">
+        <div class="card-rank-badge" id="rank-2">#3 · neighborhood fit</div>
+      </div>
+      <div class="card-body">
+        <div class="card-header-row">
+          <div class="card-name">Cortland South End II</div>
+          <div class="card-unit">Unit 601</div>
+        </div>
+        <div class="card-neighborhood">SouthEnd
+          <span class="card-neighborhood-char">Walkable · bars & coffee · young professional</span>
+        </div>
+        <div class="card-rationale">Top floor — <strong>no upstairs neighbors</strong>, skyline view. Above estimated range at $1,810. <strong>Available June 1</strong> — one day before start.</div>
+        <div class="card-tags">
+          <span class="card-tag match">Top floor</span>
+          <span class="card-tag match">No upstairs neighbors</span>
+          <span class="card-tag info">Skyline view</span>
+          <span class="card-tag weak">June 1 — tight</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-price">
+          <div class="card-price-amount">$1,810</div>
+          <div class="card-price-label">/mo all-in</div>
+          <div class="card-price-fees">$1,680 + $75 pet + $55 fees</div>
+        </div>
+        <div class="card-actions">
+          <button class="btn-view" onclick="event.stopPropagation()">See unit →</button>
+          <button class="btn-save" onclick="toggleSave(event,this)">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="match-card fade-up" id="card-3" data-price="1558" onclick="toggleExpand(3)">
+      <div class="card-image">
+        <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&q=70" alt="" onerror="this.style.display='none'">
+        <div class="card-rank-badge" id="rank-3">#4 · neighborhood fit</div>
+      </div>
+      <div class="card-body">
+        <div class="card-header-row">
+          <div class="card-name">Cortland Plaza Midwood</div>
+          <div class="card-unit">Unit 115</div>
+        </div>
+        <div class="card-neighborhood">Plaza Midwood
+          <span class="card-neighborhood-char">Indie coffee · eclectic · slightly quieter than SouthEnd</span>
+        </div>
+        <div class="card-rationale">Lowest price at $1,558 and earliest available — <strong>May 20, 13 days buffer</strong>. Ranked 4th because <strong>nearest dog park is 14 min</strong> — outside your stated preference.</div>
+        <div class="card-tags">
+          <span class="card-tag match">Lowest price</span>
+          <span class="card-tag match">May 20 — most buffer</span>
+          <span class="card-tag weak">Dog park 14 min</span>
+          <span class="card-tag info">Eclectic neighborhood</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-price">
+          <div class="card-price-amount">$1,558</div>
+          <div class="card-price-label">/mo all-in</div>
+          <div class="card-price-fees">$1,440 + $75 pet + $43 fees</div>
+        </div>
+        <div class="card-actions">
+          <button class="btn-view" onclick="event.stopPropagation()">See unit →</button>
+          <button class="btn-save" onclick="toggleSave(event,this)">Save</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- EXPANDED PANEL -->
+  <div class="expanded-panel" id="expanded-panel">
+    <div class="exp-header" id="exp-header"></div>
+    <div class="expanded-inner" id="expanded-inner"></div>
+    <div class="exp-close" onclick="closeExpanded()">↑ Close detail</div>
+  </div>
+
+  <div class="end-note">
+    <div class="end-note-text">
+      <strong>That's all 4 matches.</strong> These are every Cortland unit in Charlotte fitting your current criteria.
+      Expanding dog park distance or budget opens 3 additional units.
+    </div>
+    <a class="context-edit" href="cortland-m1.html">← Adjust context</a>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <div class="footer-meta">Cortland × Huge — DXP Vision — M2 of 4</div>
+  <div class="footer-nav">
+    <a href="cortland-m1.html">← Context</a>
+    <a href="cortland-m3.html" class="next">Next: Unit →</a>
+  </div>
+</footer>
+
+<script>
+const cardData = [
+  { title:'Cortland South End · Unit 412', sections:[
+    { label:'All-in cost', rows:[['Base rent','$1,595'],['Pet — Thor','$75'],['Valet trash','$30'],['Admin','$24'],['Parking','Not included'],['Total monthly','$1,724']] },
+    { label:'Unit', rows:[['Size','724 sqft'],['Floor','4 of 6'],['Orientation','East-facing'],['Noise','2/5 quiet'],['Available','May 24']] },
+    { label:'Neighborhood', rows:[['Dog park','6 min walk'],['Coffee','3 min walk'],['Light rail','4 blocks'],['Walkability','92/100']] }
+  ]},
+  { title:'Cortland NoDa · Unit 208', sections:[
+    { label:'All-in cost', rows:[['Base rent','$1,495'],['Pet — Thor','$75'],['Valet trash','$30'],['Admin','$12'],['Total monthly','$1,612']] },
+    { label:'Unit', rows:[['Size','688 sqft'],['Floor','Ground / courtyard'],['Outdoor space','Private patio'],['Noise','2/5 quiet'],['Available','May 28']] },
+    { label:'Neighborhood', rows:[['Dog park','8 min walk'],['Character','Arts / music / indie'],['Walkability','84/100'],['Light rail','Gold Line, 2 stops']] }
+  ]},
+  { title:'Cortland South End II · Unit 601', sections:[
+    { label:'All-in cost', rows:[['Base rent','$1,680'],['Pet — Thor','$75'],['Valet trash','$30'],['Admin','$25'],['Total monthly','$1,810']] },
+    { label:'Unit', rows:[['Size','756 sqft'],['Floor','6 of 6 — top'],['Upstairs neighbors','None'],['Noise','1/5 very quiet'],['Available','June 1 — tight']] },
+    { label:'Neighborhood', rows:[['Dog park','6 min walk'],['View','SouthEnd skyline'],['Walkability','91/100']] }
+  ]},
+  { title:'Cortland Plaza Midwood · Unit 115', sections:[
+    { label:'All-in cost', rows:[['Base rent','$1,440'],['Pet — Thor','$75'],['Valet trash','$30'],['Admin','$13'],['Total monthly','$1,558']] },
+    { label:'Unit', rows:[['Size','660 sqft'],['Floor','1 of 4'],['Noise','3/5 moderate'],['Available','May 20 — most buffer']] },
+    { label:'Neighborhood', rows:[['Dog park','14 min walk'],['Character','Eclectic / indie'],['Walkability','78/100']] }
+  ]}
+];
+
+let expandedCard = null;
+
+function toggleExpand(idx) {
+  if (expandedCard === idx) { closeExpanded(); return; }
+  document.querySelectorAll('.match-card').forEach(c => c.classList.remove('expanded'));
+  document.getElementById('card-' + idx).classList.add('expanded');
+  expandedCard = idx;
+
+  const d = cardData[idx];
+  document.getElementById('exp-header').textContent = d.title;
+  document.getElementById('expanded-inner').innerHTML = d.sections.map(s => `
+    <div>
+      <div class="exp-section-label">${s.label}</div>
+      ${s.rows.map(r => `<div class="exp-row"><span class="exp-row-label">${r[0]}</span><span class="exp-row-val">${r[1]}</span></div>`).join('')}
+    </div>`).join('');
+
+  const panel = document.getElementById('expanded-panel');
+  panel.classList.add('open');
+  setTimeout(() => panel.scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
+}
+
+function closeExpanded() {
+  document.getElementById('expanded-panel').classList.remove('open');
+  document.querySelectorAll('.match-card').forEach(c => c.classList.remove('expanded'));
+  expandedCard = null;
+}
+
+const sortNotes = {
+  neighborhood: 'Ranked by neighborhood character — SouthEnd and NoDa first, based on your vibe selection.',
+  price: 'Ranked lowest to highest all-in monthly cost.',
+};
+const rankSuffix = { neighborhood: '· neighborhood fit', price: '· price' };
+const priceOrder = [3,1,0,2];
+const neighOrder = [0,1,2,3];
+
+function reorder(mode) {
+  document.querySelectorAll('.toggle-btn:not(.disabled)').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-' + mode).classList.add('active');
+  document.getElementById('sort-note').textContent = sortNotes[mode];
+  const order = mode === 'price' ? priceOrder : neighOrder;
+  const grid = document.getElementById('card-grid');
+  order.forEach((cardIdx, pos) => {
+    grid.appendChild(document.getElementById('card-' + cardIdx));
+    document.getElementById('rank-' + cardIdx).textContent = `#${pos+1} ${rankSuffix[mode]}`;
+  });
+  closeExpanded();
+}
+
+function toggleSave(e, btn) {
+  e.stopPropagation();
+  btn.classList.toggle('saved');
+  btn.textContent = btn.classList.contains('saved') ? 'Saved ✓' : 'Save';
+}
+</script>
+</body>
+</html>

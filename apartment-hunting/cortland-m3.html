@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cortland — AI Discovery / M3</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; background: #fff; color: #0a0a0a; -webkit-font-smoothing: antialiased; }
+:root {
+  --black:#0a0a0a; --gray-1:#1a1a1a; --gray-2:#2e2e2e; --gray-3:#5a5a5a;
+  --gray-4:#8a8a8a; --gray-5:#c4c4c4; --gray-6:#e8e8e8; --gray-7:#f4f4f4;
+  --white:#fff; --mono:'Courier Prime','Courier New',monospace; --sans:'Inter',sans-serif;
+}
+
+/* NAV */
+.nav {
+  position:fixed; top:0; left:0; right:0; height:52px;
+  border-bottom:1px solid var(--gray-6); background:var(--white);
+  display:flex; align-items:center; justify-content:space-between; padding:0 32px; z-index:200;
+}
+.nav-wordmark { font-size:13px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; }
+.nav-journey { display:flex; }
+.nav-step { display:flex; align-items:center; gap:8px; padding:0 16px; height:52px; font-size:11px; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; color:var(--gray-4); border-bottom:2px solid transparent; text-decoration:none; cursor:default; }
+.nav-step.complete { color:var(--gray-3); }
+.nav-step.active { color:var(--black); border-bottom-color:var(--black); }
+.nav-step-num { font-family:var(--mono); font-size:10px; color:inherit; }
+.nav-link { font-size:12px; color:var(--gray-4); text-decoration:none; }
+
+/* PAGE */
+.page { padding-top:52px; padding-bottom:80px; max-width:1200px; margin:0 auto; padding-left:64px; padding-right:64px; }
+
+/* BREADCRUMB */
+.breadcrumb { padding:20px 0 0; display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:11px; color:var(--gray-4); letter-spacing:0.06em; }
+.breadcrumb a { color:var(--gray-4); text-decoration:none; transition:color 0.15s; }
+.breadcrumb a:hover { color:var(--black); }
+.breadcrumb-sep { color:var(--gray-5); }
+
+/* UNIT HEADER */
+.unit-header { padding:24px 0 28px; border-bottom:1px solid var(--gray-6); display:grid; grid-template-columns:1fr auto; gap:24px; align-items:start; }
+.unit-title { font-size:clamp(24px,3vw,36px); font-weight:600; letter-spacing:-0.02em; color:var(--black); margin-bottom:6px; line-height:1.1; }
+.unit-title span { font-weight:300; }
+.unit-address { font-family:var(--mono); font-size:12px; color:var(--gray-3); margin-bottom:16px; }
+.unit-meta-row { display:flex; flex-wrap:wrap; gap:0; border:1px solid var(--gray-6); width:fit-content; }
+.unit-meta-item { padding:10px 16px; border-right:1px solid var(--gray-6); }
+.unit-meta-item:last-child { border-right:none; }
+.unit-meta-label { font-family:var(--mono); font-size:9px; letter-spacing:0.14em; text-transform:uppercase; color:var(--gray-4); margin-bottom:3px; }
+.unit-meta-val { font-family:var(--mono); font-size:13px; color:var(--black); font-weight:700; }
+.unit-meta-val.highlight { color:var(--black); }
+.unit-meta-val.warn { color:var(--gray-3); }
+
+/* PRICE BLOCK */
+.price-block { text-align:right; }
+.price-amount { font-size:32px; font-weight:600; letter-spacing:-0.025em; line-height:1; }
+.price-label { font-family:var(--mono); font-size:10px; color:var(--gray-4); letter-spacing:0.08em; text-transform:uppercase; margin-top:4px; }
+.price-breakdown { margin-top:10px; font-family:var(--mono); font-size:11px; color:var(--gray-4); line-height:1.7; text-align:right; }
+.price-breakdown strong { color:var(--black); font-weight:700; }
+
+/* SECTION STRUCTURE */
+.section { padding:40px 0; border-bottom:1px solid var(--gray-6); }
+.section:last-of-type { border-bottom:none; }
+.section-eyebrow { font-family:var(--mono); font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--gray-3); margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+.section-title { font-size:clamp(20px,2.2vw,26px); font-weight:500; letter-spacing:-0.015em; color:var(--black); margin-bottom:8px; line-height:1.2; }
+.section-sub { font-family:var(--mono); font-size:13px; color:var(--gray-2); line-height:1.65; margin-bottom:24px; max-width:600px; }
+
+/* AI DIFFERENTIATORS — 3 cards */
+.diff-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--gray-6); border:1px solid var(--gray-6); }
+.diff-card { background:var(--gray-7); padding:24px 20px; display:flex; flex-direction:column; gap:0; }
+.diff-num { font-family:var(--mono); font-size:12px; color:var(--gray-3); margin-bottom:12px; }
+.diff-headline { font-family:var(--mono); font-size:14px; font-weight:700; color:var(--black); margin-bottom:10px; line-height:1.35; }
+.diff-body { font-family:var(--mono); font-size:12px; color:var(--gray-2); line-height:1.65; flex:1; }
+
+/* GALLERY */
+.gallery { display:grid; grid-template-columns:2fr 1fr 1fr; grid-template-rows:auto auto; gap:3px; margin-bottom:0; }
+.gallery-main { grid-row:1/3; height:380px; }
+.gallery-side { height:188px; }
+.gallery-thumb { width:100%; height:100%; position:relative; overflow:hidden; cursor:pointer; display:block; }
+.gallery-thumb img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.3s ease, opacity 0.2s; }
+.gallery-thumb:hover img { transform:scale(1.03); opacity:0.88; }
+.gallery-thumb .thumb-overlay {
+  position:absolute; inset:0; background:rgba(10,10,10,0);
+  display:flex; align-items:center; justify-content:center;
+  transition:background 0.2s;
+}
+.gallery-thumb:hover .thumb-overlay { background:rgba(10,10,10,0.15); }
+.gallery-thumb .thumb-expand {
+  opacity:0; width:32px; height:32px; background:rgba(255,255,255,0.92);
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; transition:opacity 0.2s; color:var(--black);
+}
+.gallery-thumb:hover .thumb-expand { opacity:1; }
+.gallery-label { font-family:var(--mono); font-size:11px; color:var(--gray-3); margin-top:8px; }
+
+/* LIGHTBOX */
+.lightbox {
+  position:fixed; inset:0; background:rgba(10,10,10,0.94);
+  z-index:500; display:none; align-items:center; justify-content:center;
+  flex-direction:column; gap:0;
+}
+.lightbox.open { display:flex; }
+.lightbox-img-wrap {
+  position:relative; max-width:90vw; max-height:80vh;
+  display:flex; align-items:center; justify-content:center;
+}
+.lightbox-img {
+  max-width:90vw; max-height:80vh; object-fit:contain;
+  display:block; opacity:0; transition:opacity 0.2s;
+}
+.lightbox-img.loaded { opacity:1; }
+.lightbox-prev, .lightbox-next {
+  position:absolute; top:50%; transform:translateY(-50%);
+  background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
+  color:var(--white); width:44px; height:44px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:18px; transition:background 0.15s;
+  user-select:none;
+}
+.lightbox-prev { left:-60px; }
+.lightbox-next { right:-60px; }
+.lightbox-prev:hover, .lightbox-next:hover { background:rgba(255,255,255,0.2); }
+.lightbox-footer {
+  padding:14px 0 0; display:flex; align-items:center; gap:24px;
+}
+.lightbox-caption { font-family:var(--mono); font-size:12px; color:rgba(255,255,255,0.6); letter-spacing:0.06em; }
+.lightbox-counter { font-family:var(--mono); font-size:11px; color:rgba(255,255,255,0.4); letter-spacing:0.1em; }
+.lightbox-close {
+  position:absolute; top:20px; right:24px;
+  color:rgba(255,255,255,0.6); font-size:22px; cursor:pointer;
+  background:none; border:none; line-height:1; padding:4px 8px;
+  transition:color 0.15s;
+}
+.lightbox-close:hover { color:var(--white); }
+.lightbox-dots { display:flex; gap:6px; padding-top:12px; }
+.lightbox-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:rgba(255,255,255,0.25); cursor:pointer; transition:background 0.15s;
+}
+.lightbox-dot.active { background:var(--white); }
+
+/* LIGHT SCRUBBER */
+.scrubber-wrap { position:relative; border:1px solid var(--gray-6); overflow:hidden; background:var(--gray-7); }
+.scrubber-img { width:100%; height:320px; object-fit:cover; display:block; filter:grayscale(85%); transition:filter 0.3s; }
+.scrubber-overlay { position:absolute; top:12px; left:12px; background:rgba(10,10,10,0.82); color:var(--white); padding:8px 14px; font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:0.04em; }
+.scrubber-lux { position:absolute; top:12px; right:12px; background:rgba(255,255,255,0.92); color:var(--black); padding:6px 12px; font-family:var(--mono); font-size:11px; letter-spacing:0.08em; }
+.scrubber-caption { position:absolute; bottom:12px; left:12px; background:rgba(255,255,255,0.88); color:var(--gray-2); padding:5px 10px; font-family:var(--mono); font-size:10px; letter-spacing:0.06em; max-width:360px; line-height:1.5; }
+
+.scrubber-controls { margin-top:0; border:1px solid var(--gray-6); border-top:none; padding:16px 20px 12px; background:var(--white); }
+.time-track { position:relative; height:4px; background:var(--gray-6); margin-bottom:14px; cursor:pointer; }
+.time-fill { position:absolute; left:0; top:0; bottom:0; background:var(--black); pointer-events:none; transition:width 0.1s; }
+.time-thumb { position:absolute; top:50%; width:14px; height:14px; background:var(--black); border-radius:50%; transform:translate(-50%,-50%); cursor:grab; transition:left 0.1s; }
+.time-thumb:active { cursor:grabbing; }
+.time-ticks { display:flex; justify-content:space-between; }
+.time-tick { font-family:var(--mono); font-size:10px; color:var(--gray-4); letter-spacing:0.04em; cursor:pointer; padding:3px 0; transition:color 0.15s; }
+.time-tick:hover, .time-tick.active { color:var(--black); font-weight:700; }
+
+/* NOISE */
+.noise-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+.noise-score-block { display:flex; align-items:baseline; gap:10px; margin-bottom:12px; }
+.noise-score-num { font-size:56px; font-weight:600; letter-spacing:-0.03em; line-height:1; color:var(--black); }
+.noise-score-denom { font-family:var(--mono); font-size:16px; color:var(--gray-4); }
+.noise-score-label { font-family:var(--mono); font-size:13px; color:var(--gray-2); font-weight:700; }
+.noise-bars { display:flex; gap:4px; margin-bottom:12px; }
+.noise-bar { height:20px; flex:1; background:var(--gray-6); transition:background 0.2s; }
+.noise-bar.filled { background:var(--black); }
+.noise-stat { font-family:var(--mono); font-size:13px; color:var(--gray-2); line-height:1.6; margin-bottom:16px; }
+.noise-note { font-family:var(--mono); font-size:12px; color:var(--gray-3); line-height:1.65; font-style:italic; }
+.adjacency-table { display:flex; flex-direction:column; gap:1px; }
+.adj-row { display:grid; grid-template-columns:28px 1fr auto; gap:12px; padding:10px 14px; background:var(--gray-7); align-items:center; font-family:var(--mono); font-size:12px; }
+.adj-dir { color:var(--gray-3); font-size:11px; letter-spacing:0.08em; }
+.adj-desc { color:var(--gray-2); }
+.adj-status { font-size:11px; letter-spacing:0.08em; text-transform:uppercase; }
+.adj-status.occupied { color:var(--gray-3); }
+.adj-status.quiet { color:var(--black); font-weight:700; }
+
+/* BUILDING TRUST */
+.trust-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--gray-6); border:1px solid var(--gray-6); margin-bottom:0; }
+.trust-item { background:var(--white); padding:22px 20px 20px; }
+.trust-label { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--gray-3); margin-bottom:10px; }
+.trust-value { font-size:30px; font-weight:600; letter-spacing:-0.02em; color:var(--black); line-height:1; margin-bottom:8px; }
+.trust-sub { font-family:var(--mono); font-size:12px; color:var(--gray-2); line-height:1.6; margin-bottom:14px; }
+.trust-compare {
+  display:flex; gap:20px; padding:10px 0;
+  border-top:1px solid var(--gray-6);
+  margin-bottom:10px;
+}
+.trust-compare-item { display:flex; flex-direction:column; gap:3px; }
+.trust-compare-val { font-family:var(--mono); font-size:14px; font-weight:700; color:var(--black); }
+.trust-compare-val.portfolio { color:var(--gray-3); }
+.trust-compare-label { font-family:var(--mono); font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--gray-4); }
+.trust-compare-divider { width:1px; background:var(--gray-6); align-self:stretch; }
+.trust-source { font-family:var(--mono); font-size:10px; color:var(--gray-3); letter-spacing:0.08em; text-transform:uppercase; }
+
+/* NEIGHBORHOOD FIT */
+.nhood-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--gray-6); border:1px solid var(--gray-6); }
+.nhood-item { background:var(--white); padding:18px 18px 16px; }
+.nhood-label { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--gray-3); margin-bottom:8px; }
+.nhood-value { font-size:22px; font-weight:600; letter-spacing:-0.02em; color:var(--black); line-height:1; margin-bottom:5px; }
+.nhood-sub { font-family:var(--mono); font-size:12px; color:var(--gray-2); line-height:1.6; margin-bottom:10px; }
+.nhood-scale { display:flex; gap:3px; }
+.nhood-pip { width:20px; height:6px; background:var(--gray-6); }
+.nhood-pip.filled { background:var(--black); }
+.nhood-marcus { display:flex; align-items:center; gap:6px; margin-top:10px; font-family:var(--mono); font-size:11px; color:var(--gray-2); letter-spacing:0.06em; }
+.nhood-marcus::before { content:''; display:block; width:6px; height:6px; background:var(--black); border-radius:50%; flex-shrink:0; }
+
+/* HOLD */
+.hold-block { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start; padding:40px 0 0; }
+.hold-left {}
+.hold-eyebrow { font-family:var(--mono); font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--gray-3); margin-bottom:12px; }
+.hold-headline { font-size:clamp(22px,2.5vw,32px); font-weight:500; letter-spacing:-0.02em; line-height:1.15; color:var(--black); margin-bottom:14px; }
+.hold-body { font-family:var(--mono); font-size:13px; color:var(--gray-2); line-height:1.75; margin-bottom:28px; }
+.hold-btn { display:inline-flex; align-items:center; gap:10px; padding:16px 32px; background:var(--black); color:var(--white); font-family:var(--sans); font-size:14px; font-weight:500; border:none; cursor:pointer; letter-spacing:0.02em; transition:background 0.15s; width:100%; justify-content:center; text-decoration:none; }
+.hold-btn:hover { background:var(--gray-1); }
+.hold-note { font-family:var(--mono); font-size:12px; color:var(--gray-3); line-height:1.6; margin-top:12px; text-align:center; }
+
+/* MAYA BLOCK */
+.maya-block { background:var(--gray-7); border:1px solid var(--gray-6); padding:20px; }
+.maya-header { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+.maya-avatar { width:40px; height:40px; background:var(--gray-5); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:14px; font-weight:700; color:var(--white); flex-shrink:0; }
+.maya-name { font-size:15px; font-weight:600; color:var(--black); margin-bottom:2px; }
+.maya-title { font-family:var(--mono); font-size:11px; color:var(--gray-3); letter-spacing:0.08em; }
+.maya-body { font-family:var(--mono); font-size:12px; color:var(--gray-2); line-height:1.7; margin-bottom:16px; }
+.maya-filmed { font-family:var(--mono); font-size:11px; color:var(--gray-3); letter-spacing:0.06em; margin-bottom:16px; }
+.maya-actions { display:flex; gap:8px; }
+.btn-maya-primary { flex:1; padding:10px; background:var(--black); color:var(--white); font-family:var(--mono); font-size:11px; letter-spacing:0.06em; border:none; cursor:pointer; transition:background 0.15s; text-align:center; }
+.btn-maya-primary:hover { background:var(--gray-1); }
+.btn-maya-secondary { flex:1; padding:10px; background:var(--white); color:var(--gray-2); font-family:var(--mono); font-size:11px; letter-spacing:0.06em; border:1px solid var(--gray-5); cursor:pointer; transition:all 0.15s; text-align:center; }
+.btn-maya-secondary:hover { border-color:var(--black); color:var(--black); }
+
+/* FOOTER */
+.footer { position:fixed; bottom:0; left:0; right:0; height:40px; border-top:1px solid var(--gray-6); background:var(--white); display:flex; align-items:center; justify-content:space-between; padding:0 32px; z-index:200; }
+.footer-meta { font-family:var(--mono); font-size:10px; color:var(--gray-5); letter-spacing:0.08em; }
+.footer-nav { display:flex; gap:24px; }
+.footer-nav a { font-family:var(--mono); font-size:10px; letter-spacing:0.08em; color:var(--gray-4); text-decoration:none; transition:color 0.15s; }
+.footer-nav a:hover, .footer-nav a.next { color:var(--black); font-weight:700; }
+
+/* ANIM */
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.fade-up { opacity:0; animation:fadeUp 0.4s ease-out forwards; }
+.fade-up:nth-child(1){animation-delay:0.05s} .fade-up:nth-child(2){animation-delay:0.12s}
+.fade-up:nth-child(3){animation-delay:0.19s} .fade-up:nth-child(4){animation-delay:0.26s}
+
+/* RESPONSIVE */
+@media(max-width:860px){
+  .page { padding-left:20px; padding-right:20px; }
+  .unit-header { grid-template-columns:1fr; }
+  .price-block { text-align:left; }
+  .noise-grid, .trust-grid, .hold-block { grid-template-columns:1fr; }
+  .nhood-grid { grid-template-columns:1fr 1fr; }
+  .diff-cards { grid-template-columns:1fr; }
+  .gallery { grid-template-columns:1fr; grid-template-rows:auto; }
+  .gallery-main { height:240px; grid-row:auto; }
+  .gallery-side { height:160px; }
+  .lightbox-prev { left:-44px; }
+  .lightbox-next { right:-44px; }
+  .nav-journey { display:none; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-wordmark">Cortland</div>
+  <div class="nav-journey">
+    <a href="cortland-m0a.html" class="nav-step complete"><span class="nav-step-num">00</span> Discovery</a>
+    <a href="cortland-m1.html" class="nav-step complete"><span class="nav-step-num">01</span> Context</a>
+    <a href="cortland-m2.html" class="nav-step complete"><span class="nav-step-num">02</span> Matches</a>
+    <div class="nav-step active"><span class="nav-step-num">03</span> Unit</div>
+    <div class="nav-step"><span class="nav-step-num">04</span> Hold</div>
+  </div>
+  <div><a href="#" class="nav-link">Sign in</a></div>
+</nav>
+
+<div class="page">
+
+  <!-- BREADCRUMB -->
+  <div class="breadcrumb fade-up">
+    <a href="cortland-m2.html">← Your matches</a>
+    <span class="breadcrumb-sep">/</span>
+    <span>Cortland South End</span>
+    <span class="breadcrumb-sep">/</span>
+    <span>Unit 412</span>
+  </div>
+
+  <!-- UNIT HEADER -->
+  <div class="unit-header fade-up">
+    <div>
+      <div class="unit-title">Cortland South End, <span>Unit 412</span></div>
+      <div class="unit-address">1234 S Tryon St, Charlotte, NC 28203 · 4th floor of 6</div>
+      <div class="unit-meta-row">
+        <div class="unit-meta-item">
+          <div class="unit-meta-label">Available</div>
+          <div class="unit-meta-val highlight">May 24 — 9 days before June 2</div>
+        </div>
+        <div class="unit-meta-item">
+          <div class="unit-meta-label">Layout</div>
+          <div class="unit-meta-val">1 bed · 1 bath</div>
+        </div>
+        <div class="unit-meta-item">
+          <div class="unit-meta-label">Size</div>
+          <div class="unit-meta-val">724 sqft</div>
+        </div>
+        <div class="unit-meta-item">
+          <div class="unit-meta-label">Dog park</div>
+          <div class="unit-meta-val highlight">6 min walk</div>
+        </div>
+        <div class="unit-meta-item">
+          <div class="unit-meta-label">Lease</div>
+          <div class="unit-meta-val">12 mo standard</div>
+        </div>
+      </div>
+    </div>
+    <div class="price-block">
+      <div class="price-amount">$1,724</div>
+      <div class="price-label">/ month, all-in</div>
+      <div class="price-breakdown">
+        Base $1,595<br>
+        + pet rent $75 (Thor)<br>
+        + valet trash $30<br>
+        + admin $24<br>
+        <strong>= $1,724 total</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- GALLERY -->
+  <div class="section" style="padding-top:32px;">
+    <div class="gallery">
+      <div class="gallery-main">
+        <div class="gallery-thumb" onclick="openLightbox(0)">
+          <img src="https://lh3.googleusercontent.com/p/AF1QipO8RZIEpXK7MDicgtYgXD3wREHplQ_lhSXOvA72=s1360-w1360-h1020-rw" alt="Living room, east window">
+          <div class="thumb-overlay"><div class="thumb-expand">⤢</div></div>
+        </div>
+      </div>
+      <div class="gallery-side">
+        <div class="gallery-thumb" onclick="openLightbox(1)">
+          <img src="https://lh3.googleusercontent.com/p/AF1QipNws3_avQp3UcPXRpshmVuyHdnk-etqzmVePOk9=s1360-w1360-h1020-rw" alt="Kitchen">
+          <div class="thumb-overlay"><div class="thumb-expand">⤢</div></div>
+        </div>
+      </div>
+      <div class="gallery-side">
+        <div class="gallery-thumb" onclick="openLightbox(2)">
+          <img src="https://lh3.googleusercontent.com/p/AF1QipPm8_xEXJXIoWJczieX2UKfd0aCsiZF3J3ptrXO=s1360-w1360-h1020-rw" alt="Bedroom">
+          <div class="thumb-overlay"><div class="thumb-expand">⤢</div></div>
+        </div>
+      </div>
+      <div class="gallery-side">
+        <div class="gallery-thumb" onclick="openLightbox(3)">
+          <img src="https://lh3.googleusercontent.com/p/AF1QipMAQU-5b5ZoXKnvvARJp4fPI41bQxWIkwSH2GnM=s1360-w1360-h1020-rw" alt="Bathroom">
+          <div class="thumb-overlay"><div class="thumb-expand">⤢</div></div>
+        </div>
+      </div>
+      <div class="gallery-side">
+        <div class="gallery-thumb" onclick="openLightbox(4)">
+          <img src="https://lh3.googleusercontent.com/p/AF1QipNIubMH7f1KOCwSMbE-oXq5HibZgoUNSRM2Tjd-=s1360-w1360-h1020-rw" alt="Building exterior">
+          <div class="thumb-overlay"><div class="thumb-expand">⤢</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="gallery-label">5 photos · Filmed April 24, 2026 by Maya R. · All photos of actual unit 412 — click any photo to enlarge</div>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox" onclick="handleLightboxClick(event)">
+    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    <div class="lightbox-img-wrap">
+      <div class="lightbox-prev" onclick="lightboxNav(-1, event)">‹</div>
+      <img class="lightbox-img" id="lightbox-img" src="" alt="">
+      <div class="lightbox-next" onclick="lightboxNav(1, event)">›</div>
+    </div>
+    <div class="lightbox-footer">
+      <div class="lightbox-caption" id="lightbox-caption"></div>
+      <div class="lightbox-counter" id="lightbox-counter"></div>
+    </div>
+    <div class="lightbox-dots" id="lightbox-dots"></div>
+  </div>
+
+  <!-- AI DIFFERENTIATORS -->
+  <div class="section fade-up">
+    <div class="section-eyebrow">
+      <span>AI</span> Unit analysis
+    </div>
+    <div class="section-title">Three things that make 412 different from the units around it.</div>
+    <div class="section-sub">Derived from 47 photos, walkthrough footage, and sensor data. Not marketing copy.</div>
+    <div class="diff-cards">
+      <div class="diff-card">
+        <div class="diff-num">01</div>
+        <div class="diff-headline">Strong east-facing morning light. Direct sun until ~11am.</div>
+        <div class="diff-body">The living room gets direct morning light from an east-facing window — bright enough to work without lamps until late morning on clear days. Units on the west side of this floor don't get direct sun until afternoon. Measured at 1,840 lux at 9am on a clear day.</div>
+      </div>
+      <div class="diff-card">
+        <div class="diff-num">02</div>
+        <div class="diff-headline">Open kitchen with unobstructed sightline to the living room.</div>
+        <div class="diff-body">The island sits on a single line of sight to the living couch — unusual for this floor plan, where most units have a partial wall. Good if you cook and watch TV, or work from the couch while keeping an eye on the stove.</div>
+      </div>
+      <div class="diff-card">
+        <div class="diff-num">03</div>
+        <div class="diff-headline">4th floor with no adjacent unit on the north wall.</div>
+        <div class="diff-body">The bedroom shares no wall with another tenant on the north side — it faces a corridor. Combined with a noise score of 2/5, this is the quietest sleeping configuration available in this building right now.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIGHT SCRUBBER -->
+  <div class="section fade-up">
+    <div class="section-eyebrow">Live light timeline</div>
+    <div class="section-title">What sunlight actually looks like in this unit, hour by hour.</div>
+    <div class="section-sub">Captured April 24 from a fixed tripod position in the living room. Drag the handle or tap a time to scrub through the day.</div>
+
+    <div class="scrubber-wrap" id="scrubber-wrap">
+      <img class="scrubber-img" id="scrubber-img"
+        src="https://lh3.googleusercontent.com/p/AF1QipO8RZIEpXK7MDicgtYgXD3wREHplQ_lhSXOvA72=s1360-w1360-h1020-rw" alt="Unit at 9am">
+      <div class="scrubber-overlay" id="scrubber-time">9:00 AM</div>
+      <div class="scrubber-lux" id="scrubber-lux">1,840 lux · Bright, direct</div>
+      <div class="scrubber-caption" id="scrubber-caption">Saturday, clear day · Living room, east window · Fixed camera position</div>
+    </div>
+
+    <div class="scrubber-controls">
+      <div class="time-track" id="time-track">
+        <div class="time-fill" id="time-fill" style="width:33%"></div>
+        <div class="time-thumb" id="time-thumb" style="left:33%"></div>
+      </div>
+      <div class="time-ticks">
+        <span class="time-tick" data-idx="0" onclick="setTime(0)">6 AM<br><span style="font-size:9px;color:var(--gray-5)">First light</span></span>
+        <span class="time-tick active" data-idx="2" onclick="setTime(2)">9 AM<br><span style="font-size:9px;color:var(--gray-5)">Morning peak</span></span>
+        <span class="time-tick" data-idx="4" onclick="setTime(4)">1 PM<br><span style="font-size:9px;color:var(--gray-5)">Soft midday</span></span>
+        <span class="time-tick" data-idx="6" onclick="setTime(6)">5 PM<br><span style="font-size:9px;color:var(--gray-5)">Golden hour</span></span>
+        <span class="time-tick" data-idx="8" onclick="setTime(8)">8 PM<br><span style="font-size:9px;color:var(--gray-5)">Lamps on</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOISE -->
+  <div class="section fade-up">
+    <div class="section-eyebrow">Ambient measurement</div>
+    <div class="section-title">How loud is it, really.</div>
+    <div class="section-sub">Recorded inside unit 412 at 2:14 PM with windows closed. Includes street, hallway, and HVAC.</div>
+
+    <div class="noise-grid">
+      <div>
+        <div class="noise-score-block">
+          <div class="noise-score-num">2</div>
+          <div class="noise-score-denom">/5</div>
+          <div class="noise-score-label">Quiet</div>
+        </div>
+        <div class="noise-bars">
+          <div class="noise-bar filled"></div>
+          <div class="noise-bar filled"></div>
+          <div class="noise-bar"></div>
+          <div class="noise-bar"></div>
+          <div class="noise-bar"></div>
+        </div>
+        <div class="noise-stat">38 dB ambient · 44 dB peak<br>Quieter than 78% of units in this building.</div>
+        <div class="noise-note">S Tryon St is residential and one-way. You'll hear birds and the occasional delivery truck. Bedroom faces the courtyard. Captured Mon Apr 24, 2:14 PM · By Maya R. · iPhone 15 Pro</div>
+      </div>
+      <div>
+        <div class="section-eyebrow" style="margin-bottom:12px;">Floor &amp; adjacencies</div>
+        <div class="adjacency-table">
+          <div class="adj-row">
+            <div class="adj-dir">↑</div>
+            <div class="adj-desc">Unit 512 — same layout, hardwood floors</div>
+            <div class="adj-status occupied">occupied</div>
+          </div>
+          <div class="adj-row">
+            <div class="adj-dir">↓</div>
+            <div class="adj-desc">Unit 312 — long-term resident, 6 yrs</div>
+            <div class="adj-status occupied">occupied</div>
+          </div>
+          <div class="adj-row">
+            <div class="adj-dir">→</div>
+            <div class="adj-desc">Unit 413 — courtyard-facing studio</div>
+            <div class="adj-status occupied">occupied</div>
+          </div>
+          <div class="adj-row">
+            <div class="adj-dir">←</div>
+            <div class="adj-desc">No adjacent unit — corridor wall</div>
+            <div class="adj-status quiet">quiet</div>
+          </div>
+          <div class="adj-row">
+            <div class="adj-dir">N</div>
+            <div class="adj-desc">No adjacent unit — bedroom side</div>
+            <div class="adj-status quiet">quiet</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUILDING TRUST -->
+  <div class="section fade-up">
+    <div class="section-eyebrow">Building intelligence</div>
+    <div class="section-title">What the data says about living here — not just renting here.</div>
+    <div class="section-sub">Signals a first-time renter might not know to ask for. Sourced from Cortland operations data and verified resident records.</div>
+
+    <div class="trust-grid">
+      <div class="trust-item">
+        <div class="trust-label">Maintenance response — median</div>
+        <div class="trust-value">3.2 hrs</div>
+        <div class="trust-sub">Median time from request to first response. Urgent requests (HVAC, water) average 1.4 hrs.</div>
+        <div class="trust-compare">
+          <div class="trust-compare-item">
+            <div class="trust-compare-val">3.2 hrs</div>
+            <div class="trust-compare-label">This building</div>
+          </div>
+          <div class="trust-compare-divider"></div>
+          <div class="trust-compare-item">
+            <div class="trust-compare-val portfolio">5.8 hrs</div>
+            <div class="trust-compare-label">Portfolio median</div>
+          </div>
+        </div>
+        <div class="trust-source">Cortland ops data · rolling 12 months · 847 requests</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-label">Lease renewal rate — this building</div>
+        <div class="trust-value">71%</div>
+        <div class="trust-sub">Of residents whose leases came up last year, 71% renewed. A higher renewal rate is the clearest signal that residents want to stay.</div>
+        <div class="trust-compare">
+          <div class="trust-compare-item">
+            <div class="trust-compare-val">71%</div>
+            <div class="trust-compare-label">This building</div>
+          </div>
+          <div class="trust-compare-divider"></div>
+          <div class="trust-compare-item">
+            <div class="trust-compare-val portfolio">63%</div>
+            <div class="trust-compare-label">Portfolio average</div>
+          </div>
+        </div>
+        <div class="trust-source">Cortland resident records · 2025 renewal cycle</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-label">Fee variance — advertised vs. actual</div>
+        <div class="trust-value">+8.1%</div>
+        <div class="trust-sub">Your quoted $1,724 already includes all mandatory fees — no surprises at signing. The industry average variance is significantly higher.</div>
+        <div class="trust-compare">
+          <div class="trust-compare-item">
+            <div class="trust-compare-val">8.1%</div>
+            <div class="trust-compare-label">This building</div>
+          </div>
+          <div class="trust-compare-divider"></div>
+          <div class="trust-compare-item">
+            <div class="trust-compare-val portfolio">~15–22%</div>
+            <div class="trust-compare-label">Industry range</div>
+          </div>
+        </div>
+        <div class="trust-source">Cortland lease data · avg across 2024–2025 leases</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-label">Move-out dispute rate</div>
+        <div class="trust-value">4%</div>
+        <div class="trust-sub">Formal deposit disputes in the past 24 months. Lower means management is operating in good faith at move-out — the moment most renters regret not checking.</div>
+        <div class="trust-compare">
+          <div class="trust-compare-item">
+            <div class="trust-compare-val">4%</div>
+            <div class="trust-compare-label">This building</div>
+          </div>
+          <div class="trust-compare-divider"></div>
+          <div class="trust-compare-item">
+            <div class="trust-compare-val portfolio">11%</div>
+            <div class="trust-compare-label">Portfolio average</div>
+          </div>
+        </div>
+        <div class="trust-source">Cortland resident records · 2023–2025</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEIGHBORHOOD FIT FOR MARCUS -->
+  <div class="section fade-up">
+    <div class="section-eyebrow">Neighborhood fit — for Marcus</div>
+    <div class="section-title">What SouthEnd looks like for the life you described.</div>
+    <div class="section-sub">Scaled to your stated priorities: walkable, dog-friendly, young professional community. Not generic livability scores.</div>
+
+    <div class="nhood-grid">
+      <div class="nhood-item">
+        <div class="nhood-label">Dog infrastructure</div>
+        <div class="nhood-value">Strong</div>
+        <div class="nhood-sub">Veterans Park off-leash area 6 min walk. 14 dog-friendly patios within 10 min. Building has dog wash station on L1.</div>
+        <div class="nhood-scale">
+          <div class="nhood-pip filled"></div><div class="nhood-pip filled"></div>
+          <div class="nhood-pip filled"></div><div class="nhood-pip filled"></div>
+          <div class="nhood-pip"></div>
+        </div>
+        <div class="nhood-marcus">Your priority — confirmed match</div>
+      </div>
+      <div class="nhood-item">
+        <div class="nhood-label">Walkable daily life</div>
+        <div class="nhood-value">92 / 100</div>
+        <div class="nhood-sub">Coffee 3 min walk. Grocery 8 min. 40+ restaurants within 10 min. Light rail stop 4 blocks — useful once you have a commute address.</div>
+        <div class="nhood-scale">
+          <div class="nhood-pip filled"></div><div class="nhood-pip filled"></div>
+          <div class="nhood-pip filled"></div><div class="nhood-pip filled"></div>
+          <div class="nhood-pip filled"></div>
+        </div>
+        <div class="nhood-marcus">Matches your vibe selection</div>
+      </div>
+      <div class="nhood-item">
+        <div class="nhood-label">Building community</div>
+        <div class="nhood-value">Skews young</div>
+        <div class="nhood-sub">Median resident age at this building: 28. 74% single-occupancy leases. High turnover cohort — you'll meet people in similar life stages.</div>
+        <div class="nhood-scale">
+          <div class="nhood-pip filled"></div><div class="nhood-pip filled"></div>
+          <div class="nhood-pip filled"></div><div class="nhood-pip filled"></div>
+          <div class="nhood-pip"></div>
+        </div>
+        <div class="nhood-marcus">Inferred match — first solo move</div>
+      </div>
+      <div class="nhood-item">
+        <div class="nhood-label">Friday night noise, street level</div>
+        <div class="nhood-value">Moderate</div>
+        <div class="nhood-sub">SouthEnd bar strip is 2 blocks east. Street-level noise peaks 10pm–1am Friday–Saturday. Unit 412 faces the courtyard — somewhat buffered.</div>
+        <div class="nhood-scale">
+          <div class="nhood-pip filled"></div><div class="nhood-pip filled"></div>
+          <div class="nhood-pip filled"></div><div class="nhood-pip"></div>
+          <div class="nhood-pip"></div>
+        </div>
+        <div class="nhood-marcus">Worth knowing — not a dealbreaker</div>
+      </div>
+      <div class="nhood-item">
+        <div class="nhood-label">New resident orientation</div>
+        <div class="nhood-value">Structured</div>
+        <div class="nhood-sub">Cortland South End assigns a named contact for the first 90 days. Onboarding includes a neighborhood guide, local partner discounts, and a move-in day concierge.</div>
+        <div class="nhood-scale">
+          <div class="nhood-pip filled"></div><div class="nhood-pip filled"></div>
+          <div class="nhood-pip filled"></div><div class="nhood-pip filled"></div>
+          <div class="nhood-pip"></div>
+        </div>
+        <div class="nhood-marcus">Relevant — you're new to the city</div>
+      </div>
+      <div class="nhood-item">
+        <div class="nhood-label">Commute flexibility</div>
+        <div class="nhood-value">High</div>
+        <div class="nhood-sub">Light rail to Uptown 8 min. Bike lane on S Tryon. Parking structure in building. Add your office address to get a precise time.</div>
+        <div class="nhood-scale">
+          <div class="nhood-pip filled"></div><div class="nhood-pip filled"></div>
+          <div class="nhood-pip filled"></div><div class="nhood-pip filled"></div>
+          <div class="nhood-pip"></div>
+        </div>
+        <div class="nhood-marcus">Estimated — add commute to confirm</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOLD — links to M4 -->
+  <div class="hold-block fade-up">
+    <div class="hold-left">
+      <div class="hold-eyebrow">Next step</div>
+      <div class="hold-headline">Hold unit 412 for 24 hours while you decide.</div>
+      <div class="hold-body">No application. No fee. No commitment. We'll take 412 off the market for 24 hours so you can take your time — look at the neighborhood, check commute times, review the numbers. Maya gets a direct notification and will reach out if you have questions.</div>
+      <a href="cortland-m4.html" class="hold-btn">
+        Claim 412 for 24 hours →
+      </a>
+      <div class="hold-note">The hold expires 24 hours after you claim it. No action needed if you decide to pass.</div>
+    </div>
+    <div class="maya-block">
+      <div class="maya-header">
+        <div class="maya-avatar">M</div>
+        <div>
+          <div class="maya-name">Maya Rodriguez</div>
+          <div class="maya-title">Leasing specialist · SouthEnd · responds within 12 min</div>
+        </div>
+      </div>
+      <div class="maya-body">
+        Maya filmed unit 412 on Monday. She walked it with a meter and a phone — every photo, the walkthrough, the noise reading. She knows this specific unit better than anyone on the team right now.
+      </div>
+      <div class="maya-filmed">Filmed this unit · Mon Apr 24 · Verified data</div>
+      <div class="maya-actions">
+        <button class="btn-maya-primary">Message Maya</button>
+        <button class="btn-maya-secondary">Schedule a tour</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <div class="footer-meta">Cortland × Huge — DXP Vision — M3 of 4</div>
+  <div class="footer-nav">
+    <a href="cortland-m2.html">← Matches</a>
+    <a href="cortland-m4.html" class="next">Next: Hold →</a>
+  </div>
+</footer>
+
+<script>
+// ── LIGHTBOX ──────────────────────────────────────────────────────────
+const photos = [
+  { src:'https://lh3.googleusercontent.com/p/AF1QipO8RZIEpXK7MDicgtYgXD3wREHplQ_lhSXOvA72=s1360-w1360-h1020-rw', caption:'Living room · East window · Natural light' },
+  { src:'https://lh3.googleusercontent.com/p/AF1QipNws3_avQp3UcPXRpshmVuyHdnk-etqzmVePOk9=s1360-w1360-h1020-rw', caption:'Kitchen · Open sightline to living room' },
+  { src:'https://lh3.googleusercontent.com/p/AF1QipPm8_xEXJXIoWJczieX2UKfd0aCsiZF3J3ptrXO=s1360-w1360-h1020-rw', caption:'Bedroom · North wall — no adjacent unit' },
+  { src:'https://lh3.googleusercontent.com/p/AF1QipMAQU-5b5ZoXKnvvARJp4fPI41bQxWIkwSH2GnM=s1360-w1360-h1020-rw', caption:'Bathroom' },
+  { src:'https://lh3.googleusercontent.com/p/AF1QipNIubMH7f1KOCwSMbE-oXq5HibZgoUNSRM2Tjd-=s1360-w1360-h1020-rw', caption:'Building exterior · S Tryon St, SouthEnd' },
+];
+
+let lbIdx = 0;
+
+function openLightbox(idx) {
+  lbIdx = idx;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  loadLightboxPhoto(idx);
+  buildDots();
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleLightboxClick(e) {
+  if (e.target === document.getElementById('lightbox')) closeLightbox();
+}
+
+function loadLightboxPhoto(idx) {
+  const img = document.getElementById('lightbox-img');
+  img.classList.remove('loaded');
+  img.src = photos[idx].src;
+  img.onload = () => img.classList.add('loaded');
+  document.getElementById('lightbox-caption').textContent = photos[idx].caption;
+  document.getElementById('lightbox-counter').textContent = `${idx + 1} / ${photos.length}`;
+  document.querySelectorAll('.lightbox-dot').forEach((d,i) => d.classList.toggle('active', i === idx));
+}
+
+function lightboxNav(dir, e) {
+  e.stopPropagation();
+  lbIdx = (lbIdx + dir + photos.length) % photos.length;
+  loadLightboxPhoto(lbIdx);
+}
+
+function buildDots() {
+  const el = document.getElementById('lightbox-dots');
+  el.innerHTML = photos.map((_, i) =>
+    `<div class="lightbox-dot ${i === lbIdx ? 'active' : ''}" onclick="event.stopPropagation(); lbIdx=${i}; loadLightboxPhoto(${i})"></div>`
+  ).join('');
+}
+
+// Keyboard nav
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('lightbox').classList.contains('open')) return;
+  if (e.key === 'ArrowRight') { lbIdx = (lbIdx + 1) % photos.length; loadLightboxPhoto(lbIdx); }
+  if (e.key === 'ArrowLeft')  { lbIdx = (lbIdx - 1 + photos.length) % photos.length; loadLightboxPhoto(lbIdx); }
+  if (e.key === 'Escape') closeLightbox();
+});
+
+
+const timeStates = [
+  {
+    label:'6:00 AM', lux:'140 lux · First light, indirect',
+    caption:'Early morning · Living room, east window · Overcast day',
+    filter:'grayscale(90%) brightness(0.7)',
+    src:'https://lh3.googleusercontent.com/p/AF1QipO8RZIEpXK7MDicgtYgXD3wREHplQ_lhSXOvA72=s1360-w1360-h1020-rw',
+    pct: 0
+  },
+  {
+    label:'7:30 AM', lux:'620 lux · Warm indirect',
+    caption:'Mid-morning · Natural light building · Clear day',
+    filter:'grayscale(75%) brightness(0.85)',
+    src:'https://lh3.googleusercontent.com/p/AF1QipO8RZIEpXK7MDicgtYgXD3wREHplQ_lhSXOvA72=s1360-w1360-h1020-rw',
+    pct: 16
+  },
+  {
+    label:'9:00 AM', lux:'1,840 lux · Bright, direct',
+    caption:'Saturday, clear day · Living room, east window · Fixed camera position',
+    filter:'grayscale(40%) brightness(1.05)',
+    src:'https://lh3.googleusercontent.com/p/AF1QipO8RZIEpXK7MDicgtYgXD3wREHplQ_lhSXOvA72=s1360-w1360-h1020-rw',
+    pct: 33
+  },
+  {
+    label:'11:00 AM', lux:'1,200 lux · Bright, transitioning',
+    caption:'Late morning · Sun moving off direct angle · Clear day',
+    filter:'grayscale(55%) brightness(1.0)',
+    src:'https://lh3.googleusercontent.com/p/AF1QipO8RZIEpXK7MDicgtYgXD3wREHplQ_lhSXOvA72=s1360-w1360-h1020-rw',
+    pct: 44
+  },
+  {
+    label:'1:00 PM', lux:'480 lux · Soft, ambient',
+    caption:'Early afternoon · No direct sun · Comfortable working light',
+    filter:'grayscale(75%) brightness(0.9)',
+    src:'https://lh3.googleusercontent.com/p/AF1QipO8RZIEpXK7MDicgtYgXD3wREHplQ_lhSXOvA72=s1360-w1360-h1020-rw',
+    pct: 55
+  },
+  {
+    label:'3:30 PM', lux:'320 lux · Diffuse',
+    caption:'Mid-afternoon · Even ambient light · Minimal glare',
+    filter:'grayscale(80%) brightness(0.85)',
+    src:'https://lh3.googleusercontent.com/p/AF1QipO8RZIEpXK7MDicgtYgXD3wREHplQ_lhSXOvA72=s1360-w1360-h1020-rw',
+    pct: 66
+  },
+  {
+    label:'5:00 PM', lux:'210 lux · Warm, low',
+    caption:'Late afternoon · Golden hour quality · Warm tones',
+    filter:'grayscale(50%) brightness(0.9) sepia(0.3)',
+    src:'https://lh3.googleusercontent.com/p/AF1QipO8RZIEpXK7MDicgtYgXD3wREHplQ_lhSXOvA72=s1360-w1360-h1020-rw',
+    pct: 75
+  },
+  {
+    label:'7:00 PM', lux:'60 lux · Dusk',
+    caption:'Evening · Natural light fading · Lamps recommended',
+    filter:'grayscale(85%) brightness(0.65)',
+    src:'https://lh3.googleusercontent.com/p/AF1QipO8RZIEpXK7MDicgtYgXD3wREHplQ_lhSXOvA72=s1360-w1360-h1020-rw',
+    pct: 88
+  },
+  {
+    label:'8:00 PM', lux:'12 lux · Lamps on',
+    caption:'Night · Artificial light only · Warm living room ambiance',
+    filter:'grayscale(70%) brightness(0.55) sepia(0.2)',
+    src:'https://lh3.googleusercontent.com/p/AF1QipO8RZIEpXK7MDicgtYgXD3wREHplQ_lhSXOvA72=s1360-w1360-h1020-rw',
+    pct: 100
+  },
+];
+
+let currentIdx = 2;
+
+function applyState(idx) {
+  currentIdx = idx;
+  const s = timeStates[idx];
+  document.getElementById('scrubber-time').textContent = s.label;
+  document.getElementById('scrubber-lux').textContent = s.lux;
+  document.getElementById('scrubber-caption').textContent = s.caption;
+  document.getElementById('scrubber-img').style.filter = s.filter;
+  document.getElementById('time-fill').style.width = s.pct + '%';
+  document.getElementById('time-thumb').style.left = s.pct + '%';
+  document.querySelectorAll('.time-tick').forEach(t => {
+    t.classList.toggle('active', parseInt(t.dataset.idx) === idx);
+  });
+}
+
+function setTime(idx) { applyState(idx); }
+
+// Drag scrubber
+const track = document.getElementById('time-track');
+let dragging = false;
+
+function pctFromEvent(e) {
+  const r = track.getBoundingClientRect();
+  const x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+  return Math.max(0, Math.min(1, x / r.width));
+}
+
+function idxFromPct(pct) {
+  let closest = 0, minDist = Infinity;
+  timeStates.forEach((s,i) => {
+    const d = Math.abs(s.pct/100 - pct);
+    if (d < minDist) { minDist = d; closest = i; }
+  });
+  return closest;
+}
+
+track.addEventListener('mousedown', e => { dragging = true; applyState(idxFromPct(pctFromEvent(e))); });
+track.addEventListener('touchstart', e => { dragging = true; applyState(idxFromPct(pctFromEvent(e))); }, {passive:true});
+document.addEventListener('mousemove', e => { if (dragging) applyState(idxFromPct(pctFromEvent(e))); });
+document.addEventListener('touchmove', e => { if (dragging) applyState(idxFromPct(pctFromEvent(e))); }, {passive:true});
+document.addEventListener('mouseup', () => dragging = false);
+document.addEventListener('touchend', () => dragging = false);
+
+applyState(2);
+</script>
+</body>
+</html>

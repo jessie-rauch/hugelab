@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cortland — M0a: The Discovery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black:  #0a0a0a;
+    --gray-1: #1a1a1a;
+    --gray-2: #2e2e2e;
+    --gray-3: #5a5a5a;
+    --gray-4: #8a8a8a;
+    --gray-5: #c4c4c4;
+    --gray-6: #e8e8e8;
+    --gray-7: #f4f4f4;
+    --white:  #ffffff;
+    --mono:   'Courier Prime', 'Courier New', monospace;
+    --sans:   'Inter', sans-serif;
+    --mono-xs: 13px;
+    --mono-sm: 14px;
+    --mono-md: 16px;
+    --mono-lg: 18px;
+    /* ChatGPT-accurate colors */
+    --gpt-bg: #212121;
+    --gpt-sidebar: #171717;
+    --gpt-user-bubble: #2f2f2f;
+    --gpt-text: #ececec;
+    --gpt-text-dim: #8e8ea0;
+    --gpt-border: #3f3f3f;
+    --gpt-green: #19c37d;
+    --gpt-input-bg: #2f2f2f;
+    --gpt-hover: #3a3a3a;
+    --gpt-citation: #10a37f;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: var(--sans);
+    background: var(--black);
+    color: var(--white);
+    overflow: hidden;
+  }
+
+  /* ── Huge nav overlay ─────────────────────────────────── */
+  .huge-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 52px;
+    background: var(--black);
+    border-bottom: 1px solid var(--gray-2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    z-index: 100;
+  }
+  .huge-nav .wordmark {
+    font-family: var(--mono);
+    font-size: var(--mono-sm);
+    letter-spacing: 0.08em;
+    color: var(--white);
+  }
+  .huge-nav .journey {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    font-family: var(--mono);
+    font-size: var(--mono-xs);
+    color: var(--gray-4);
+  }
+  .journey-step {
+    padding: 4px 14px;
+    cursor: pointer;
+    transition: color 0.15s;
+    white-space: nowrap;
+    position: relative;
+    text-decoration: none;
+    color: inherit;
+  }
+  .journey-step:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: -4px;
+    color: var(--gray-2);
+  }
+  .journey-step.active {
+    color: var(--white);
+  }
+  .journey-step.current {
+    color: var(--white);
+  }
+  .journey-step.current::before {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 14px; right: 14px;
+    height: 1px;
+    background: var(--white);
+  }
+  .huge-nav .signin {
+    font-family: var(--mono);
+    font-size: var(--mono-xs);
+    color: var(--gray-4);
+    cursor: pointer;
+  }
+
+  /* ── Huge footer ──────────────────────────────────────── */
+  .huge-footer {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 40px;
+    background: var(--black);
+    border-top: 1px solid var(--gray-2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    z-index: 100;
+  }
+  .huge-footer span {
+    font-family: var(--mono);
+    font-size: var(--mono-xs);
+    color: var(--gray-4);
+  }
+  .huge-footer .footer-links {
+    display: flex;
+    gap: 20px;
+  }
+
+  /* ── Main layout ──────────────────────────────────────── */
+  .main-wrapper {
+    position: fixed;
+    top: 52px;
+    bottom: 40px;
+    left: 0; right: 0;
+    display: flex;
+  }
+
+  /* ── GPT sidebar ──────────────────────────────────────── */
+  .gpt-sidebar {
+    width: 260px;
+    background: var(--gpt-sidebar);
+    border-right: 1px solid var(--gpt-border);
+    display: flex;
+    flex-direction: column;
+    padding: 12px 8px;
+    flex-shrink: 0;
+  }
+  .gpt-sidebar-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 8px 12px;
+  }
+  .gpt-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--gpt-text);
+  }
+  .gpt-logo svg {
+    width: 20px; height: 20px;
+  }
+  .gpt-new-chat {
+    width: 32px; height: 32px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--gpt-text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: background 0.15s;
+  }
+  .gpt-new-chat:hover { background: var(--gpt-hover); }
+
+  .gpt-sidebar-section {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gpt-text-dim);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 8px 8px 4px;
+    margin-top: 8px;
+  }
+  .gpt-chat-item {
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--gpt-text-dim);
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background 0.15s;
+  }
+  .gpt-chat-item:hover { background: var(--gpt-hover); }
+  .gpt-chat-item.active {
+    background: var(--gpt-user-bubble);
+    color: var(--gpt-text);
+  }
+
+  .gpt-sidebar-bottom {
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid var(--gpt-border);
+  }
+  .gpt-user-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .gpt-user-row:hover { background: var(--gpt-hover); }
+  .gpt-avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: #5c6bff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    flex-shrink: 0;
+  }
+  .gpt-user-name {
+    font-size: 13px;
+    color: var(--gpt-text);
+    font-weight: 500;
+  }
+
+  /* ── GPT main chat area ───────────────────────────────── */
+  .gpt-main {
+    flex: 1;
+    background: var(--gpt-bg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .gpt-header {
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--gpt-border);
+    flex-shrink: 0;
+  }
+  .gpt-model-select {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gpt-text);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.15s;
+  }
+  .gpt-model-select:hover { background: var(--gpt-hover); }
+  .gpt-model-select .chevron {
+    font-size: 10px;
+    color: var(--gpt-text-dim);
+  }
+  .gpt-header-actions {
+    display: flex;
+    gap: 4px;
+  }
+  .gpt-header-btn {
+    width: 32px; height: 32px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--gpt-text-dim);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    transition: background 0.15s;
+  }
+  .gpt-header-btn:hover { background: var(--gpt-hover); }
+
+  /* ── Chat messages ────────────────────────────────────── */
+  .gpt-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gpt-border) transparent;
+  }
+  .gpt-messages::-webkit-scrollbar { width: 6px; }
+  .gpt-messages::-webkit-scrollbar-track { background: transparent; }
+  .gpt-messages::-webkit-scrollbar-thumb { background: var(--gpt-border); border-radius: 3px; }
+
+  .msg-row {
+    max-width: 740px;
+    margin: 0 auto;
+    padding: 4px 20px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .msg-row.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* user message */
+  .msg-user {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+  }
+  .msg-user-bubble {
+    background: var(--gpt-user-bubble);
+    border-radius: 18px 18px 4px 18px;
+    padding: 12px 16px;
+    max-width: 80%;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--gpt-text);
+  }
+
+  /* assistant message */
+  .msg-assistant {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 8px;
+    align-items: flex-start;
+  }
+  .msg-assistant-icon {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .msg-assistant-icon svg {
+    width: 16px; height: 16px;
+  }
+  .msg-assistant-body {
+    flex: 1;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--gpt-text);
+  }
+  .msg-assistant-body p { margin-bottom: 12px; }
+  .msg-assistant-body p:last-child { margin-bottom: 0; }
+
+  /* typing indicator */
+  .typing-indicator {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    padding: 4px 0;
+  }
+  .typing-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--gpt-text-dim);
+    animation: bounce 1.2s infinite;
+  }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-4px); opacity: 1; }
+  }
+
+  /* ── Citation card — the key moment ──────────────────── */
+  .citation-block {
+    margin: 16px 0 8px;
+    border: 1px solid var(--gpt-border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--gpt-user-bubble);
+  }
+  .citation-header {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--gpt-border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--gpt-text-dim);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+  .citation-source-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--gpt-citation);
+    flex-shrink: 0;
+  }
+  .citation-body {
+    padding: 16px 14px;
+  }
+  .citation-property-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gpt-text);
+    margin-bottom: 4px;
+  }
+  .citation-address {
+    font-size: 13px;
+    color: var(--gpt-text-dim);
+    margin-bottom: 14px;
+  }
+  .citation-data-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .citation-data-item {
+    background: var(--gpt-bg);
+    border-radius: 6px;
+    padding: 8px 10px;
+  }
+  .citation-data-label {
+    font-size: 11px;
+    color: var(--gpt-text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 3px;
+  }
+  .citation-data-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gpt-text);
+  }
+  .citation-data-value.highlight {
+    color: var(--gpt-citation);
+  }
+  .citation-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .citation-tag {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    border: 1px solid var(--gpt-border);
+    color: var(--gpt-text-dim);
+  }
+  .citation-tag.match {
+    border-color: var(--gpt-citation);
+    color: var(--gpt-citation);
+    background: rgba(16, 163, 127, 0.08);
+  }
+
+  /* ── The click-through CTA ───────────────────────────── */
+  .citation-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: rgba(16, 163, 127, 0.06);
+    border-top: 1px solid var(--gpt-border);
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .citation-cta:hover {
+    background: rgba(16, 163, 127, 0.12);
+  }
+  .citation-cta-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .citation-cta-label {
+    font-size: 11px;
+    color: var(--gpt-text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .citation-cta-url {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--gpt-citation);
+  }
+  .citation-cta-arrow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gpt-citation);
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(16, 163, 127, 0.4);
+    transition: all 0.2s;
+  }
+  .citation-cta:hover .citation-cta-arrow {
+    background: rgba(16, 163, 127, 0.15);
+  }
+
+  /* pulse ring on the CTA */
+  .citation-cta-arrow::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    animation: pulseRing 2s ease-out infinite;
+    pointer-events: none;
+  }
+  @keyframes pulseRing {
+    0% { box-shadow: 0 0 0 0 rgba(16,163,127,0.3); }
+    70% { box-shadow: 0 0 0 8px rgba(16,163,127,0); }
+    100% { box-shadow: 0 0 0 0 rgba(16,163,127,0); }
+  }
+
+  /* ── Sources strip ────────────────────────────────────── */
+  .sources-strip {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .source-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--gpt-border);
+    font-size: 12px;
+    color: var(--gpt-text-dim);
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .source-chip:hover { border-color: var(--gpt-citation); color: var(--gpt-citation); }
+  .source-chip .source-num {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--gpt-citation);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .source-chip.highlight .source-num {
+    animation: sourcePulse 1.5s ease-in-out 0.5s 3;
+  }
+  @keyframes sourcePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+  }
+
+  /* ── Message actions ──────────────────────────────────── */
+  .msg-actions {
+    display: flex;
+    gap: 4px;
+    margin-top: 8px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .msg-assistant:hover .msg-actions { opacity: 1; }
+  .msg-action-btn {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--gpt-text-dim);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    transition: background 0.15s;
+  }
+  .msg-action-btn:hover { background: var(--gpt-hover); }
+
+  /* ── GPT input area ───────────────────────────────────── */
+  .gpt-input-area {
+    padding: 12px 20px 16px;
+    flex-shrink: 0;
+  }
+  .gpt-input-wrap {
+    max-width: 740px;
+    margin: 0 auto;
+    background: var(--gpt-input-bg);
+    border-radius: 16px;
+    border: 1px solid var(--gpt-border);
+    padding: 12px 16px;
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    transition: border-color 0.2s;
+  }
+  .gpt-input-wrap:focus-within { border-color: var(--gray-3); }
+  .gpt-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--sans);
+    font-size: 15px;
+    color: var(--gpt-text);
+    resize: none;
+    min-height: 24px;
+    max-height: 120px;
+    line-height: 1.5;
+  }
+  .gpt-input::placeholder { color: var(--gpt-text-dim); }
+  .gpt-send {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    border: none;
+    background: var(--gpt-text-dim);
+    color: var(--gpt-bg);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  .gpt-send:hover { background: var(--gpt-text); }
+  .gpt-disclaimer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--gpt-text-dim);
+    margin-top: 8px;
+    max-width: 740px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ── Annotation layer ─────────────────────────────────── */
+  .annotation-overlay {
+    position: fixed;
+    bottom: 56px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--black);
+    border: 1px solid var(--gray-2);
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-family: var(--mono);
+    font-size: var(--mono-xs);
+    color: var(--gray-4);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s;
+    z-index: 50;
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+  }
+  .annotation-overlay.show { opacity: 1; }
+  .annotation-highlight {
+    color: var(--white);
+  }
+
+  /* ── Transition overlay ───────────────────────────────── */
+  .transition-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--black);
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  .transition-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .transition-line {
+    font-family: var(--mono);
+    font-size: var(--mono-xs);
+    color: var(--gray-4);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .transition-line.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .transition-main {
+    font-family: var(--sans);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--white);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.3s ease 0.15s, transform 0.3s ease 0.15s;
+  }
+  .transition-main.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* cursor blink for streamed text */
+  .cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: var(--gpt-text);
+    margin-left: 1px;
+    vertical-align: text-bottom;
+    animation: blink 0.8s step-end infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Huge nav -->
+<nav class="huge-nav">
+  <span class="wordmark">CORTLAND × HUGE</span>
+  <div class="journey">
+    <span class="journey-step current">M0 — Discovery</span>
+    <a class="journey-step" href="cortland-m1.html">M1 — Context</a>
+    <a class="journey-step" href="cortland-m2.html">M2 — Matches</a>
+    <a class="journey-step" href="cortland-m3.html">M3 — Unit</a>
+    <a class="journey-step" href="cortland-m4.html">M4 — Hold</a>
+  </div>
+  <span class="signin">Sign in</span>
+</nav>
+
+<!-- Transition overlay -->
+<div class="transition-overlay" id="transitionOverlay">
+  <span class="transition-line" id="tLine1">Context transferred — cortland.com</span>
+  <span class="transition-main" id="tMain">Opening your matches...</span>
+</div>
+
+<!-- Main layout -->
+<div class="main-wrapper">
+
+  <!-- GPT sidebar -->
+  <aside class="gpt-sidebar">
+    <div class="gpt-sidebar-top">
+      <div class="gpt-logo">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z" fill="currentColor"/>
+        </svg>
+        ChatGPT
+      </div>
+      <button class="gpt-new-chat">✎</button>
+    </div>
+
+    <div class="gpt-sidebar-section">Today</div>
+    <div class="gpt-chat-item active">Moving to Charlotte — where to live</div>
+
+    <div class="gpt-sidebar-section">Yesterday</div>
+    <div class="gpt-chat-item">New job offer breakdown</div>
+    <div class="gpt-chat-item">Memphis lease break options</div>
+    <div class="gpt-chat-item">Charlotte neighborhoods overview</div>
+
+    <div class="gpt-sidebar-section">Last week</div>
+    <div class="gpt-chat-item">Thor breed restrictions research</div>
+    <div class="gpt-chat-item">Memphis vs Charlotte cost of living</div>
+    <div class="gpt-chat-item">Light rail cities for young professionals</div>
+
+    <div class="gpt-sidebar-bottom">
+      <div class="gpt-user-row">
+        <div class="gpt-avatar">MT</div>
+        <span class="gpt-user-name">Marcus Thompson</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- GPT main -->
+  <div class="gpt-main">
+    <div class="gpt-header">
+      <div class="gpt-model-select">
+        ChatGPT <span class="chevron">▾</span>
+      </div>
+      <div class="gpt-header-actions">
+        <button class="gpt-header-btn">⋯</button>
+        <button class="gpt-header-btn">✎</button>
+      </div>
+    </div>
+
+    <div class="gpt-messages" id="chatMessages">
+
+      <!-- User message 1 -->
+      <div class="msg-row" id="msg1">
+        <div class="msg-user">
+          <div class="msg-user-bubble">
+            I'm relocating from Memphis to Charlotte next month for a new job starting June 2nd. I don't really know the city yet. I want to be somewhere walkable — good coffee shops, bars, access to transit, that kind of vibe. I have a medium-sized dog (mixed breed, 55 lbs) and I need a 1-bedroom. What neighborhoods should I actually be looking at, and are there apartment buildings there that are genuinely dog-friendly?
+          </div>
+        </div>
+      </div>
+
+      <!-- GPT response 1 -->
+      <div class="msg-row" id="msg2">
+        <div class="msg-assistant">
+          <div class="msg-assistant-icon">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z" fill="#0a0a0a"/>
+            </svg>
+          </div>
+          <div class="msg-assistant-body" id="response1Body">
+            <span id="response1Text"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- User message 2 -->
+      <div class="msg-row" id="msg3">
+        <div class="msg-user">
+          <div class="msg-user-bubble">
+            South End sounds right. Yes — pull the details on Cortland South End. What's the actual all-in monthly cost for a 1-bed, and what's available late May?
+          </div>
+        </div>
+      </div>
+
+      <!-- GPT response 2 — the citation moment -->
+      <div class="msg-row" id="msg4">
+        <div class="msg-assistant">
+          <div class="msg-assistant-icon">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z" fill="#0a0a0a"/>
+            </svg>
+          </div>
+          <div class="msg-assistant-body" id="response2Body">
+            <span id="response2Text"></span>
+
+            <!-- Citation card — appears mid-stream -->
+            <div class="citation-block" id="citationCard" style="display:none;">
+              <div class="citation-header">
+                <div class="citation-source-dot"></div>
+                Source: cortland.com/south-end — verified listing data
+              </div>
+              <div class="citation-body">
+                <div class="citation-property-name">Cortland South End</div>
+                <div class="citation-address">1200 South Blvd, Charlotte, NC 28203 · South End</div>
+                <div class="citation-data-grid">
+                  <div class="citation-data-item">
+                    <div class="citation-data-label">1-bed from</div>
+                    <div class="citation-data-value highlight">$1,650 / mo</div>
+                  </div>
+                  <div class="citation-data-item">
+                    <div class="citation-data-label">Units available</div>
+                    <div class="citation-data-value">3 from late May</div>
+                  </div>
+                  <div class="citation-data-item">
+                    <div class="citation-data-label">Dog park</div>
+                    <div class="citation-data-value">6 min walk</div>
+                  </div>
+                </div>
+                <div class="citation-tags">
+                  <span class="citation-tag match">✓ No breed restrictions</span>
+                  <span class="citation-tag match">✓ 75 lb weight limit</span>
+                  <span class="citation-tag match">✓ Dog park nearby</span>
+                  <span class="citation-tag">$500 pet deposit</span>
+                  <span class="citation-tag">$65/mo pet fee</span>
+                </div>
+                <div class="citation-cta" id="ctaButton" onclick="triggerHandoff()">
+                  <div class="citation-cta-left">
+                    <span class="citation-cta-label">View full listing + available units</span>
+                    <span class="citation-cta-url">cortland.com/south-end?ref=chatgpt&ctx=marcus</span>
+                  </div>
+                  <div class="citation-cta-arrow">Open Cortland →</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sources strip -->
+            <div class="sources-strip" id="sourcesStrip" style="display:none;">
+              <div class="source-chip highlight">
+                <span class="source-num">1</span>
+                cortland.com
+              </div>
+              <div class="source-chip">
+                <span class="source-num">2</span>
+                apartmentlist.com
+              </div>
+              <div class="source-chip">
+                <span class="source-num">3</span>
+                Charlotte Paws Network
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /gpt-messages -->
+
+    <!-- Input area -->
+    <div class="gpt-input-area">
+      <div class="gpt-input-wrap">
+        <textarea class="gpt-input" placeholder="Ask a follow-up..." rows="1"></textarea>
+        <button class="gpt-send">↑</button>
+      </div>
+      <div class="gpt-disclaimer">ChatGPT can make mistakes. Consider checking important information.</div>
+    </div>
+  </div><!-- /gpt-main -->
+
+</div><!-- /main-wrapper -->
+
+<!-- Annotation overlay -->
+<div class="annotation-overlay" id="annotation"></div>
+
+<!-- Huge footer -->
+<footer class="huge-footer">
+  <span>CORTLAND DXP VISION — AI JOURNEY PROTOTYPE</span>
+  <div class="footer-links">
+    <span>M0a — ChatGPT Discovery</span>
+    <a href="cortland-m0b.html" style="font-family:var(--mono);font-size:var(--mono-xs);color:var(--gray-4);text-decoration:none;letter-spacing:0.06em;transition:color 0.15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--gray-4)'">Next: Why it happened →</a>
+  </div>
+</footer>
+
+<script>
+const RESPONSE_1_TYPED = `Based on what you're describing — walkable, transit access, good street-level energy, dog-friendly — two neighborhoods rise to the top:`;
+
+const RESPONSE_1_REST = `
+
+<strong>South End</strong> is the strongest fit. On the LYNX Blue Line, dense with coffee shops and bars, skews young professional. Newer construction means real dog amenities, not afterthoughts.
+
+<strong>NoDa</strong> (North Davidson) is the arts district alternative — more eclectic, slightly lower rents, same light rail access.
+
+For your situation specifically, <strong>Cortland South End</strong> is the standout. No breed restrictions, 75-lb weight limit, actual pricing published upfront. Real dog park nearby, not a rooftop turf square. Want me to pull the details?`;
+
+const RESPONSE_2_PRE = `Cortland South End has structured listing data published — here's what I can confirm:`;
+
+const RESPONSE_2_POST = `The dog park is ground-level at McDowell Park — a 6-minute walk, not a rooftop patch. A few 1-beds are opening late May, which lines up with your June 2 start. The link below carries your search context over so you land on current availability.`;
+
+function typeText(elementId, text, speed, callback) {
+  const el = document.getElementById(elementId);
+  let i = 0;
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor';
+  el.appendChild(cursor);
+
+  const interval = setInterval(() => {
+    if (i < text.length) {
+      cursor.insertAdjacentText('beforebegin', text[i]);
+      i++;
+    } else {
+      clearInterval(interval);
+      cursor.remove();
+      if (callback) callback();
+    }
+  }, speed);
+}
+
+function showAnnotation(text, duration) {
+  const el = document.getElementById('annotation');
+  el.innerHTML = text;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), duration);
+}
+
+function scrollToBottom() {
+  const msgs = document.getElementById('chatMessages');
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showEl(id) {
+  const el = document.getElementById(id);
+  el.style.display = '';
+  el.classList.add('visible');
+}
+
+function triggerHandoff() {
+  showAnnotation('Context packet: <span class="annotation-highlight">relocating · 1BR · dog · June · SouthEnd · budget ~$1,400–1,800</span> → transferring to cortland.com', 3000);
+  const overlay = document.getElementById('transitionOverlay');
+  overlay.classList.add('active');
+  setTimeout(() => {
+    document.getElementById('tLine1').classList.add('show');
+  }, 300);
+  setTimeout(() => {
+    document.getElementById('tMain').classList.add('show');
+    setTimeout(() => { window.location.href = 'cortland-m1.html'; }, 1200);
+  }, 600);
+}
+
+// Orchestrate the conversation
+function runSequence() {
+  // Show user msg 1
+  setTimeout(() => {
+    showEl('msg1');
+    scrollToBottom();
+  }, 400);
+
+  // Show assistant typing then response 1
+  setTimeout(() => {
+    showEl('msg2');
+    scrollToBottom();
+    const body = document.getElementById('response1Body');
+    const typing = document.createElement('div');
+    typing.className = 'typing-indicator';
+    typing.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+    body.prepend(typing);
+
+    setTimeout(() => {
+      typing.remove();
+      // Type just the opener sentence
+      typeText('response1Text', RESPONSE_1_TYPED, 18, () => {
+        // After ~2.5s of typing, snap the rest in instantly
+        setTimeout(() => {
+          const span = document.getElementById('response1Text');
+          span.innerHTML += RESPONSE_1_REST;
+          scrollToBottom();
+        }, 120);
+      });
+    }, 800);
+  }, 1200);
+
+  // Show user msg 2 — tighter wait now that response 1 is shorter
+  setTimeout(() => {
+    showEl('msg3');
+    scrollToBottom();
+  }, 6000);
+
+  // Show assistant response 2 with citation
+  setTimeout(() => {
+    showEl('msg4');
+    scrollToBottom();
+    const body = document.getElementById('response2Body');
+    const typing = document.createElement('div');
+    typing.className = 'typing-indicator';
+    typing.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+    body.prepend(typing);
+
+    setTimeout(() => {
+      typing.remove();
+
+      typeText('response2Text', RESPONSE_2_PRE, 16, () => {
+        // Show citation card
+        setTimeout(() => {
+          const card = document.getElementById('citationCard');
+          card.style.display = 'block';
+          card.style.opacity = '0';
+          card.style.transform = 'translateY(6px)';
+          card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+          requestAnimationFrame(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+          });
+          scrollToBottom();
+
+          showAnnotation('Structured data found: <span class="annotation-highlight">schema markup · pricing · availability · pet policy</span>', 3000);
+
+          // Snap post-citation text in instantly
+          setTimeout(() => {
+            const postSpan = document.createElement('span');
+            postSpan.id = 'response2Post';
+            document.getElementById('citationCard').after(postSpan);
+            postSpan.innerHTML = '<br><br>' + RESPONSE_2_POST;
+            scrollToBottom();
+
+            // Show sources
+            setTimeout(() => {
+              const strip = document.getElementById('sourcesStrip');
+              strip.style.display = 'flex';
+              strip.style.opacity = '0';
+              strip.style.transition = 'opacity 0.4s';
+              requestAnimationFrame(() => { strip.style.opacity = '1'; });
+              scrollToBottom();
+
+              // Final annotation — click prompt
+              setTimeout(() => {
+                showAnnotation('← <span class="annotation-highlight">Click "Open Cortland →"</span> to see the context handoff', 5000);
+              }, 1000);
+            }, 400);
+          }, 800);
+        }, 400);
+      });
+    }, 800);
+  }, 7800);
+}
+
+window.addEventListener('load', runSequence);
+</script>
+</body>
+</html>

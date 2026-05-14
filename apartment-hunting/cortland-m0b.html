@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cortland — M0b: Why It Happened</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black:  #0a0a0a;
+    --gray-1: #1a1a1a;
+    --gray-2: #2e2e2e;
+    --gray-3: #5a5a5a;
+    --gray-4: #8a8a8a;
+    --gray-5: #c4c4c4;
+    --gray-6: #e8e8e8;
+    --gray-7: #f4f4f4;
+    --white:  #ffffff;
+    --mono:   'Courier Prime', 'Courier New', monospace;
+    --sans:   'Inter', sans-serif;
+    --mono-xs: 13px;
+    --mono-sm: 14px;
+    --mono-md: 16px;
+    --mono-lg: 18px;
+    --gpt-bg: #212121;
+    --gpt-sidebar: #171717;
+    --gpt-user-bubble: #2f2f2f;
+    --gpt-text: #ececec;
+    --gpt-text-dim: #8e8ea0;
+    --gpt-border: #3f3f3f;
+    --gpt-input-bg: #2f2f2f;
+    --gpt-hover: #3a3a3a;
+    --gpt-citation: #10a37f;
+    --accent: #ffffff;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: var(--sans);
+    background: var(--black);
+    color: var(--white);
+    overflow: hidden;
+  }
+
+  /* ── Huge nav ─────────────────────────────────────────── */
+  .huge-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 52px;
+    background: var(--black);
+    border-bottom: 1px solid var(--gray-2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    z-index: 100;
+  }
+  .huge-nav .wordmark {
+    font-family: var(--mono);
+    font-size: var(--mono-sm);
+    letter-spacing: 0.08em;
+    color: var(--white);
+  }
+  .huge-nav .journey {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    font-family: var(--mono);
+    font-size: var(--mono-xs);
+    color: var(--gray-4);
+  }
+  .journey-step {
+    padding: 4px 14px;
+    cursor: pointer;
+    transition: color 0.15s;
+    white-space: nowrap;
+    position: relative;
+    text-decoration: none;
+    color: inherit;
+  }
+  .journey-step:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: -4px;
+    color: var(--gray-2);
+  }
+  .journey-step.active { color: var(--white); }
+  .journey-step.current {
+    color: var(--white);
+  }
+  .journey-step.current::before {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 14px; right: 14px;
+    height: 1px;
+    background: var(--white);
+  }
+  .huge-nav .signin {
+    font-family: var(--mono);
+    font-size: var(--mono-xs);
+    color: var(--gray-4);
+    cursor: pointer;
+  }
+
+  /* ── Huge footer ──────────────────────────────────────── */
+  .huge-footer {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 40px;
+    background: var(--black);
+    border-top: 1px solid var(--gray-2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    z-index: 100;
+  }
+  .huge-footer span {
+    font-family: var(--mono);
+    font-size: var(--mono-xs);
+    color: var(--gray-4);
+  }
+  .huge-footer .footer-links { display: flex; gap: 20px; }
+
+  /* ── Main split layout ────────────────────────────────── */
+  .main-wrapper {
+    position: fixed;
+    top: 52px;
+    bottom: 40px;
+    left: 0; right: 0;
+    display: flex;
+  }
+
+  /* ── LEFT PANEL — frozen ChatGPT ─────────────────────── */
+  .left-panel {
+    width: 48%;
+    border-right: 1px solid var(--gray-2);
+    background: var(--gpt-bg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* frozen overlay — subtle vignette to signal "paused" */
+  .left-panel::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(10,10,10,0.18);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .frozen-label {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--mono);
+    font-size: var(--mono-xs);
+    color: var(--gray-4);
+    background: var(--gray-1);
+    border: 1px solid var(--gray-2);
+    border-radius: 20px;
+    padding: 4px 12px;
+    letter-spacing: 0.06em;
+    z-index: 10;
+    white-space: nowrap;
+  }
+
+  /* mini GPT chrome */
+  .gpt-mini-header {
+    height: 44px;
+    border-bottom: 1px solid var(--gpt-border);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .gpt-mini-logo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gpt-text);
+  }
+  .gpt-mini-logo svg { width: 16px; height: 16px; }
+  .gpt-mini-model {
+    font-size: 12px;
+    color: var(--gpt-text-dim);
+    margin-left: auto;
+  }
+
+  .left-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 16px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gpt-border) transparent;
+  }
+  .left-scroll::-webkit-scrollbar { width: 4px; }
+  .left-scroll::-webkit-scrollbar-thumb { background: var(--gpt-border); border-radius: 2px; }
+
+  /* frozen messages */
+  .frozen-user {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 14px;
+  }
+  .frozen-user-bubble {
+    background: var(--gpt-user-bubble);
+    border-radius: 16px 16px 3px 16px;
+    padding: 10px 14px;
+    max-width: 85%;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--gpt-text);
+  }
+
+  .frozen-assistant {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+    align-items: flex-start;
+  }
+  .frozen-icon {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .frozen-icon svg { width: 13px; height: 13px; }
+  .frozen-body {
+    flex: 1;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--gpt-text);
+  }
+  .frozen-body p { margin-bottom: 10px; }
+  .frozen-body p:last-child { margin-bottom: 0; }
+  .frozen-body strong { font-weight: 600; }
+
+  /* the citation card — highlighted/annotated version */
+  .frozen-citation {
+    margin: 22px 0 8px;
+    border: 1px solid var(--gpt-citation);
+    border-radius: 10px;
+    overflow: visible;
+    background: var(--gpt-user-bubble);
+    position: relative;
+  }
+  .frozen-citation > * {
+    border-radius: inherit;
+  }
+  .frozen-citation-badge {
+    position: absolute;
+    top: -11px;
+    right: 12px;
+    font-family: var(--mono);
+    font-size: 10px;
+    background: var(--gpt-citation);
+    color: var(--black);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    z-index: 3;
+  }
+  .frozen-citation-header {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--gpt-border);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--gpt-text-dim);
+  }
+  .citation-source-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--gpt-citation);
+    flex-shrink: 0;
+  }
+  .frozen-citation-body { padding: 12px; }
+  .frozen-prop-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gpt-text);
+    margin-bottom: 2px;
+  }
+  .frozen-address {
+    font-size: 11px;
+    color: var(--gpt-text-dim);
+    margin-bottom: 10px;
+  }
+  .frozen-data-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .frozen-data-item {
+    background: var(--gpt-bg);
+    border-radius: 5px;
+    padding: 6px 8px;
+  }
+  .frozen-data-label {
+    font-size: 10px;
+    color: var(--gpt-text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+  }
+  .frozen-data-value {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gpt-text);
+  }
+  .frozen-data-value.hi { color: var(--gpt-citation); }
+  .frozen-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+  .frozen-tag {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 20px;
+    border: 1px solid var(--gpt-border);
+    color: var(--gpt-text-dim);
+  }
+  .frozen-tag.match {
+    border-color: var(--gpt-citation);
+    color: var(--gpt-citation);
+  }
+  .frozen-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-top: 1px solid var(--gpt-border);
+    background: rgba(16,163,127,0.06);
+  }
+  .frozen-cta-url {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--gpt-citation);
+  }
+  .frozen-cta-btn {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gpt-citation);
+    border: 1px solid rgba(16,163,127,0.4);
+    border-radius: 5px;
+    padding: 4px 10px;
+  }
+
+  .frozen-sources {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .frozen-source-chip {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    border: 1px solid var(--gpt-border);
+    font-size: 11px;
+    color: var(--gpt-text-dim);
+  }
+  .frozen-source-chip .snum {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--gpt-citation);
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* connection lines between panels */
+  .connector-svg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+    overflow: visible;
+  }
+
+  /* ── RIGHT PANEL — infrastructure ────────────────────── */
+  .right-panel {
+    flex: 1;
+    background: var(--black);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .right-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 32px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gray-2) transparent;
+  }
+  .right-scroll::-webkit-scrollbar { width: 4px; }
+  .right-scroll::-webkit-scrollbar-thumb { background: var(--gray-2); border-radius: 2px; }
+
+  /* headline */
+  .infra-headline {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--gray-4);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .infra-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.25;
+    margin-bottom: 8px;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.4s ease 0.08s, transform 0.4s ease 0.08s;
+  }
+  .infra-sub {
+    font-size: 14px;
+    color: var(--gray-4);
+    line-height: 1.6;
+    margin-bottom: 28px;
+    max-width: 420px;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.4s ease 0.16s, transform 0.4s ease 0.16s;
+  }
+  .infra-headline.show,
+  .infra-title.show,
+  .infra-sub.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── Infrastructure cards ─────────────────────────────── */
+  .infra-section-label {
+    font-family: var(--mono);
+    font-size: var(--mono-xs);
+    color: var(--gray-3);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--gray-2);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .infra-section-label.show { opacity: 1; }
+
+  .infra-card {
+    border: 1px solid var(--gray-2);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .infra-card.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .infra-card.active {
+    border-color: var(--white);
+  }
+  .infra-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    background: var(--gray-1);
+    user-select: none;
+  }
+  .infra-card.active .infra-card-header {
+    background: var(--gray-1);
+    border-bottom: 1px solid var(--gray-2);
+  }
+  .infra-card-icon {
+    width: 28px; height: 28px;
+    border-radius: 5px;
+    background: var(--gray-2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .infra-card.active .infra-card-icon {
+    background: var(--white);
+  }
+  .infra-card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+    flex: 1;
+  }
+  .infra-card-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--gray-4);
+    border: 1px solid var(--gray-2);
+    border-radius: 4px;
+    padding: 2px 6px;
+    letter-spacing: 0.04em;
+  }
+  .infra-card.active .infra-card-tag {
+    border-color: var(--gpt-citation);
+    color: var(--gpt-citation);
+    background: rgba(16,163,127,0.08);
+  }
+  .infra-card-body {
+    padding: 0 14px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, padding 0.35s ease;
+  }
+  .infra-card.open .infra-card-body {
+    padding: 12px 14px 14px;
+    max-height: 400px;
+  }
+
+  /* code block inside cards */
+  .code-block {
+    background: var(--gray-1);
+    border: 1px solid var(--gray-2);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 10px 0;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--gray-5);
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+  .code-key { color: var(--gray-4); }
+  .code-val { color: var(--white); }
+  .code-str { color: var(--gpt-citation); }
+  .code-comment { color: var(--gray-3); font-style: italic; }
+
+  .infra-card-desc {
+    font-size: 13px;
+    color: var(--gray-4);
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+  .infra-card-desc strong { color: var(--white); font-weight: 500; }
+
+  /* impact row */
+  .impact-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 8px 10px;
+    background: rgba(16,163,127,0.06);
+    border-radius: 5px;
+    border: 1px solid rgba(16,163,127,0.15);
+  }
+  .impact-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--gpt-citation);
+    flex-shrink: 0;
+  }
+  .impact-text {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--gpt-citation);
+    line-height: 1.4;
+  }
+
+  /* ── What this means section ──────────────────────────── */
+  .means-section {
+    margin-top: 24px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .means-section.show { opacity: 1; }
+
+  .means-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+    align-items: flex-start;
+  }
+  .means-num {
+    font-family: var(--mono);
+    font-size: var(--mono-xs);
+    color: var(--gray-3);
+    width: 20px;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .means-text {
+    font-size: 13px;
+    color: var(--gray-4);
+    line-height: 1.6;
+  }
+  .means-text strong { color: var(--white); font-weight: 500; }
+
+  /* ── Phase 1 callout ──────────────────────────────────── */
+  .phase-callout {
+    margin-top: 24px;
+    padding: 16px 18px;
+    border: 1px solid var(--gray-2);
+    border-left: 3px solid var(--white);
+    border-radius: 0 6px 6px 0;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .phase-callout.show { opacity: 1; }
+  .phase-callout-label {
+    font-family: var(--mono);
+    font-size: var(--mono-xs);
+    color: var(--gray-4);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .phase-callout-text {
+    font-size: 13px;
+    color: var(--white);
+    line-height: 1.65;
+  }
+  .phase-callout-text em {
+    font-style: normal;
+    color: var(--gray-4);
+  }
+
+  /* invisible until ready */
+  .invisible { visibility: hidden; }
+</style>
+</head>
+<body>
+
+<!-- Huge nav -->
+<nav class="huge-nav">
+  <span class="wordmark">CORTLAND × HUGE</span>
+  <div class="journey">
+    <span class="journey-step current">M0 — Discovery</span>
+    <a class="journey-step" href="cortland-m1.html">M1 — Context</a>
+    <a class="journey-step" href="cortland-m2.html">M2 — Matches</a>
+    <a class="journey-step" href="cortland-m3.html">M3 — Unit</a>
+    <a class="journey-step" href="cortland-m4.html">M4 — Hold</a>
+  </div>
+  <span class="signin">Sign in</span>
+</nav>
+
+<!-- Main -->
+<div class="main-wrapper">
+
+  <!-- LEFT — frozen GPT -->
+  <div class="left-panel">
+    <div class="frozen-label">← what Marcus sees</div>
+
+    <div class="gpt-mini-header">
+      <div class="gpt-mini-logo">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z" fill="var(--gpt-text)"/>
+        </svg>
+        ChatGPT
+      </div>
+      <span class="gpt-mini-model">GPT-4o</span>
+    </div>
+
+    <div class="left-scroll" id="leftScroll">
+
+      <div class="frozen-user">
+        <div class="frozen-user-bubble">
+          Tell me more about Cortland South End. What's the all-in monthly cost for a 1-bed? And is the dog park actually walkable?
+        </div>
+      </div>
+
+      <div class="frozen-assistant">
+        <div class="frozen-icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z" fill="#0a0a0a"/>
+          </svg>
+        </div>
+        <div class="frozen-body">
+          <p>Cortland South End has structured listing data published — here's what I can confirm:</p>
+
+          <!-- THE citation card — highlighted -->
+          <div class="frozen-citation" id="frozenCitation">
+            <div class="frozen-citation-badge">CITED SOURCE</div>
+            <div class="frozen-citation-header">
+              <div class="citation-source-dot"></div>
+              cortland.com/south-end — verified listing data
+            </div>
+            <div class="frozen-citation-body">
+              <div class="frozen-prop-name">Cortland South End</div>
+              <div class="frozen-address">1200 South Blvd, Charlotte, NC 28203 · South End</div>
+              <div class="frozen-data-grid">
+                <div class="frozen-data-item">
+                  <div class="frozen-data-label">1-bed from</div>
+                  <div class="frozen-data-value hi">$1,650 / mo</div>
+                </div>
+                <div class="frozen-data-item">
+                  <div class="frozen-data-label">Units available</div>
+                  <div class="frozen-data-value">3 from late May</div>
+                </div>
+                <div class="frozen-data-item">
+                  <div class="frozen-data-label">Dog park</div>
+                  <div class="frozen-data-value">6 min walk</div>
+                </div>
+              </div>
+              <div class="frozen-tags">
+                <span class="frozen-tag match">✓ No breed restrictions</span>
+                <span class="frozen-tag match">✓ 75 lb weight limit</span>
+                <span class="frozen-tag match">✓ Dog park nearby</span>
+                <span class="frozen-tag">$500 pet deposit</span>
+                <span class="frozen-tag">$65/mo pet fee</span>
+              </div>
+              <div class="frozen-cta">
+                <span class="frozen-cta-url">cortland.com/south-end?ref=chatgpt&ctx=marcus</span>
+                <span class="frozen-cta-btn">Open Cortland →</span>
+              </div>
+            </div>
+          </div>
+
+          <p style="margin-top:10px;">The dog park is ground-level at McDowell Park — a 6-minute walk, not a rooftop patch. Residents cite it as the main reason they renewed.</p>
+          <p>A few 1-beds are opening in late May, which lines up with your June 2 start. Pricing varies by floor and exposure.</p>
+
+          <div class="frozen-sources">
+            <div class="frozen-source-chip">
+              <span class="snum">1</span> cortland.com
+            </div>
+            <div class="frozen-source-chip">
+              <span class="snum">2</span> apartmentlist.com
+            </div>
+            <div class="frozen-source-chip">
+              <span class="snum">3</span> Charlotte Paws Network
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /left-scroll -->
+  </div><!-- /left-panel -->
+
+  <!-- RIGHT — infrastructure explanation -->
+  <div class="right-panel">
+    <div class="right-scroll">
+
+      <div class="infra-headline" id="h0">What made this possible</div>
+      <div class="infra-title" id="h1">Cortland was citable<br>because its content was readable.</div>
+      <div class="infra-sub" id="h2">ChatGPT didn't find Cortland by crawling a webpage. It found structured, semantically rich data that answered Marcus's question precisely. That data existed because Cortland's DXP was built for it. This is GEO — Generative Engine Optimization — and it's a Phase 1 requirement, not a future consideration.</div>
+
+      <!-- Section 1: The three infrastructure pieces -->
+      <div class="infra-section-label" id="sec1">The infrastructure that powered the citation</div>
+
+      <!-- Card 1: Schema markup -->
+      <div class="infra-card active open" id="card1">
+        <div class="infra-card-header" onclick="toggleCard('card1')">
+          <div class="infra-card-icon">{ }</div>
+          <span class="infra-card-title">Structured schema markup</span>
+          <span class="infra-card-tag">✓ Active</span>
+        </div>
+        <div class="infra-card-body">
+          <p class="infra-card-desc">Every Cortland listing page publishes <strong>JSON-LD schema</strong> — machine-readable data that tells AI crawlers exactly what they're looking at: property type, pricing, availability, amenities, pet policy. No inference required.</p>
+          <div class="code-block"><span class="code-comment">// cortland.com/south-end — structured data</span>
+<span class="code-key">"@type"</span>: <span class="code-str">"ApartmentComplex"</span>,
+<span class="code-key">"name"</span>: <span class="code-str">"Cortland South End"</span>,
+<span class="code-key">"priceRange"</span>: <span class="code-str">"$1650-$2100"</span>,
+<span class="code-key">"petsAllowed"</span>: <span class="code-val">true</span>,
+<span class="code-key">"petPolicy"</span>: {
+  <span class="code-key">"breedRestrictions"</span>: <span class="code-val">false</span>,
+  <span class="code-key">"weightLimit"</span>: <span class="code-str">"75lbs"</span>
+},
+<span class="code-key">"availableUnits"</span>: <span class="code-str">"3"</span>,
+<span class="code-key">"availableFrom"</span>: <span class="code-str">"2026-05-20"</span></div>
+          <div class="impact-row">
+            <div class="impact-dot"></div>
+            <span class="impact-text">This is what ChatGPT read. Not the page — the schema beneath it. Cortland's content was structured for meaning, not just for clicks.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: llms.txt -->
+      <div class="infra-card" id="card2">
+        <div class="infra-card-header" onclick="toggleCard('card2')">
+          <div class="infra-card-icon">⌁</div>
+          <span class="infra-card-title">llms.txt — the AI sitemap</span>
+          <span class="infra-card-tag">✓ Active</span>
+        </div>
+        <div class="infra-card-body">
+          <p class="infra-card-desc">An <strong>llms.txt file</strong> at the domain root tells AI systems exactly where to find authoritative content — and what to trust. Without it, AI crawlers guess. With it, they navigate with precision.</p>
+          <div class="code-block"><span class="code-comment"># cortland.com/llms.txt</span>
+
+<span class="code-key">Listings</span>: <span class="code-str">/communities/</span>
+<span class="code-key">Pricing</span>: <span class="code-str">/communities/*/pricing</span>
+<span class="code-key">Availability</span>: <span class="code-str">/communities/*/units</span>
+<span class="code-key">Pet Policy</span>: <span class="code-str">/communities/*/pet-policy</span>
+<span class="code-key">Verified</span>: <span class="code-str">true</span>
+<span class="code-key">Last-Updated</span>: <span class="code-str">daily</span></div>
+          <div class="impact-row">
+            <div class="impact-dot"></div>
+            <span class="impact-text">Before Phase 1, cortland.com returned HTTP 415 errors to AI crawlers — functionally invisible to ChatGPT, Perplexity, and Gemini. llms.txt fixes this in days, not months.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Intent-aligned content -->
+      <div class="infra-card" id="card3">
+        <div class="infra-card-header" onclick="toggleCard('card3')">
+          <div class="infra-card-icon">◎</div>
+          <span class="infra-card-title">Intent-aligned content</span>
+          <span class="infra-card-tag">✓ Active</span>
+        </div>
+        <div class="infra-card-body">
+          <p class="infra-card-desc">Marcus asked about <strong>dog parks, not amenities</strong>. He asked about <strong>all-in cost, not base rent</strong>. Cortland's content is written to match how renters actually ask — full sentences, specific concerns, real questions. AI surfaces return answers, not links. The content has to be the answer.</p>
+          <div class="code-block"><span class="code-comment">// content strategy: answer the actual question</span>
+
+<span class="code-comment">// ✗ old: "Pet-friendly community"</span>
+<span class="code-comment">// ✓ new: "No breed restrictions. 75-lb limit.</span>
+<span class="code-comment">//         Ground-level dog park 6 min walk."</span>
+
+<span class="code-comment">// ✗ old: "Starting at $1,650/mo"</span>
+<span class="code-comment">// ✓ new: "$1,724/mo all-in: base + water +</span>
+<span class="code-comment">//         trash + admin. No hidden fees."</span></div>
+          <div class="impact-row">
+            <div class="impact-dot"></div>
+            <span class="impact-text">AI-referred traffic already converts at 4.4× the rate of organic search. The brands winning aren't cleverer — their content was already structured for meaning.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: Context handoff -->
+      <div class="infra-card" id="card4">
+        <div class="infra-card-header" onclick="toggleCard('card4')">
+          <div class="infra-card-icon">→</div>
+          <span class="infra-card-title">Context handoff via URL parameters</span>
+          <span class="infra-card-tag">✓ Active</span>
+        </div>
+        <div class="infra-card-body">
+          <p class="infra-card-desc">When Marcus clicks through, he doesn't start from scratch. The referral URL carries a <strong>context token</strong> — source, search intent, and session signals — that seeds Cortland's system with what it already knows about him.</p>
+          <div class="code-block"><span class="code-comment">// the URL Marcus clicked</span>
+cortland.com/south-end
+  <span class="code-key">?ref</span>=<span class="code-str">chatgpt</span>
+  <span class="code-key">&ctx</span>=<span class="code-str">marcus</span>
+
+<span class="code-comment">// what the DXP resolves from that token</span>
+<span class="code-key">source</span>: <span class="code-str">"chatgpt"</span>
+<span class="code-key">intent</span>: <span class="code-str">"dog-friendly 1BR late May Charlotte"</span>
+<span class="code-key">confidence</span>: <span class="code-str">"high"</span>
+<span class="code-key">→ skip generic homepage</span>
+<span class="code-key">→ surface matched units immediately</span></div>
+          <div class="impact-row">
+            <div class="impact-dot"></div>
+            <span class="impact-text">This is why M1 knows Marcus's situation before he types a word. The context traveled with the click. The DXP was built to receive it.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- What this means -->
+      <div class="means-section" id="meansSection">
+        <div class="infra-section-label show" style="margin-top:24px;">What this means for Phase 1</div>
+
+        <div class="means-row">
+          <span class="means-num">01</span>
+          <span class="means-text"><strong>GEO is not a future workstream.</strong> Schema markup, llms.txt, and intent-aligned content are Phase 1 deliverables — not a Phase 3 add-on. The window to be early is now.</span>
+        </div>
+        <div class="means-row">
+          <span class="means-num">02</span>
+          <span class="means-text"><strong>The DXP architecture has to be designed to receive context.</strong> A traditional CMS can't do what M1 shows. The composable architecture is what makes the handoff possible.</span>
+        </div>
+        <div class="means-row">
+          <span class="means-num">03</span>
+          <span class="means-text"><strong>This is JJ's question answered.</strong> Building for AI search doesn't require predicting the future. It requires content structured for meaning and an architecture modular enough to extend as discovery behaviors shift.</span>
+        </div>
+      </div>
+
+      <!-- Phase 1 callout -->
+      <div class="phase-callout" id="phaseCallout">
+        <div class="phase-callout-label">The Phase 1 argument</div>
+        <div class="phase-callout-text">
+          Every decision made in Phase 1 — content architecture, schema strategy, composable CMS structure, context-passing URL design — is a decision about whether Cortland is citable in three years. <em>This isn't speculative. It's already happening. Cortland's current site is invisible to AI crawlers today.</em> Phase 1 is how that changes.
+        </div>
+      </div>
+
+      <div style="height: 32px;"></div>
+
+    </div><!-- /right-scroll -->
+  </div><!-- /right-panel -->
+
+</div><!-- /main-wrapper -->
+
+<!-- Huge footer -->
+<footer class="huge-footer">
+  <span>CORTLAND DXP VISION — AI JOURNEY PROTOTYPE</span>
+  <div class="footer-links">
+    <a href="cortland-m0a.html" style="font-family:var(--mono);font-size:var(--mono-xs);color:var(--gray-4);text-decoration:none;letter-spacing:0.06em;transition:color 0.15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--gray-4)'">← The discovery</a>
+    <span style="font-family:var(--mono);font-size:var(--mono-xs);color:var(--gray-3);">M0b — Infrastructure</span>
+    <a href="cortland-m1.html" style="font-family:var(--mono);font-size:var(--mono-xs);color:var(--gray-4);text-decoration:none;letter-spacing:0.06em;transition:color 0.15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--gray-4)'">Next: Context →</a>
+  </div>
+</footer>
+
+<script>
+  function toggleCard(id) {
+    const card = document.getElementById(id);
+    const isOpen = card.classList.contains('open');
+    // close all
+    document.querySelectorAll('.infra-card').forEach(c => c.classList.remove('open'));
+    // open clicked if it was closed
+    if (!isOpen) card.classList.add('open');
+  }
+
+  function reveal() {
+    const delays = [
+      ['h0', 0],
+      ['h1', 80],
+      ['h2', 160],
+      ['sec1', 300],
+      ['card1', 400],
+      ['card2', 520],
+      ['card3', 640],
+      ['card4', 760],
+      ['meansSection', 900],
+      ['phaseCallout', 1050],
+    ];
+    delays.forEach(([id, delay]) => {
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('show');
+      }, delay);
+    });
+  }
+
+  // scroll left panel to show the citation card prominently
+  window.addEventListener('load', () => {
+    reveal();
+    setTimeout(() => {
+      const ls = document.getElementById('leftScroll');
+      const citation = document.getElementById('frozenCitation');
+      if (ls && citation) {
+        const top = citation.offsetTop - 80;
+        ls.scrollTo({ top, behavior: 'smooth' });
+      }
+    }, 600);
+  });
+</script>
+</body>
+</html>

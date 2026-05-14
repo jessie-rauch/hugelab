@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cortland — AI Discovery / M4</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body { font-family: 'Inter', sans-serif; background: #fff; color: #0a0a0a; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+:root {
+  --black:#0a0a0a; --gray-1:#1a1a1a; --gray-2:#2e2e2e; --gray-3:#5a5a5a;
+  --gray-4:#8a8a8a; --gray-5:#c4c4c4; --gray-6:#e8e8e8; --gray-7:#f4f4f4;
+  --white:#fff; --mono:'Courier Prime','Courier New',monospace; --sans:'Inter',sans-serif;
+  --mono-xs: 13px;   /* labels, sources, eyebrows */
+  --mono-sm: 14px;   /* secondary body */
+  --mono-md: 16px;   /* primary body */
+  --mono-lg: 18px;   /* lead copy */
+}
+
+/* NAV */
+.nav {
+  position:fixed; top:0; left:0; right:0; height:52px;
+  border-bottom:1px solid var(--gray-6); background:var(--white);
+  display:flex; align-items:center; justify-content:space-between; padding:0 32px; z-index:100;
+}
+.nav-wordmark { font-size:var(--mono-md); font-weight:600; letter-spacing:0.12em; text-transform:uppercase; }
+.nav-journey { display:flex; }
+.nav-step { display:flex; align-items:center; gap:8px; padding:0 16px; height:52px; font-size:var(--mono-xs); font-weight:500; letter-spacing:0.08em; text-transform:uppercase; color:var(--gray-4); border-bottom:2px solid transparent; text-decoration:none; cursor:default; }
+.nav-step.complete { color:var(--gray-3); }
+.nav-step.active { color:var(--black); border-bottom-color:var(--black); }
+.nav-step-num { font-family:var(--mono); font-size:var(--mono-xs); color:inherit; }
+.nav-link { font-size:var(--mono-sm); color:var(--gray-4); text-decoration:none; }
+
+/* PAGE — two column above fold, single below */
+.page { padding-top:52px; min-height:100vh; }
+
+/* HERO — full bleed confirmation */
+.hero {
+  display:grid; grid-template-columns:1fr 1fr;
+  min-height:calc(100vh - 52px);
+  border-bottom:1px solid var(--gray-6);
+}
+
+/* LEFT — confirmation */
+.hero-left {
+  padding: clamp(40px,7vh,80px) 64px clamp(40px,5vh,64px);
+  display:flex; flex-direction:column; justify-content:center;
+  border-right:1px solid var(--gray-6);
+}
+
+.confirm-eyebrow {
+  font-family:var(--mono); font-size:var(--mono-xs); letter-spacing:0.16em;
+  text-transform:uppercase; color:var(--gray-3); margin-bottom:16px;
+  display:flex; align-items:center; gap:10px;
+}
+.confirm-dot {
+  width:8px; height:8px; background:var(--black); border-radius:50%;
+  animation: confirmPulse 2s ease-in-out 3;
+}
+@keyframes confirmPulse {
+  0%,100%{transform:scale(1); opacity:1;}
+  50%{transform:scale(1.6); opacity:0.5;}
+}
+
+.confirm-headline {
+  font-size:clamp(32px,4vw,52px); font-weight:300; letter-spacing:-0.025em;
+  line-height:1.1; color:var(--black); margin-bottom:6px;
+}
+.confirm-headline strong { font-weight:600; }
+
+.confirm-unit {
+  font-family:var(--mono); font-size:15px; color:var(--gray-3);
+  margin-bottom:40px; letter-spacing:0.04em;
+}
+
+/* COUNTDOWN */
+.countdown-block { margin-bottom:40px; }
+.countdown-label {
+  font-family:var(--mono); font-size:var(--mono-xs); letter-spacing:0.16em;
+  text-transform:uppercase; color:var(--gray-3); margin-bottom:12px;
+}
+.countdown-display {
+  display:flex; align-items:center; gap:2px;
+  font-family:var(--mono); font-size:clamp(44px,5vw,64px);
+  font-weight:700; letter-spacing:-0.02em; color:var(--black); line-height:1;
+  margin-bottom:14px;
+}
+.countdown-sep { color:var(--gray-4); margin:0 6px; font-weight:300; }
+.countdown-track { height:2px; background:var(--gray-6); position:relative; margin-bottom:10px; }
+.countdown-fill { position:absolute; left:0; top:0; bottom:0; background:var(--black); transition:width 1s linear; }
+.countdown-expires {
+  font-family:var(--mono); font-size:var(--mono-md); color:var(--gray-3); line-height:1.6;
+}
+
+/* APPLY CTA */
+.apply-block { margin-bottom:32px; }
+.btn-apply {
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  width:100%; padding:16px 28px; background:var(--black); color:var(--white);
+  font-family:var(--sans); font-size:14px; font-weight:500; letter-spacing:0.02em;
+  border:none; cursor:pointer; transition:background 0.15s; text-decoration:none;
+  margin-bottom:12px;
+}
+.btn-apply:hover { background:var(--gray-1); }
+.apply-sub {
+  font-family:var(--mono); font-size:var(--mono-md); color:var(--gray-3);
+  text-align:center; line-height:1.6;
+}
+
+/* RELEASE */
+.release-link {
+  font-family:var(--mono); font-size:var(--mono-sm); color:var(--gray-3);
+  text-decoration:underline; text-decoration-style:dashed;
+  text-decoration-color:var(--gray-5); cursor:pointer;
+  transition:color 0.15s; display:inline-block; margin-top:4px;
+}
+.release-link:hover { color:var(--black); }
+
+/* RIGHT — unit recap + next steps */
+.hero-right {
+  padding: clamp(40px,7vh,80px) 64px clamp(40px,5vh,64px);
+  display:flex; flex-direction:column; justify-content:center;
+  background:var(--gray-7);
+}
+
+/* UNIT SNAPSHOT */
+.unit-snapshot {
+  display:flex; gap:16px; align-items:flex-start;
+  padding:20px; background:var(--white); border:1px solid var(--gray-6);
+  margin-bottom:28px;
+}
+.snapshot-img {
+  width:100px; height:72px; object-fit:cover; display:block; flex-shrink:0;
+}
+.snapshot-body { flex:1; }
+.snapshot-name { font-size:14px; font-weight:600; color:var(--black); margin-bottom:3px; letter-spacing:-0.01em; }
+.snapshot-detail { font-family:var(--mono); font-size:var(--mono-xs); color:var(--gray-3); line-height:1.6; }
+.snapshot-price { font-family:var(--mono); font-size:var(--mono-md); font-weight:700; color:var(--black); margin-top:4px; }
+
+/* WHAT HAPPENS NEXT */
+.next-label {
+  font-family:var(--mono); font-size:var(--mono-xs); letter-spacing:0.16em;
+  text-transform:uppercase; color:var(--gray-4); margin-bottom:14px;
+}
+.next-steps { display:flex; flex-direction:column; gap:1px; margin-bottom:28px; }
+.next-step {
+  display:grid; grid-template-columns:28px 1fr;
+  gap:14px; padding:14px 16px; background:var(--white);
+  align-items:start;
+}
+.next-step-num {
+  font-family:var(--mono); font-size:var(--mono-xs); color:var(--gray-4);
+  padding-top:2px; letter-spacing:0.06em;
+}
+.next-step-content {}
+.next-step-title { font-size:var(--mono-md); font-weight:600; color:var(--black); margin-bottom:3px; }
+.next-step-body { font-family:var(--mono); font-size:var(--mono-xs); color:var(--gray-3); line-height:1.6; }
+.next-step-body strong { color:var(--gray-2); font-weight:700; }
+
+/* JOURNEY SUMMARY */
+.journey-section { padding:48px 64px; border-bottom:1px solid var(--gray-6); }
+.journey-label {
+  font-family:var(--mono); font-size:var(--mono-xs); letter-spacing:0.16em;
+  text-transform:uppercase; color:var(--gray-4); margin-bottom:20px;
+}
+.journey-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--gray-6); border:1px solid var(--gray-6); }
+.journey-item { background:var(--white); padding:20px 18px; }
+.journey-item-label {
+  font-family:var(--mono); font-size:var(--mono-xs); letter-spacing:0.12em;
+  text-transform:uppercase; color:var(--gray-3); margin-bottom:8px;
+}
+.journey-item-val { font-family:var(--mono); font-size:15px; color:var(--black); font-weight:700; line-height:1.3; margin-bottom:4px; }
+.journey-item-sub { font-family:var(--mono); font-size:var(--mono-sm); color:var(--gray-3); line-height:1.5; }
+
+/* MATCH REASONING — cards */
+.reasoning-section { padding:48px 64px; border-bottom:1px solid var(--gray-6); }
+.reasoning-eyebrow {
+  font-family:var(--mono); font-size:var(--mono-xs); letter-spacing:0.16em;
+  text-transform:uppercase; color:var(--gray-3); margin-bottom:12px;
+}
+.reasoning-headline {
+  font-size:clamp(22px,2.5vw,30px); font-weight:500; letter-spacing:-0.02em;
+  color:var(--black); margin-bottom:8px; line-height:1.15;
+}
+.reasoning-sub {
+  font-family:var(--mono); font-size:var(--mono-md); color:var(--gray-2);
+  line-height:1.7; margin-bottom:32px; max-width:640px;
+}
+.reasoning-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.reasoning-card {
+  background:var(--white); border:1px solid var(--gray-6);
+  border-top:3px solid var(--black);
+  padding:20px 18px 18px;
+}
+.reasoning-card-label {
+  font-family:var(--mono); font-size:var(--mono-xs); letter-spacing:0.14em;
+  text-transform:uppercase; color:var(--gray-4); margin-bottom:10px;
+}
+.reasoning-card-headline {
+  font-size:14px; font-weight:600; color:var(--black);
+  letter-spacing:-0.01em; margin-bottom:8px; line-height:1.3;
+}
+.reasoning-card-body {
+  font-family:var(--mono); font-size:var(--mono-sm); color:var(--gray-2); line-height:1.7;
+}
+.reasoning-card-body strong { color:var(--black); font-weight:700; }
+
+/* MAYA FOLLOW-UP */
+.maya-section {
+  padding:48px 64px 80px;
+  display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start;
+}
+.maya-block { background:var(--gray-7); border:1px solid var(--gray-6); padding:24px; }
+.maya-header { display:flex; align-items:center; gap:14px; margin-bottom:16px; }
+.maya-avatar { width:44px; height:44px; background:var(--black); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:16px; font-weight:700; color:var(--white); flex-shrink:0; }
+.maya-name { font-size:15px; font-weight:600; color:var(--black); margin-bottom:3px; }
+.maya-status { font-family:var(--mono); font-size:var(--mono-sm); color:var(--gray-3); display:flex; align-items:center; gap:6px; }
+.maya-status::before { content:''; display:block; width:6px; height:6px; background:var(--black); border-radius:50%; }
+.maya-body { font-family:var(--mono); font-size:var(--mono-md); color:var(--gray-2); line-height:1.75; margin-bottom:20px; }
+.maya-actions { display:flex; gap:8px; }
+.btn-maya { flex:1; padding:12px; font-family:var(--mono); font-size:var(--mono-sm); letter-spacing:0.06em; cursor:pointer; transition:all 0.15s; text-align:center; border:none; }
+.btn-maya.primary { background:var(--black); color:var(--white); }
+.btn-maya.primary:hover { background:var(--gray-1); }
+.btn-maya.secondary { background:var(--white); color:var(--gray-2); border:1px solid var(--gray-5); }
+.btn-maya.secondary:hover { border-color:var(--black); color:var(--black); }
+
+/* CHECKLIST */
+.whats-next-block {}
+.whats-next-title { font-size:17px; font-weight:600; letter-spacing:-0.01em; color:var(--black); margin-bottom:18px; }
+.checklist { display:flex; flex-direction:column; gap:1px; }
+.check-item {
+  display:flex; align-items:flex-start; gap:14px;
+  padding:16px 0; border-bottom:1px solid var(--gray-6);
+}
+.check-item:last-child { border-bottom:none; }
+.check-box {
+  width:20px; height:20px; border:1.5px solid var(--gray-5);
+  flex-shrink:0; margin-top:2px; display:flex; align-items:center;
+  justify-content:center; cursor:pointer; transition:all 0.15s;
+}
+.check-box.done { background:var(--black); border-color:var(--black); color:var(--white); font-size:var(--mono-sm); }
+.check-content { flex:1; }
+.check-title { font-size:14px; font-weight:500; color:var(--black); margin-bottom:4px; }
+.check-sub { font-family:var(--mono); font-size:var(--mono-sm); color:var(--gray-3); line-height:1.55; }
+
+/* COMMUTE INPUT — inline affordance */
+.commute-input-row {
+  display:flex; gap:8px; margin-top:8px;
+}
+.commute-input {
+  flex:1; padding:7px 12px; border:1px solid var(--gray-5);
+  font-family:var(--mono); font-size:var(--mono-sm); color:var(--black);
+  outline:none; transition:border-color 0.15s; background:var(--white);
+}
+.commute-input:focus { border-color:var(--black); }
+.commute-input::placeholder { color:var(--gray-5); }
+.commute-submit {
+  padding:7px 14px; background:var(--black); color:var(--white);
+  font-family:var(--mono); font-size:var(--mono-xs); letter-spacing:0.06em;
+  border:none; cursor:pointer; transition:background 0.15s; white-space:nowrap;
+}
+.commute-submit:hover { background:var(--gray-1); }
+
+/* CONTACT CAPTURE */
+.contact-block {
+  border: 1px solid var(--gray-6);
+  border-left: 3px solid var(--gray-5);
+  padding: 20px 20px 18px;
+  margin-bottom: 28px;
+  background: var(--white);
+}
+.contact-block-label {
+  font-family: var(--sans); font-size: 15px; font-weight: 500;
+  color: var(--black); margin-bottom: 16px;
+}
+.contact-field { margin-bottom: 14px; }
+.contact-field-label {
+  font-family: var(--mono); font-size: var(--mono-xs);
+  color: var(--gray-3); letter-spacing: 0.06em;
+  text-transform: uppercase; margin-bottom: 6px; display: block;
+}
+.contact-input {
+  width: 100%; padding: 9px 14px;
+  border: 1px solid var(--gray-5); background: var(--white);
+  font-family: var(--mono); font-size: var(--mono-sm);
+  color: var(--black); outline: none; transition: border-color 0.15s;
+}
+.contact-input:focus { border-color: var(--black); }
+.contact-input::placeholder { color: var(--gray-5); }
+
+/* Switch-style method selector */
+.contact-methods {
+  display: inline-flex; border: 1px solid var(--gray-5);
+  margin-bottom: 14px; overflow: hidden;
+}
+.contact-method {
+  padding: 7px 20px; text-align: center;
+  font-family: var(--mono); font-size: var(--mono-xs);
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--gray-3); cursor: pointer;
+  transition: all 0.15s; background: var(--white);
+  border-right: 1px solid var(--gray-5); user-select: none;
+}
+.contact-method:last-child { border-right: none; }
+.contact-method:hover:not(.selected) {
+  background: var(--gray-7); color: var(--gray-2);
+}
+.contact-method.selected {
+  background: var(--gray-2); color: var(--white);
+}
+
+/* Inline-width save button */
+.contact-save-row { display: flex; justify-content: center; margin-top: 4px; }
+.contact-save {
+  padding: 9px 28px; background: var(--gray-2); color: var(--white);
+  font-family: var(--mono); font-size: var(--mono-sm); letter-spacing: 0.06em;
+  border: none; cursor: pointer; transition: background 0.15s;
+}
+.contact-save:hover { background: var(--black); }
+.contact-saved {
+  display: none; font-family: var(--mono); font-size: var(--mono-sm);
+  color: var(--gray-2); line-height: 1.6; padding-top: 4px; text-align: center;
+}
+.contact-saved strong { color: var(--black); }
+.footer { position:fixed; bottom:0; left:0; right:0; height:40px; border-top:1px solid var(--gray-6); background:var(--white); display:flex; align-items:center; justify-content:space-between; padding:0 32px; z-index:100; }
+.footer-meta { font-family:var(--mono); font-size:var(--mono-xs); color:var(--gray-5); letter-spacing:0.08em; }
+.footer-nav { display:flex; gap:24px; }
+.footer-nav a { font-family:var(--mono); font-size:var(--mono-xs); letter-spacing:0.08em; color:var(--gray-4); text-decoration:none; transition:color 0.15s; }
+.footer-nav a:hover { color:var(--black); }
+
+/* ANIM */
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+.fade-up { opacity:0; animation:fadeUp 0.4s ease-out forwards; }
+.fade-up:nth-child(1){animation-delay:0.08s} .fade-up:nth-child(2){animation-delay:0.16s}
+.fade-up:nth-child(3){animation-delay:0.24s} .fade-up:nth-child(4){animation-delay:0.32s}
+.fade-up:nth-child(5){animation-delay:0.40s}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .hero { grid-template-columns:1fr; min-height:unset; }
+  .hero-left { border-right:none; border-bottom:1px solid var(--gray-6); padding:40px 24px; justify-content:flex-start; }
+  .hero-right { padding:40px 24px; }
+  .journey-section, .reasoning-section, .maya-section { padding:40px 24px; }
+  .journey-grid { grid-template-columns:repeat(2,1fr); }
+  .reasoning-grid { grid-template-columns:1fr; }
+  .maya-section { grid-template-columns:1fr; gap:32px; }
+  .nav-journey { display:none; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-wordmark">Cortland</div>
+  <div class="nav-journey">
+    <a href="cortland-m0a.html" class="nav-step complete"><span class="nav-step-num">00</span> Discovery</a>
+    <a href="cortland-m1.html" class="nav-step complete"><span class="nav-step-num">01</span> Context</a>
+    <a href="cortland-m2.html" class="nav-step complete"><span class="nav-step-num">02</span> Matches</a>
+    <a href="cortland-m3.html" class="nav-step complete"><span class="nav-step-num">03</span> Unit</a>
+    <div class="nav-step active"><span class="nav-step-num">04</span> Hold</div>
+  </div>
+  <div><a href="#" class="nav-link">Sign in</a></div>
+</nav>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+
+    <!-- LEFT — confirmation + countdown -->
+    <div class="hero-left">
+      <div class="confirm-eyebrow fade-up">
+        <div class="confirm-dot"></div>
+        Hold confirmed
+      </div>
+
+      <div class="confirm-headline fade-up">
+        Unit 412 is yours<br>
+        <strong>for the next 24 hours.</strong>
+      </div>
+      <div class="confirm-unit fade-up">Cortland South End · 1234 S Tryon St · Charlotte, NC</div>
+
+      <div class="countdown-block fade-up">
+        <div class="countdown-label">Hold expires in</div>
+        <div class="countdown-display">
+          <span id="cd-hours">23</span>
+          <span class="countdown-sep">:</span>
+          <span id="cd-mins">59</span>
+          <span class="countdown-sep">:</span>
+          <span id="cd-secs">59</span>
+        </div>
+        <div class="countdown-track">
+          <div class="countdown-fill" id="countdown-fill" style="width:100%"></div>
+        </div>
+        <div class="countdown-expires" id="countdown-expires">Hold placed today at <span id="hold-time"></span> · Expires tomorrow at <span id="expire-time"></span></div>
+      </div>
+
+      <div class="contact-block fade-up" id="contact-block">
+        <div class="contact-block-label">So we can reach you</div>
+        <div class="contact-field">
+          <label class="contact-field-label" for="contact-name">What should we call you?</label>
+          <input class="contact-input" id="contact-name" type="text" placeholder="First name">
+        </div>
+        <div class="contact-field">
+          <label class="contact-field-label">How should we reach you?</label>
+          <div class="contact-methods">
+            <div class="contact-method selected" data-method="text" onclick="selectMethod(this)">Text</div>
+            <div class="contact-method" data-method="call" onclick="selectMethod(this)">Call</div>
+            <div class="contact-method" data-method="email" onclick="selectMethod(this)">Email</div>
+          </div>
+          <input class="contact-input" id="contact-value" type="tel" placeholder="Mobile number">
+        </div>
+        <div class="contact-save-row">
+          <button class="contact-save" onclick="saveContact()">Save →</button>
+        </div>
+        <div class="contact-saved" id="contact-saved"></div>
+      </div>
+
+      <div class="apply-block fade-up">
+        <a href="#" class="btn-apply">Start application →</a>
+        <div class="apply-sub">Takes about 12 minutes. No fee to apply.<br>Approval typically within 24 hours.</div>
+      </div>
+
+      <div class="fade-up">
+        <div style="font-family:var(--mono);font-size:var(--mono-xs);color:var(--gray-4);margin-bottom:6px;">Changed your mind?</div>
+        <a class="release-link" href="cortland-m2.html">Release this hold and return to your matches</a>
+      </div>
+    </div>
+
+    <!-- RIGHT — unit snapshot + next steps -->
+    <div class="hero-right">
+
+      <div class="unit-snapshot fade-up">
+        <img class="snapshot-img"
+          src="https://lh3.googleusercontent.com/p/AF1QipO8RZIEpXK7MDicgtYgXD3wREHplQ_lhSXOvA72=s1360-w1360-h1020-rw"
+          alt="Unit 412">
+        <div class="snapshot-body">
+          <div class="snapshot-name">Cortland South End — Unit 412</div>
+          <div class="snapshot-detail">
+            1 bed · 1 bath · 724 sqft · 4th floor<br>
+            Available May 24 · Dog park 6 min walk
+          </div>
+          <div class="snapshot-price">$1,724 / mo all-in</div>
+        </div>
+      </div>
+
+      <div class="next-label fade-up">What happens next</div>
+      <div class="next-steps fade-up">
+        <div class="next-step">
+          <div class="next-step-num">01</div>
+          <div class="next-step-content">
+            <div class="next-step-title" id="maya-step-title">Maya will be in touch.</div>
+            <div class="next-step-body" id="maya-step-body">She filmed this unit and knows it well. She'll confirm the hold, answer any questions, and walk you through the application if you're ready. <strong>No pressure either way.</strong></div>
+          </div>
+        </div>
+        <div class="next-step">
+          <div class="next-step-num">02</div>
+          <div class="next-step-content">
+            <div class="next-step-title">The unit is off the market for 24 hours.</div>
+            <div class="next-step-body">No one else can apply or hold it during this window. <strong>You have until <span id="expire-time-2"></span> tomorrow</strong> to decide — apply, extend, or pass.</div>
+          </div>
+        </div>
+        <div class="next-step">
+          <div class="next-step-num">03</div>
+          <div class="next-step-content">
+            <div class="next-step-title">If you apply, approval is typically same-day.</div>
+            <div class="next-step-body">Cortland's application takes about 12 minutes. Given your <strong>June 2 start date</strong> and a May 24 availability, the timeline fits cleanly with no gaps.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- JOURNEY SUMMARY -->
+  <div class="journey-section">
+    <div class="journey-label">Your search — how you got here</div>
+    <div class="journey-grid">
+      <div class="journey-item">
+        <div class="journey-item-label">Arrived from</div>
+        <div class="journey-item-val">ChatGPT</div>
+        <div class="journey-item-sub">AI referral · context traveled with the link</div>
+      </div>
+      <div class="journey-item">
+        <div class="journey-item-label">Units considered</div>
+        <div class="journey-item-val">4 matched</div>
+        <div class="journey-item-sub">SouthEnd ×2 · NoDa · Plaza Midwood</div>
+      </div>
+      <div class="journey-item">
+        <div class="journey-item-label">Time on unit 412</div>
+        <div class="journey-item-val">4 min 12 sec</div>
+        <div class="journey-item-sub">Most of any unit in your session</div>
+      </div>
+      <div class="journey-item">
+        <div class="journey-item-label">Context confirmed</div>
+        <div class="journey-item-val">5 of 6 signals</div>
+        <div class="journey-item-sub">Commute address still missing — add anytime</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MATCH REASONING -->
+  <div class="reasoning-section">
+    <div class="reasoning-eyebrow">Why this unit matched you</div>
+    <div class="reasoning-headline">The system's reasoning — shown, not hidden.</div>
+    <div class="reasoning-sub">This is how 412 ended up as your #1 match. Not an algorithm score — a set of specific decisions the system made based on what it knew about you.</div>
+    <div class="reasoning-grid">
+      <div class="reasoning-card">
+        <div class="reasoning-card-label">Dog park distance</div>
+        <div class="reasoning-card-headline">Veterans Park: 6 min walk.</div>
+        <div class="reasoning-card-body">You prioritized dog park within 10 min. <strong>412 was the closest match at 6 min.</strong> NoDa was 8 min. Plaza Midwood was 14 min — which is why it ranked 4th despite the lowest price.</div>
+      </div>
+      <div class="reasoning-card">
+        <div class="reasoning-card-label">Move-in timing</div>
+        <div class="reasoning-card-headline">May 24 — 9 days before your start.</div>
+        <div class="reasoning-card-body">Late May move-in preferred. <strong>May 24 gives the most buffer</strong> of the SouthEnd options. Only Plaza Midwood (May 20) was earlier, but lost on dog park distance.</div>
+      </div>
+      <div class="reasoning-card">
+        <div class="reasoning-card-label">Neighborhood character</div>
+        <div class="reasoning-card-headline">SouthEnd matched all three priorities.</div>
+        <div class="reasoning-card-body">You selected walkable, bars & coffee, young professional. <strong>SouthEnd scored highest on all three.</strong> NoDa was close but skews more arts/creative.</div>
+      </div>
+      <div class="reasoning-card">
+        <div class="reasoning-card-label">Budget fit</div>
+        <div class="reasoning-card-headline">$1,724 — within your estimated range.</div>
+        <div class="reasoning-card-body">Your estimated range was $1,400–1,800. <strong>412 sits comfortably inside it.</strong> South End II at $1,810 was above. NoDa at $1,612 was below — but the patio unit adds value the price doesn't capture.</div>
+      </div>
+      <div class="reasoning-card">
+        <div class="reasoning-card-label">Building trust signals</div>
+        <div class="reasoning-card-headline">This building outperforms the portfolio.</div>
+        <div class="reasoning-card-body"><strong>3.2 hr maintenance response</strong> vs. 5.8 hr median. <strong>71% renewal rate</strong> vs. 63% average. <strong>4% dispute rate</strong> vs. 11%. All three first-time-renter signals point the same direction.</div>
+      </div>
+      <div class="reasoning-card">
+        <div class="reasoning-card-label">Unit specifics</div>
+        <div class="reasoning-card-headline">Quietest configuration in the building.</div>
+        <div class="reasoning-card-body">East-facing morning light, open kitchen sightline, no adjacent unit on the north bedroom wall. <strong>Noise score 2/5</strong> — quieter than 78% of units in this building right now.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAYA + CHECKLIST -->
+  <div class="maya-section">
+
+    <div class="maya-block fade-up">
+      <div class="maya-header">
+        <div class="maya-avatar">M</div>
+        <div>
+          <div class="maya-name">Maya Rodriguez</div>
+          <div class="maya-status" id="maya-status">Notified · will reach out within a few hours</div>
+        </div>
+      </div>
+      <div class="maya-body">
+        Maya has been notified of your hold. She filmed unit 412 on Monday and knows every detail — the light, the noise, the floor plan quirks. She'll follow up shortly to answer questions and walk you through next steps. No obligation to do anything until you're ready.
+      </div>
+      <div class="maya-actions">
+        <button class="btn-maya primary">Message Maya now</button>
+        <button class="btn-maya secondary">Schedule a call</button>
+      </div>
+    </div>
+
+    <div class="whats-next-block fade-up">
+      <div class="whats-next-title">Before you apply — a short checklist.</div>
+      <div class="checklist">
+        <div class="check-item">
+          <div class="check-box done" onclick="toggleCheck(this)">✓</div>
+          <div class="check-content">
+            <div class="check-title">Review the all-in monthly cost</div>
+            <div class="check-sub">$1,724 — base $1,595 + pet $75 + valet trash $30 + admin $24. No additional mandatory fees.</div>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="check-box done" onclick="toggleCheck(this)">✓</div>
+          <div class="check-content">
+            <div class="check-title">Confirm Thor's breed eligibility</div>
+            <div class="check-sub">Medium-size dogs are eligible at this building. Breed restrictions apply — Maya can confirm for Thor's specific breed.</div>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="check-box" id="commute-check" onclick="toggleCheck(this)"></div>
+          <div class="check-content">
+            <div class="check-title">Add your commute address</div>
+            <div class="check-sub">Not required for the hold, but sharpens the picture. Light rail to Uptown is 8 min from this building.</div>
+            <div class="commute-input-row" id="commute-row">
+              <input class="commute-input" id="commute-input" type="text" placeholder="e.g. 500 S Tryon St, Charlotte">
+              <button class="commute-submit" onclick="saveCommute()">Save →</button>
+            </div>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <div class="check-content">
+            <div class="check-title">Visit the neighborhood</div>
+            <div class="check-sub">SouthEnd on a weekday morning vs. Friday night are different experiences. Worth a walk if you can get to Charlotte before the hold expires.</div>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="check-box" onclick="toggleCheck(this)"></div>
+          <div class="check-content">
+            <div class="check-title">Start your application when ready</div>
+            <div class="check-sub">About 12 minutes. No fee. Approval within 24 hours — which still leaves time before your May 24 availability date.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<footer class="footer">
+  <div class="footer-meta">Cortland × Huge — DXP Vision — M4 of 4</div>
+  <div class="footer-nav">
+    <a href="cortland-m3.html">← Unit detail</a>
+    <a href="cortland-m1.html">Start over</a>
+  </div>
+</footer>
+
+<script>
+// ── COUNTDOWN ─────────────────────────────────────────────────────────
+const holdDuration = 24 * 60 * 60 * 1000; // 24 hours in ms
+const holdStart = Date.now();
+const holdEnd = holdStart + holdDuration;
+
+function fmt2(n) { return String(n).padStart(2,'0'); }
+function fmtTime(d) {
+  let h = d.getHours(), m = d.getMinutes();
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  return `${h}:${fmt2(m)} ${ampm}`;
+}
+
+// Set static timestamps
+const holdTimeEl = document.getElementById('hold-time');
+const expireTimeEl = document.getElementById('expire-time');
+const expireTime2El = document.getElementById('expire-time-2');
+if (holdTimeEl) holdTimeEl.textContent = fmtTime(new Date(holdStart));
+if (expireTimeEl) expireTimeEl.textContent = fmtTime(new Date(holdEnd));
+if (expireTime2El) expireTime2El.textContent = fmtTime(new Date(holdEnd));
+
+function updateCountdown() {
+  const remaining = Math.max(0, holdEnd - Date.now());
+  const totalSecs = Math.floor(remaining / 1000);
+  const h = Math.floor(totalSecs / 3600);
+  const m = Math.floor((totalSecs % 3600) / 60);
+  const s = totalSecs % 60;
+
+  document.getElementById('cd-hours').textContent = fmt2(h);
+  document.getElementById('cd-mins').textContent = fmt2(m);
+  document.getElementById('cd-secs').textContent = fmt2(s);
+
+  const pct = (remaining / holdDuration) * 100;
+  const fill = document.getElementById('countdown-fill');
+  if (fill) fill.style.width = pct + '%';
+
+  if (remaining <= 0) clearInterval(countdownInterval);
+}
+
+const countdownInterval = setInterval(updateCountdown, 1000);
+updateCountdown();
+
+// ── TIME-AWARE MAYA COPY ──────────────────────────────────────────────
+const hour = new Date().getHours();
+const mayaTitle = document.getElementById('maya-step-title');
+const mayaBody  = document.getElementById('maya-step-body');
+const mayaStatus = document.getElementById('maya-status');
+
+if (hour >= 9 && hour < 17) {
+  // Business hours
+  mayaTitle.textContent = 'Maya will be in touch today.';
+  mayaBody.innerHTML = 'She may be showing units right now, but she\'ll get back to you within a few hours. She filmed this unit and knows it well. <strong>No pressure either way.</strong>';
+  mayaStatus.textContent = 'Notified · will respond within a few hours';
+} else if (hour >= 17 && hour < 21) {
+  // Evening
+  mayaTitle.textContent = 'Maya\'s day is winding down.';
+  mayaBody.innerHTML = 'She\'ll see your hold tonight and follow up first thing tomorrow morning. She filmed this unit and knows every detail. <strong>Your hold is locked in — no action needed until you hear from her.</strong>';
+  mayaStatus.textContent = 'Notified · expect a response tomorrow morning';
+} else {
+  // Late night / early morning
+  mayaTitle.textContent = 'It\'s after hours — Maya will reach out tomorrow.';
+  mayaBody.innerHTML = 'She\'ll see this when she\'s back in the morning and reach out then. Your hold is secure in the meantime. <strong>No action needed until you hear from her.</strong>';
+  mayaStatus.textContent = 'Notified · will respond tomorrow morning';
+}
+
+// ── CONTACT CAPTURE ───────────────────────────────────────────────────
+const methodPlaceholders = {
+  text:  'Mobile number',
+  call:  'Mobile number',
+  email: 'Email address',
+};
+const methodTypes = {
+  text:  'tel',
+  call:  'tel',
+  email: 'email',
+};
+
+function selectMethod(el) {
+  document.querySelectorAll('.contact-method').forEach(m => m.classList.remove('selected'));
+  el.classList.add('selected');
+  const method = el.dataset.method;
+  const input = document.getElementById('contact-value');
+  input.placeholder = methodPlaceholders[method];
+  input.type = methodTypes[method];
+  input.value = '';
+  input.focus();
+}
+
+function saveContact() {
+  const name  = document.getElementById('contact-name').value.trim();
+  const value = document.getElementById('contact-value').value.trim();
+  const method = document.querySelector('.contact-method.selected').dataset.method;
+  if (!name || !value) {
+    document.getElementById('contact-name').focus();
+    return;
+  }
+  // Show saved state
+  const saved = document.getElementById('contact-saved');
+  const methodLabel = method === 'email' ? 'email' : 'number';
+  saved.innerHTML = `<strong>${name}</strong> — we'll ${method} you at ${value}. Maya has been updated.`;
+  saved.style.display = 'block';
+  // Hide form fields, show confirmation
+  document.querySelector('.contact-save').style.display = 'none';
+  document.querySelectorAll('.contact-field').forEach(f => f.style.display = 'none');
+  document.querySelector('.contact-methods').style.display = 'none';
+  // Update Maya status
+  if (mayaStatus) mayaStatus.textContent = `Notified · will ${method} ${name}`;
+}
+
+
+function toggleCheck(box) {
+  const isDone = box.classList.contains('done');
+  if (isDone) {
+    box.classList.remove('done');
+    box.textContent = '';
+  } else {
+    box.classList.add('done');
+    box.textContent = '✓';
+  }
+}
+
+function saveCommute() {
+  const val = document.getElementById('commute-input').value.trim();
+  if (!val) return;
+  const row = document.getElementById('commute-row');
+  const check = document.getElementById('commute-check');
+  row.innerHTML = `<div style="font-family:var(--mono);font-size:var(--mono-sm);color:var(--gray-2);margin-top:6px;">📍 ${val} — commute calculation added to your context.</div>`;
+  check.classList.add('done');
+  check.textContent = '✓';
+}
+</script>
+</body>
+</html>
