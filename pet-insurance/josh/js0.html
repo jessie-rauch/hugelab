@@ -129,7 +129,6 @@ body { background: var(--gray-50); color: var(--ink); font-family: var(--sans); 
 </div>
 
 <script>
-  if (sessionStorage.getItem('joshflow') === 'ok') unlock();
   function checkPw() {
     if (document.getElementById('pw').value.trim().toLowerCase() === 'pets123') {
       sessionStorage.setItem('joshflow', 'ok');
@@ -147,8 +146,8 @@ body { background: var(--gray-50); color: var(--ink); font-family: var(--sans); 
     startAnimation();
   }
   document.addEventListener('DOMContentLoaded', function() {
-    if (sessionStorage.getItem('joshflow') === 'ok') unlock();
     document.getElementById('pw').addEventListener('keydown', function(e){ if (e.key === 'Enter') checkPw(); });
+    if (sessionStorage.getItem('joshflow') === 'ok') unlock();
   });
 </script>
 
