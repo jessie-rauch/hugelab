@@ -149,7 +149,7 @@ body { background: var(--gray-50); color: var(--ink); font-family: var(--sans); 
 </div>
 
 <script>
-  if (sessionStorage.getItem('emilyflow') === 'ok') unlock();
+  if (sessionStorage.getItem('emilyflow') === 'ok') { document.addEventListener('DOMContentLoaded', unlock); }
   function checkPw() {
     if (document.getElementById('pw').value.trim().toLowerCase() === 'pets123') {
       sessionStorage.setItem('emilyflow', 'ok');
@@ -162,7 +162,7 @@ body { background: var(--gray-50); color: var(--ink); font-family: var(--sans); 
       setTimeout(function(){ e.textContent = ''; }, 2500);
     }
   }
-  function unlock() { document.getElementById('gate').classList.add('hidden'); }
+  function unlock() { document.getElementById('gate').classList.add('hidden'); startAnimation(); }
   document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('pw').addEventListener('keydown', function(e){ if (e.key === 'Enter') checkPw(); });
   });
@@ -319,32 +319,30 @@ trigger = <em>"pre-first-vet-visit"</em></div>
 </div>
 
 <script>
-  // Staggered animation — reveal messages one at a time
-  // display:none keeps them out of DOM flow so chat doesn't pre-scroll
-  const msgs = [
-    { id: 'm0', delay: 600 },
-    { id: 'm1', delay: 1800 },
-    { id: 'm2', delay: 3400 }
-  ];
-  msgs.forEach(({ id, delay }) => {
-    setTimeout(() => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      // Make visible in flow first, then transition opacity on next frame
-      el.style.display = 'flex';
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          el.style.opacity = '1';
-          el.style.transform = 'translateY(0)';
-        });
-      });
-      // Scroll after a brief moment so layout has settled
+  function startAnimation() {
+    const msgs = [
+      { id: 'm0', delay: 600 },
+      { id: 'm1', delay: 1800 },
+      { id: 'm2', delay: 3400 }
+    ];
+    msgs.forEach(({ id, delay }) => {
       setTimeout(() => {
-        const chat = document.getElementById('phoneChat');
-        chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
-      }, 80);
-    }, delay);
-  });
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.display = 'flex';
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
+          });
+        });
+        setTimeout(() => {
+          const chat = document.getElementById('phoneChat');
+          chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
+        }, 80);
+      }, delay);
+    });
+  }
 
   document.getElementById('ctaBtn').addEventListener('click', () => {
     const h = document.getElementById('handoff');
