@@ -1,79 +1,354 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quick Quote · Pet Insurance</title>
+<script>
+  (function() {
+    var key = 'beacon_auth_petinsurance';
+    if (sessionStorage.getItem(key) !== '1') {
+      var pw = prompt('Password required:');
+      if (pw !== 'pets123') {
+        document.documentElement.innerHTML = '<body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#000;color:#fff;font-size:14px;">Access denied.</body>';
+        throw new Error('Access denied');
+      }
+      sessionStorage.setItem(key, '1');
+    }
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
-  :root { --accent: #FF0090; --accent-dim: rgba(255,0,144,0.1); }
+  :root {
+    --accent: #FF0090;
+    --accent-dim: rgba(255,0,144,0.1);
+    --bg: #ffffff;
+    --bg-secondary: #f5f5f5;
+    --text-primary: #111111;
+    --text-secondary: #555555;
+    --text-tertiary: #999999;
+    --border: rgba(0,0,0,0.15);
+    --border-secondary: rgba(0,0,0,0.22);
+    --radius-md: 8px;
+    --radius-lg: 12px;
+  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  .qf-wrap { max-width: 420px; margin: 0 auto; padding: 2rem 1rem 3rem; font-family: var(--font-sans); }
-  .qf-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-tertiary); margin-bottom: 0.5rem; }
-  .qf-headline { font-size: 22px; font-weight: 500; color: var(--color-text-primary); line-height: 1.25; margin-bottom: 2rem; }
-  .step { margin-bottom: 1.5rem; transition: opacity 0.2s; }
+  html { background: var(--bg); }
+  body {
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+  }
+
+  .page-wrap {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  .masthead {
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .masthead-eyebrow {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .masthead-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  .qf-eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 6px;
+  }
+  .qf-headline {
+    font-size: 26px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.2;
+    margin-bottom: 2rem;
+  }
+
+  .step { margin-bottom: 1.75rem; transition: opacity 0.2s; }
   .step.locked { opacity: 0.3; pointer-events: none; }
-  .step-label { font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-tertiary); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 6px; }
-  .step-label .check { display: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); align-items: center; justify-content: center; }
+
+  .step-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-tertiary);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .step-label .check {
+    display: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
   .step-label .check i { font-size: 10px; color: white; }
   .step.done .step-label .check { display: flex; }
 
-  .breed-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-  .breed-card { border: 1.5px solid var(--color-border-secondary); border-radius: var(--border-radius-lg); padding: 10px 12px; cursor: pointer; transition: all 0.15s; background: var(--color-background-primary); }
+  .breed-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .breed-card {
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    background: var(--bg);
+  }
   .breed-card:hover { border-color: var(--accent); }
   .breed-card.selected { background: var(--accent-dim); border-color: var(--accent); }
-  .breed-card-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); line-height: 1.2; margin-bottom: 3px; }
+  .breed-card-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.2;
+    margin-bottom: 3px;
+  }
   .breed-card.selected .breed-card-name { color: var(--accent); }
-  .breed-card-sub { font-size: 11px; color: var(--color-text-tertiary); line-height: 1.35; }
+  .breed-card-sub { font-size: 11px; color: var(--text-tertiary); line-height: 1.35; }
 
-  .more-toggle { font-size: 13px; color: var(--color-text-secondary); cursor: pointer; padding: 4px 0; display: flex; align-items: center; gap: 4px; background: none; border: none; font-family: var(--font-sans); }
+  .more-toggle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    font-family: inherit;
+  }
   .more-toggle:hover { color: var(--accent); }
   .more-breeds { display: none; }
-  .more-breeds.open { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
-  .breed-note { font-size: 12px; color: var(--color-text-secondary); margin-top: 8px; line-height: 1.5; padding: 8px 12px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); display: none; }
+  .more-breeds.open {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .breed-note {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    line-height: 1.5;
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    background: var(--bg-secondary);
+    display: none;
+  }
   .breed-note.show { display: block; }
 
   .chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
-  .chip { padding: 8px 16px; border-radius: 24px; font-size: 14px; border: 1.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); cursor: pointer; transition: all 0.15s; text-align: center; }
-  .chip small { display: block; font-size: 11px; color: var(--color-text-tertiary); }
+  .chip {
+    padding: 8px 16px;
+    border-radius: 24px;
+    font-size: 14px;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+    text-align: center;
+    font-family: inherit;
+  }
+  .chip small { display: block; font-size: 11px; color: var(--text-tertiary); }
   .chip:hover { border-color: var(--accent); color: var(--accent); }
-  .chip.selected { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 500; }
+  .chip.selected {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 500;
+  }
   .chip.selected small { color: var(--accent); opacity: 0.7; }
 
-  .zip-input { width: 100%; font-size: 18px; font-weight: 500; padding: 12px 14px; border-radius: var(--border-radius-lg); border: 1.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); letter-spacing: 0.1em; }
+  .zip-input {
+    width: 100%;
+    font-size: 18px;
+    font-weight: 500;
+    padding: 12px 14px;
+    border-radius: var(--radius-lg);
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    color: var(--text-primary);
+    letter-spacing: 0.1em;
+    font-family: inherit;
+  }
   .zip-input:focus { outline: none; border-color: var(--accent); }
-  .zip-hint { font-size: 12px; color: var(--color-text-tertiary); margin-top: 6px; }
+  .zip-hint { font-size: 12px; color: var(--text-tertiary); margin-top: 6px; }
 
   .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .tog { border: 1.5px solid var(--color-border-secondary); border-radius: var(--border-radius-lg); padding: 11px 12px; cursor: pointer; background: var(--color-background-primary); font-size: 14px; color: var(--color-text-primary); font-family: var(--font-sans); transition: background 0.15s, border-color 0.15s, color 0.15s; text-align: center; display: block; width: 100%; }
+  .tog {
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 11px 12px;
+    cursor: pointer;
+    background: var(--bg);
+    font-size: 14px;
+    color: var(--text-primary);
+    font-family: inherit;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+    text-align: center;
+    display: block;
+    width: 100%;
+  }
   .tog:hover { border-color: var(--accent); color: var(--accent); }
-  .tog.selected { background: var(--accent-dim) !important; border-color: var(--accent) !important; color: var(--accent) !important; font-weight: 500; }
+  .tog.selected {
+    background: var(--accent-dim) !important;
+    border-color: var(--accent) !important;
+    color: var(--accent) !important;
+    font-weight: 500;
+  }
 
-  .divider-line { height: 0.5px; background: var(--color-border-tertiary); margin: 1.5rem 0; }
+  .detail-sublabel {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
 
-  .result-card { border-radius: var(--border-radius-lg); border: 1.5px solid var(--accent); background: var(--color-background-primary); padding: 1.25rem 1.25rem 1rem; animation: fadeUp 0.3s ease; display: none; }
+  .divider-line {
+    height: 0.5px;
+    background: var(--border);
+    margin: 1.75rem 0;
+  }
+
+  .result-card {
+    border-radius: var(--radius-lg);
+    border: 1.5px solid var(--accent);
+    background: var(--bg);
+    padding: 1.25rem 1.25rem 1rem;
+    display: none;
+    animation: fadeUp 0.3s ease;
+  }
   .result-card.show { display: block; }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-  .result-eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--color-text-tertiary); margin-bottom: 0.5rem; }
-  .result-range { font-size: 30px; font-weight: 500; color: var(--color-text-primary); line-height: 1.1; margin-bottom: 0.25rem; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .result-eyebrow {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-tertiary);
+    margin-bottom: 6px;
+  }
+  .result-range {
+    font-size: 32px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
   .result-range em { color: var(--accent); font-style: normal; }
-  .result-sub { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 1rem; line-height: 1.5; }
-  .result-factors { border-top: 0.5px solid var(--color-border-tertiary); padding-top: 0.75rem; display: flex; flex-direction: column; gap: 6px; }
-  .factor-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--color-text-secondary); }
-  .factor-row span:last-child { font-weight: 500; color: var(--color-text-primary); }
-  .result-cta { display: block; width: 100%; margin-top: 1rem; padding: 13px; background: var(--accent); color: white; border: none; border-radius: var(--border-radius-lg); font-size: 15px; font-weight: 500; cursor: pointer; text-align: center; }
+  .result-sub {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+  .result-factors {
+    border-top: 0.5px solid var(--border);
+    padding-top: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 1rem;
+  }
+  .factor-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  .factor-row span:last-child { font-weight: 500; color: var(--text-primary); }
+  .result-cta {
+    display: block;
+    width: 100%;
+    padding: 13px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    font-family: inherit;
+    text-decoration: none;
+  }
   .result-cta:hover { opacity: 0.9; }
-</style>
 
-<div class="qf-wrap">
-  <h2 class="sr-only">Quick quote estimator</h2>
+  .page-footer {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 0.5px solid var(--border);
+    font-size: 11px;
+    color: var(--text-tertiary);
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <div class="masthead">
+    <div class="masthead-eyebrow">Trupanion Sub-Brand · Concept</div>
+    <div class="masthead-title">Quick Quote Prototype · Huge Inc. · May 2026</div>
+  </div>
+
   <p class="qf-eyebrow">Get a quote range</p>
   <h1 class="qf-headline">A few quick questions.</h1>
 
   <div class="step" id="step-breed">
-    <div class="step-label"><div class="check"><i class="ti ti-check" aria-hidden="true"></i></div><span>01 — What kind of pet?</span></div>
+    <div class="step-label">
+      <div class="check"><i class="ti ti-check"></i></div>
+      <span>01 — What kind of pet?</span>
+    </div>
     <div class="breed-grid" id="breed-primary"></div>
-    <button class="more-toggle" id="more-toggle" onclick="toggleMore()"><i class="ti ti-chevron-down" aria-hidden="true"></i> More breeds</button>
+    <button class="more-toggle" id="more-toggle" onclick="toggleMore()">
+      <i class="ti ti-chevron-down"></i> More breeds
+    </button>
     <div class="more-breeds" id="more-breeds"></div>
     <div class="breed-note" id="breed-note"></div>
   </div>
 
   <div class="step locked" id="step-age">
-    <div class="step-label"><div class="check"><i class="ti ti-check" aria-hidden="true"></i></div><span>02 — How old?</span></div>
+    <div class="step-label">
+      <div class="check"><i class="ti ti-check"></i></div>
+      <span>02 — How old?</span>
+    </div>
     <div class="chip-row">
       <div class="chip" data-mult="1.0"><span>Puppy / kitten</span><small>under 1 yr</small></div>
       <div class="chip" data-mult="0.93"><span>Young adult</span><small>1–3 yrs</small></div>
@@ -83,24 +358,30 @@
   </div>
 
   <div class="step locked" id="step-zip">
-    <div class="step-label"><div class="check"><i class="ti ti-check" aria-hidden="true"></i></div><span>03 — Postal code</span></div>
+    <div class="step-label">
+      <div class="check"><i class="ti ti-check"></i></div>
+      <span>03 — Postal code</span>
+    </div>
     <input type="text" class="zip-input" id="zip-input" placeholder="A1A 1A1 or 90210" maxlength="7" />
     <p class="zip-hint">Used for regional pricing only.</p>
   </div>
 
   <div class="step locked" id="step-details">
-    <div class="step-label"><div class="check"><i class="ti ti-check" aria-hidden="true"></i></div><span>04 — A couple more</span></div>
+    <div class="step-label">
+      <div class="check"><i class="ti ti-check"></i></div>
+      <span>04 — A couple more</span>
+    </div>
     <div style="display:flex; flex-direction:column; gap:12px;">
       <div>
-        <p style="font-size:13px; color:var(--color-text-secondary); margin-bottom:6px;">Sex</p>
-        <div class="two-col" id="sex-group">
+        <p class="detail-sublabel">Sex</p>
+        <div class="two-col">
           <button class="tog" data-group="sex" data-val="male" data-mult="1.0">Male</button>
           <button class="tog" data-group="sex" data-val="female" data-mult="0.97">Female</button>
         </div>
       </div>
       <div>
-        <p style="font-size:13px; color:var(--color-text-secondary); margin-bottom:6px;">Spayed or neutered?</p>
-        <div class="two-col" id="spay-group">
+        <p class="detail-sublabel">Spayed or neutered?</p>
+        <div class="two-col">
           <button class="tog" data-group="spay" data-val="yes" data-mult="0.95">Yes</button>
           <button class="tog" data-group="spay" data-val="no" data-mult="1.0">No / not sure</button>
         </div>
@@ -115,8 +396,14 @@
     <div class="result-range" id="result-range">—</div>
     <p class="result-sub" id="result-sub"></p>
     <div class="result-factors" id="result-factors"></div>
-    <button class="result-cta" onclick="sendPrompt('I want to see a full quote for my pet')">Get your exact quote →</button>
+    <a class="result-cta" href="#">Get your exact quote →</a>
   </div>
+
+  <div class="page-footer">
+    <span>Huge Inc. · Internal concept only</span>
+    <span>Not for client distribution</span>
+  </div>
+
 </div>
 
 <script>
@@ -166,8 +453,8 @@ function toggleMore() {
   moreOpen = !moreOpen;
   document.getElementById("more-breeds").classList.toggle("open", moreOpen);
   document.getElementById("more-toggle").innerHTML = moreOpen
-    ? '<i class="ti ti-chevron-up" aria-hidden="true"></i> Fewer breeds'
-    : '<i class="ti ti-chevron-down" aria-hidden="true"></i> More breeds';
+    ? '<i class="ti ti-chevron-up"></i> Fewer breeds'
+    : '<i class="ti ti-chevron-down"></i> More breeds';
 }
 
 function selectBreed(b) {
@@ -192,8 +479,8 @@ document.querySelectorAll(".chip").forEach(chip => {
   });
 });
 
-document.getElementById("zip-input").addEventListener("input", e => {
-  zipVal = e.target.value.trim();
+document.getElementById("zip-input").addEventListener("input", function() {
+  zipVal = this.value.trim();
   const ok = /^[A-Za-z]\d[A-Za-z]/.test(zipVal) || /^\d{5}/.test(zipVal);
   document.getElementById("step-zip").classList.toggle("done", ok);
   document.getElementById("step-details").classList.toggle("locked", !ok);
@@ -203,9 +490,7 @@ document.getElementById("zip-input").addEventListener("input", e => {
 document.querySelectorAll(".tog").forEach(btn => {
   btn.addEventListener("click", function() {
     const group = this.dataset.group;
-    document.querySelectorAll(`.tog[data-group="${group}"]`).forEach(b => {
-      b.classList.remove("selected");
-    });
+    document.querySelectorAll('.tog[data-group="' + group + '"]').forEach(b => b.classList.remove("selected"));
     this.classList.add("selected");
     sel[group] = { val: this.dataset.val, mult: parseFloat(this.dataset.mult) };
     if (sel.sex && sel.spay) document.getElementById("step-details").classList.add("done");
@@ -242,17 +527,22 @@ function tryShowResult() {
   const isCA = /^[A-Za-z]\d[A-Za-z]/.test(zipVal);
   const currency = isCA ? "CAD" : "USD";
 
-  document.getElementById("result-range").innerHTML = `<em>$${lo}–$${hi}</em> / mo`;
-  document.getElementById("result-sub").textContent = `Estimated range for a ${selectedAge.label.toLowerCase()} ${selectedBreed.name.toLowerCase()}. Illness, injury, and emergency vet included. ${currency}.`;
-  document.getElementById("result-factors").innerHTML = `
-    <div class="factor-row"><span>Pet type</span><span>${selectedBreed.name}</span></div>
-    <div class="factor-row"><span>Age</span><span>${selectedAge.label}</span></div>
-    <div class="factor-row"><span>Sex</span><span>${sel.sex.val === "male" ? "Male" : "Female"}</span></div>
-    <div class="factor-row"><span>Spay / neuter</span><span>${sel.spay.val === "yes" ? "Spayed / neutered" : "Intact / not sure"}</span></div>
-    <div class="factor-row"><span>Region</span><span>${isCA ? "Canadian rates" : "US rates"}</span></div>
-    <div class="factor-row"><span>Coverage</span><span>90% back · no payout cap</span></div>
-    <div class="factor-row"><span>Not included</span><span>Routine / wellness care</span></div>
-  `;
+  document.getElementById("result-range").innerHTML = '<em>$' + lo + '–$' + hi + '</em> / mo';
+  document.getElementById("result-sub").textContent =
+    "Estimated range for a " + selectedAge.label.toLowerCase() + " " +
+    selectedBreed.name.toLowerCase() + ". Illness, injury, and emergency vet included. " + currency + ".";
+
+  document.getElementById("result-factors").innerHTML =
+    '<div class="factor-row"><span>Pet type</span><span>' + selectedBreed.name + '</span></div>' +
+    '<div class="factor-row"><span>Age</span><span>' + selectedAge.label + '</span></div>' +
+    '<div class="factor-row"><span>Sex</span><span>' + (sel.sex.val === "male" ? "Male" : "Female") + '</span></div>' +
+    '<div class="factor-row"><span>Spay / neuter</span><span>' + (sel.spay.val === "yes" ? "Spayed / neutered" : "Intact / not sure") + '</span></div>' +
+    '<div class="factor-row"><span>Region</span><span>' + (isCA ? "Canadian rates" : "US rates") + '</span></div>' +
+    '<div class="factor-row"><span>Coverage</span><span>90% back · no payout cap</span></div>' +
+    '<div class="factor-row"><span>Not included</span><span>Routine / wellness care</span></div>';
+
   card.classList.add("show");
 }
 </script>
+</body>
+</html>
