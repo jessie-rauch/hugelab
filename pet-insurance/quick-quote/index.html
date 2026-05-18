@@ -72,28 +72,21 @@
     border-radius: 44px;
     background: var(--bg);
     border: 8px solid #111111;
-    position: relative;
     overflow: hidden;
     box-shadow: 0 24px 64px rgba(0,0,0,0.18);
   }
 
   .phone-notch {
-    width: 120px;
-    height: 28px;
+    width: 120px; height: 28px;
     background: #111111;
     border-radius: 0 0 20px 20px;
     margin: 0 auto;
-    position: relative;
-    z-index: 10;
   }
 
   .status-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: flex; justify-content: space-between; align-items: center;
     padding: 6px 16px 4px;
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 12px; font-weight: 500;
     color: var(--text-primary);
   }
   .status-icons { display: flex; gap: 4px; align-items: center; }
@@ -101,196 +94,80 @@
 
   .phone-screen {
     height: 720px;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow-y: auto; overflow-x: hidden;
     padding: 16px 20px 48px;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    scrollbar-width: none; -ms-overflow-style: none;
     scroll-behavior: smooth;
   }
   .phone-screen::-webkit-scrollbar { display: none; }
 
   .phone-home-bar {
     height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     background: var(--bg);
   }
   .phone-home-bar::after {
-    content: '';
-    display: block;
-    width: 100px;
-    height: 4px;
-    background: #111111;
-    border-radius: 2px;
-    opacity: 0.3;
+    content: ''; display: block;
+    width: 100px; height: 4px;
+    background: #111; border-radius: 2px; opacity: 0.3;
   }
 
   .app-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: flex; align-items: center; justify-content: space-between;
     padding: 8px 0 12px;
     border-bottom: 0.5px solid var(--border);
     margin-bottom: 20px;
   }
-  .app-bar-brand {
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--text-primary);
-    letter-spacing: -0.01em;
-  }
+  .app-bar-brand { font-size: 15px; font-weight: 500; color: var(--text-primary); letter-spacing: -0.01em; }
   .app-bar-brand em { color: var(--accent); font-style: normal; }
 
-  .qf-eyebrow {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-tertiary);
-    margin-bottom: 4px;
-  }
-  .qf-headline {
-    font-size: 22px;
-    font-weight: 500;
-    color: var(--text-primary);
-    line-height: 1.2;
-    margin-bottom: 20px;
-  }
+  .qf-eyebrow { font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 4px; }
+  .qf-headline { font-size: 22px; font-weight: 500; color: var(--text-primary); line-height: 1.2; margin-bottom: 20px; }
 
   .step { margin-bottom: 18px; transition: opacity 0.3s; }
   .step.locked { opacity: 0.3; pointer-events: none; }
 
-  .step-label {
-    font-size: 11px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--text-tertiary);
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  .step-label .check {
-    display: none;
-    width: 14px; height: 14px;
-    border-radius: 50%;
-    background: var(--accent);
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
+  .step-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-tertiary); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+  .step-label .check { display: none; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); align-items: center; justify-content: center; flex-shrink: 0; }
   .step-label .check i { font-size: 9px; color: white; }
   .step.done .step-label .check { display: flex; }
 
   .breed-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
-  .breed-card {
-    border: 1.5px solid var(--border-secondary);
-    border-radius: var(--radius-lg);
-    padding: 8px 10px;
-    cursor: pointer;
-    transition: all 0.15s;
-    background: var(--bg);
-  }
+  .breed-card { border: 1.5px solid var(--border-secondary); border-radius: var(--radius-lg); padding: 8px 10px; cursor: pointer; transition: all 0.15s; background: var(--bg); }
   .breed-card:hover { border-color: var(--accent); }
   .breed-card.selected { background: var(--accent-dim); border-color: var(--accent); }
   .breed-card-name { font-size: 12px; font-weight: 500; color: var(--text-primary); line-height: 1.2; margin-bottom: 2px; }
   .breed-card.selected .breed-card-name { color: var(--accent); }
   .breed-card-sub { font-size: 10px; color: var(--text-tertiary); line-height: 1.3; }
 
-  .more-toggle {
-    font-size: 12px;
-    color: var(--text-secondary);
-    cursor: pointer;
-    padding: 3px 0;
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    background: none;
-    border: none;
-    font-family: inherit;
-  }
+  .more-toggle { font-size: 12px; color: var(--text-secondary); cursor: pointer; padding: 3px 0; display: flex; align-items: center; gap: 3px; background: none; border: none; font-family: inherit; }
   .more-toggle:hover { color: var(--accent); }
   .more-breeds { display: none; }
   .more-breeds.open { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
 
-  .breed-note {
-    font-size: 11px;
-    color: var(--text-secondary);
-    margin-top: 6px;
-    line-height: 1.45;
-    padding: 7px 10px;
-    border-radius: var(--radius-md);
-    background: var(--bg-secondary);
-    display: none;
-  }
+  .breed-note { font-size: 11px; color: var(--text-secondary); margin-top: 6px; line-height: 1.45; padding: 7px 10px; border-radius: var(--radius-md); background: var(--bg-secondary); display: none; }
   .breed-note.show { display: block; }
 
   .chip-row { display: flex; gap: 6px; flex-wrap: wrap; }
-  .chip {
-    padding: 6px 12px;
-    border-radius: 24px;
-    font-size: 12px;
-    border: 1.5px solid var(--border-secondary);
-    background: var(--bg);
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all 0.15s;
-    text-align: center;
-    font-family: inherit;
-  }
+  .chip { padding: 6px 12px; border-radius: 24px; font-size: 12px; border: 1.5px solid var(--border-secondary); background: var(--bg); color: var(--text-primary); cursor: pointer; transition: all 0.15s; text-align: center; font-family: inherit; }
   .chip small { display: block; font-size: 10px; color: var(--text-tertiary); }
   .chip:hover { border-color: var(--accent); color: var(--accent); }
   .chip.selected { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 500; }
   .chip.selected small { color: var(--accent); opacity: 0.7; }
 
-  .zip-input {
-    width: 100%;
-    font-size: 16px;
-    font-weight: 500;
-    padding: 10px 12px;
-    border-radius: var(--radius-lg);
-    border: 1.5px solid var(--border-secondary);
-    background: var(--bg);
-    color: var(--text-primary);
-    letter-spacing: 0.08em;
-    font-family: inherit;
-  }
+  .zip-input { width: 100%; font-size: 16px; font-weight: 500; padding: 10px 12px; border-radius: var(--radius-lg); border: 1.5px solid var(--border-secondary); background: var(--bg); color: var(--text-primary); letter-spacing: 0.08em; font-family: inherit; }
   .zip-input:focus { outline: none; border-color: var(--accent); }
   .zip-hint { font-size: 11px; color: var(--text-tertiary); margin-top: 5px; }
 
   .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-  .tog {
-    border: 1.5px solid var(--border-secondary);
-    border-radius: var(--radius-lg);
-    padding: 9px 10px;
-    cursor: pointer;
-    background: var(--bg);
-    font-size: 13px;
-    color: var(--text-primary);
-    font-family: inherit;
-    transition: all 0.15s;
-    text-align: center;
-    display: block;
-    width: 100%;
-  }
+  .tog { border: 1.5px solid var(--border-secondary); border-radius: var(--radius-lg); padding: 9px 10px; cursor: pointer; background: var(--bg); font-size: 13px; color: var(--text-primary); font-family: inherit; transition: all 0.15s; text-align: center; display: block; width: 100%; }
   .tog:hover { border-color: var(--accent); color: var(--accent); }
   .tog.selected { background: var(--accent-dim) !important; border-color: var(--accent) !important; color: var(--accent) !important; font-weight: 500; }
 
   .detail-sublabel { font-size: 12px; color: var(--text-secondary); margin-bottom: 5px; }
-
   .divider-line { height: 0.5px; background: var(--border); margin: 16px 0; }
 
-  .result-card {
-    border-radius: var(--radius-lg);
-    border: 1.5px solid var(--accent);
-    background: var(--bg);
-    padding: 14px 14px 12px;
-    display: none;
-    animation: fadeUp 0.3s ease;
-  }
+  .result-card { border-radius: var(--radius-lg); border: 1.5px solid var(--accent); background: var(--bg); padding: 14px 14px 12px; display: none; animation: fadeUp 0.3s ease; }
   .result-card.show { display: block; }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -298,25 +175,11 @@
   .result-range { font-size: 26px; font-weight: 500; color: var(--text-primary); line-height: 1.1; margin-bottom: 3px; }
   .result-range em { color: var(--accent); font-style: normal; }
   .result-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 10px; line-height: 1.45; }
-
   .result-factors { border-top: 0.5px solid var(--border); padding-top: 8px; display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
   .factor-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); }
   .factor-row span:last-child { font-weight: 500; color: var(--text-primary); }
 
-  .result-cta {
-    display: block;
-    width: 100%;
-    padding: 11px;
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: var(--radius-lg);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    text-align: center;
-    font-family: inherit;
-  }
+  .result-cta { display: block; width: 100%; padding: 11px; background: var(--accent); color: white; border: none; border-radius: var(--radius-lg); font-size: 14px; font-weight: 500; cursor: pointer; text-align: center; font-family: inherit; }
   .result-cta:hover { opacity: 0.9; }
 </style>
 </head>
@@ -329,7 +192,6 @@
 
 <div class="phone">
   <div class="phone-notch"></div>
-
   <div class="status-bar">
     <span>9:41</span>
     <div class="status-icons">
@@ -408,26 +270,31 @@
 
 <script>
 const BREEDS = [
-  { name: "Mixed breed dog", sub: "Mutt / rescue / unknown mix", base: [40, 60], note: "Mixed breed dogs tend to be healthier than purebreds — hybrid vigor is real.", primary: true },
-  { name: "Mixed breed cat", sub: "Domestic / rescue / unknown mix", base: [28, 44], note: "Most cats in Canada and the US are mixed breed. Lower coverage costs than pedigree cats.", primary: true },
-  { name: "American Shorthair", sub: "Common domestic cat", base: [30, 46], note: "Hardy, relatively low-risk. Dental disease is the main concern with age.", primary: true },
-  { name: "French Bulldog", sub: "Flat-faced, higher health needs", base: [65, 92], note: "Respiratory (BOAS), spinal, and skin conditions are common. One of the higher-cost breeds.", primary: true },
-  { name: "Golden Retriever", sub: "Friendly family dog", base: [50, 75], note: "Relatively healthy early. Cancer risk increases after age 6.", primary: true },
-  { name: "Labrador Retriever", sub: "Common, joint-prone", base: [45, 68], note: "Hip and joint issues are common. Good general coverage candidate.", primary: true },
-  { name: "Small dog (under 20 lbs)", sub: "Chihuahua, Shih Tzu, Pom…", base: [36, 54], note: "Lower base premiums. Dental and tracheal issues common in toy breeds.", primary: false },
-  { name: "Medium dog (20–50 lbs)", sub: "Beagle, Cocker Spaniel, Aussie…", base: [42, 62], note: "Generally moderate coverage needs.", primary: false },
-  { name: "Large dog (50–90 lbs)", sub: "Shepherd, Husky, Boxer…", base: [50, 72], note: "Joint and orthopedic costs are the main driver.", primary: false },
-  { name: "Giant breed dog (90+ lbs)", sub: "Great Dane, Mastiff, Newf…", base: [62, 88], note: "Significant orthopedic, cardiac, and bloat risks.", primary: false },
-  { name: "Bulldog", sub: "English / American", base: [72, 100], note: "Among the most expensive breeds to insure.", primary: false },
-  { name: "Dachshund", sub: "Standard or miniature", base: [50, 72], note: "Spinal disease (IVDD) is extremely common.", primary: false },
-  { name: "German Shepherd", sub: "Working dog, joint-prone", base: [55, 80], note: "Hip dysplasia is the main actuarial consideration.", primary: false },
-  { name: "Cavalier King Charles", sub: "Gentle, heart-prone", base: [65, 92], note: "MVD (heart disease) is nearly universal with age.", primary: false },
-  { name: "Poodle (any size)", sub: "Toy, miniature, or standard", base: [40, 60], note: "Generally healthy. Ear issues and some joint concerns in miniatures.", primary: false },
-  { name: "Maine Coon", sub: "Large cat, heart-prone", base: [42, 64], note: "HCM (heart disease) is a significant breed risk.", primary: false },
-  { name: "Bengal Cat", sub: "Active, digestive-prone", base: [38, 58], note: "HCM and digestive issues in some lines.", primary: false },
-  { name: "Siamese / Oriental", sub: "Vocal, slender cats", base: [35, 52], note: "Dental and respiratory concerns.", primary: false },
-  { name: "Persian / Himalayan", sub: "Flat-faced cats", base: [48, 70], note: "Respiratory, eye, and dental issues common in flat-faced breeds.", primary: false },
+  { name: "Mixed breed dog", sub: "Mutt / rescue / unknown mix", base: [40, 60], species: "dog", note: "Mixed breed dogs tend to be healthier than purebreds — hybrid vigor is real.", primary: true },
+  { name: "Mixed breed cat", sub: "Domestic / rescue / unknown mix", base: [28, 44], species: "cat", note: "Most cats in Canada and the US are mixed breed. Lower coverage costs than pedigree cats.", primary: true },
+  { name: "American Shorthair", sub: "Common domestic cat", base: [30, 46], species: "cat", note: "Hardy, relatively low-risk. Dental disease is the main concern with age.", primary: true },
+  { name: "French Bulldog", sub: "Flat-faced, higher health needs", base: [65, 92], species: "dog", note: "Respiratory (BOAS), spinal, and skin conditions are common. One of the higher-cost breeds.", primary: true },
+  { name: "Golden Retriever", sub: "Friendly family dog", base: [50, 75], species: "dog", note: "Relatively healthy early. Cancer risk increases after age 6.", primary: true },
+  { name: "Labrador Retriever", sub: "Common, joint-prone", base: [45, 68], species: "dog", note: "Hip and joint issues are common. Good general coverage candidate.", primary: true },
+  { name: "Small dog (under 20 lbs)", sub: "Chihuahua, Shih Tzu, Pom…", base: [36, 54], species: "dog", note: "Lower base premiums. Dental and tracheal issues common in toy breeds.", primary: false },
+  { name: "Medium dog (20–50 lbs)", sub: "Beagle, Cocker Spaniel, Aussie…", base: [42, 62], species: "dog", note: "Generally moderate coverage needs.", primary: false },
+  { name: "Large dog (50–90 lbs)", sub: "Shepherd, Husky, Boxer…", base: [50, 72], species: "dog", note: "Joint and orthopedic costs are the main driver.", primary: false },
+  { name: "Giant breed dog (90+ lbs)", sub: "Great Dane, Mastiff, Newf…", base: [62, 88], species: "dog", note: "Significant orthopedic, cardiac, and bloat risks.", primary: false },
+  { name: "Bulldog", sub: "English / American", base: [72, 100], species: "dog", note: "Among the most expensive breeds to insure.", primary: false },
+  { name: "Dachshund", sub: "Standard or miniature", base: [50, 72], species: "dog", note: "Spinal disease (IVDD) is extremely common.", primary: false },
+  { name: "German Shepherd", sub: "Working dog, joint-prone", base: [55, 80], species: "dog", note: "Hip dysplasia is the main actuarial consideration.", primary: false },
+  { name: "Cavalier King Charles", sub: "Gentle, heart-prone", base: [65, 92], species: "dog", note: "MVD (heart disease) is nearly universal with age.", primary: false },
+  { name: "Poodle (any size)", sub: "Toy, miniature, or standard", base: [40, 60], species: "dog", note: "Generally healthy. Ear issues and some joint concerns in miniatures.", primary: false },
+  { name: "Maine Coon", sub: "Large cat, heart-prone", base: [42, 64], species: "cat", note: "HCM (heart disease) is a significant breed risk.", primary: false },
+  { name: "Bengal Cat", sub: "Active, digestive-prone", base: [38, 58], species: "cat", note: "HCM and digestive issues in some lines.", primary: false },
+  { name: "Siamese / Oriental", sub: "Vocal, slender cats", base: [35, 52], species: "cat", note: "Dental and respiratory concerns.", primary: false },
+  { name: "Persian / Himalayan", sub: "Flat-faced cats", base: [48, 70], species: "cat", note: "Respiratory, eye, and dental issues common in flat-faced breeds.", primary: false },
 ];
+
+const AGE_LABELS = {
+  dog: ["Puppy", "Young adult", "Adult", "Senior"],
+  cat: ["Kitten", "Young adult", "Adult", "Senior"],
+};
 
 let selectedBreed = null, selectedAge = null, zipVal = "";
 let sel = { sex: null, spay: null };
@@ -443,11 +310,21 @@ function scrollTo(el, offset) {
   }, 80);
 }
 
+function updateAgeLabels(species) {
+  var labels = AGE_LABELS[species] || AGE_LABELS.dog;
+  document.querySelectorAll(".chip").forEach(function(chip, i) {
+    chip.querySelector("span").textContent = labels[i];
+    if (chip.classList.contains("selected") && selectedAge) {
+      selectedAge.label = labels[i];
+    }
+  });
+}
+
 function renderBreedGrid(id, filter) {
-  const c = document.getElementById(id);
+  var c = document.getElementById(id);
   c.innerHTML = "";
   BREEDS.filter(filter).forEach(function(b) {
-    const d = document.createElement("div");
+    var d = document.createElement("div");
     d.className = "breed-card";
     d.dataset.name = b.name;
     d.innerHTML = '<div class="breed-card-name">' + b.name + '</div><div class="breed-card-sub">' + b.sub + '</div>';
@@ -473,6 +350,7 @@ function selectBreed(b) {
   document.getElementById("breed-note").textContent = b.note;
   document.getElementById("breed-note").classList.add("show");
   document.getElementById("step-breed").classList.add("done");
+  updateAgeLabels(b.species);
   var ageStep = document.getElementById("step-age");
   ageStep.classList.remove("locked");
   scrollTo(ageStep);
@@ -548,7 +426,10 @@ function tryShowResult() {
   var currency = isCA ? "CAD" : "USD";
 
   document.getElementById("result-range").innerHTML = '<em>$' + lo + '–$' + hi + '</em> / mo';
-  document.getElementById("result-sub").textContent = "Estimated for a " + selectedAge.label.toLowerCase() + " " + selectedBreed.name.toLowerCase() + ". Illness, injury & emergency vet. " + currency + ".";
+  document.getElementById("result-sub").textContent =
+    "Estimated for a " + selectedAge.label.toLowerCase() + " " +
+    selectedBreed.name.toLowerCase() + ". Illness, injury & emergency vet. " + currency + ".";
+
   document.getElementById("result-factors").innerHTML =
     '<div class="factor-row"><span>Pet type</span><span>' + selectedBreed.name + '</span></div>' +
     '<div class="factor-row"><span>Age</span><span>' + selectedAge.label + '</span></div>' +
