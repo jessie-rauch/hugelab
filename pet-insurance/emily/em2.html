@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>em2 — Tell us about Daisy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #111; --ink2: #333;
+  --gray-600: #555; --gray-500: #6b6b6b; --gray-400: #888; --gray-300: #aaa;
+  --gray-200: #d8d8d8; --gray-100: #ebebeb; --gray-50: #f3f3f1; --gray-25: #f9f9f7;
+  --white: #fff; --mono: 'Courier Prime', monospace; --sans: 'Inter', sans-serif;
+}
+html, body { height: 100%; }
+body { background: var(--gray-50); color: var(--ink); font-family: var(--sans); display: flex; flex-direction: column; min-height: 100vh; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 15px 32px; background: var(--white); border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.topbar-left { display: flex; flex-direction: column; gap: 3px; }
+.topbar-project { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; }
+.topbar-title { font-size: 15px; font-weight: 600; color: var(--ink); }
+.screen-nav { display: flex; gap: 6px; }
+.screen-nav a { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-decoration: none; padding: 6px 14px; border: 1.5px solid var(--gray-200); border-radius: 4px; transition: all 0.15s; background: var(--white); }
+.screen-nav a:hover { color: var(--ink); border-color: var(--gray-400); }
+.screen-nav a.active { color: var(--white); border-color: var(--ink); background: var(--ink); font-weight: 700; }
+.workspace { flex: 1; display: grid; grid-template-columns: 1fr 440px; min-height: 0; overflow: hidden; }
+.phone-stage { display: flex; align-items: center; justify-content: center; padding: 48px 40px; background: var(--gray-50); }
+.phone-frame { width: 340px; min-width: 340px; height: 680px; border-radius: 42px; overflow: hidden; box-shadow: 0 0 0 9px #1a1a1a, 0 0 0 10px #2e2e2e, 0 40px 80px rgba(0,0,0,0.22); display: flex; flex-direction: column; background: #fff; flex-shrink: 0; }
+.phone-status { display: flex; align-items: center; justify-content: space-between; padding: 13px 22px 6px; flex-shrink: 0; background: #fff; }
+.phone-status-time { font-size: 13px; font-weight: 700; color: #111; }
+.phone-status-icons { display: flex; gap: 5px; }
+.phone-status-dot { width: 5px; height: 5px; border-radius: 50%; background: #ccc; }
+.phone-status-dot.on { background: #333; }
+.phone-brand-bar { padding: 9px 20px 13px; border-bottom: 1.5px solid var(--gray-100); background: var(--white); flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; }
+.phone-brand-name { font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--ink); }
+.progress-track { display: flex; gap: 5px; }
+.progress-pip { width: 24px; height: 3px; background: var(--gray-100); border-radius: 2px; }
+.progress-pip.done { background: var(--ink); }
+.progress-pip.active { background: var(--gray-400); }
+.phone-content { flex: 1; overflow-y: auto; padding: 18px 16px; display: flex; flex-direction: column; gap: 12px; background: var(--gray-50); }
+.phone-content::-webkit-scrollbar { display: none; }
+@keyframes pageIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.phone-content { animation: pageIn 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+.pet-card { background: var(--white); border: 1.5px solid var(--gray-100); border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 13px; }
+.pet-avatar { width: 44px; height: 44px; background: var(--gray-50); border: 1.5px solid var(--gray-100); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.pet-name { font-size: 16px; font-weight: 700; color: var(--ink); }
+.pet-detail { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+.q-block { background: var(--white); border: 1.5px solid var(--gray-100); border-radius: 12px; padding: 16px; }
+.q-num { font-family: var(--mono); font-size: 11px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; font-weight: 700; }
+.q-text { font-size: 16px; font-weight: 400; color: var(--ink); line-height: 1.4; margin-bottom: 13px; }
+.q-text strong { font-weight: 700; }
+.chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.chip { padding: 8px 13px; border: 1.5px solid var(--gray-200); border-radius: 7px; font-size: 13px; color: var(--gray-600); cursor: pointer; transition: all 0.12s; background: var(--white); }
+.chip:hover { border-color: var(--gray-400); color: var(--ink); }
+.chip.sel { border-color: var(--ink); color: var(--ink); background: var(--gray-50); font-weight: 700; }
+.slider-area { padding: 2px 0; }
+.slider-segs { display: flex; gap: 4px; margin-bottom: 9px; }
+.seg { height: 5px; flex: 1; background: var(--gray-100); border-radius: 3px; cursor: pointer; transition: background 0.1s; }
+.seg.fill { background: var(--ink); }
+.slider-labs { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--gray-400); }
+.slider-out { font-size: 15px; font-weight: 700; color: var(--ink); margin-top: 9px; }
+.slider-hint { font-family: var(--mono); font-size: 11px; color: var(--gray-400); margin-top: 4px; transition: color 0.2s; }
+.slider-hint.warn { color: #c0703a; }
+.cta-btn { width: 100%; padding: 14px; background: var(--ink); color: var(--white); border: none; font-size: 14px; font-weight: 600; border-radius: 10px; cursor: pointer; transition: opacity 0.15s; font-family: var(--sans); }
+.cta-btn:hover { opacity: 0.85; }
+.cta-note { font-size: 12px; color: var(--gray-400); text-align: center; margin-top: 7px; }
+.phone-home { padding: 10px 0 12px; display: flex; justify-content: center; flex-shrink: 0; background: #fff; }
+.phone-home-bar { width: 110px; height: 4px; background: #e0e0e0; border-radius: 2px; }
+.sidebar { border-left: 1.5px solid var(--gray-100); display: flex; flex-direction: column; overflow: hidden; background: var(--white); }
+.sidebar-header { padding: 26px 26px 22px; border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.sidebar-eyebrow { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-bottom: 8px; }
+.sidebar-title { font-size: 18px; font-weight: 700; color: var(--ink); line-height: 1.35; }
+.sidebar-scroll { flex: 1; overflow-y: auto; padding: 26px; display: flex; flex-direction: column; gap: 24px; }
+.sidebar-scroll::-webkit-scrollbar { width: 4px; }
+.sidebar-scroll::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 2px; }
+.sb-block { display: flex; flex-direction: column; gap: 8px; }
+.sb-label { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+.sb-title { font-size: 16px; font-weight: 700; color: var(--ink); line-height: 1.4; }
+.sb-body { font-size: 15px; color: var(--gray-600); line-height: 1.7; }
+.sb-divider { border: none; border-top: 1.5px solid var(--gray-100); }
+.sb-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
+.sb-tag { font-family: var(--mono); font-size: 12px; color: var(--gray-500); border: 1.5px solid var(--gray-200); padding: 4px 10px; border-radius: 4px; background: var(--gray-25); }
+.sb-tag.open { border-style: dashed; color: var(--gray-400); }
+.sb-code { font-family: var(--mono); font-size: 14px; color: var(--gray-500); line-height: 2.1; background: var(--gray-25); padding: 14px 16px; border-radius: 5px; border: 1.5px solid var(--gray-100); white-space: pre; }
+.sb-code em { color: var(--ink2); font-style: normal; font-weight: 700; }
+.footer { padding: 14px 32px; border-top: 1.5px solid var(--gray-100); background: var(--white); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.footer-back { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-decoration: none; transition: color 0.15s; font-weight: 700; }
+.footer-back:hover { color: var(--ink); }
+.next-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: var(--ink); border: none; color: var(--white); font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; font-weight: 700; cursor: pointer; text-decoration: none; transition: opacity 0.15s; border-radius: 4px; }
+.next-btn:hover { opacity: 0.8; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-project">Trupanion Sub-Brand — Emily's Flow</div>
+    <div class="topbar-title">How does context travel to reduce onboarding friction?</div>
+  </div>
+  <div class="screen-nav">
+    <a href="em0.html">em0</a><a href="em1.html">em1</a>
+    <a href="em2.html" class="active">em2</a><a href="em3.html">em3</a>
+  </div>
+</div>
+<div class="workspace">
+  <div class="phone-stage">
+    <div class="phone-frame">
+      <div class="phone-status">
+        <span class="phone-status-time">9:41</span>
+        <div class="phone-status-icons">
+          <div class="phone-status-dot on"></div><div class="phone-status-dot on"></div>
+          <div class="phone-status-dot on"></div><div class="phone-status-dot"></div>
+        </div>
+      </div>
+      <div class="phone-brand-bar">
+        <div class="phone-brand-name">[Brand]</div>
+        <div class="progress-track">
+          <div class="progress-pip done"></div><div class="progress-pip done"></div>
+          <div class="progress-pip active"></div><div class="progress-pip"></div>
+        </div>
+      </div>
+      <div class="phone-content">
+        <div class="pet-card">
+          <div class="pet-avatar">🐾</div>
+          <div><div class="pet-name">Daisy</div><div class="pet-detail">French Bulldog · 9 weeks</div></div>
+        </div>
+        <div class="q-block">
+          <div class="q-num">01 of 03</div>
+          <div class="q-text">Has <strong>Daisy</strong> seen a vet yet?</div>
+          <div class="chips">
+            <div class="chip">Not yet</div>
+            <div class="chip sel">First appointment soon</div>
+            <div class="chip">Yes, all clear</div>
+            <div class="chip">Yes, something flagged</div>
+          </div>
+        </div>
+        <div class="q-block">
+          <div class="q-num">02 of 03</div>
+          <div class="q-text">What worries you most right now?</div>
+          <div class="chips">
+            <div class="chip">Unexpected vet bills</div>
+            <div class="chip">Breed-specific conditions</div>
+            <div class="chip">Emergency care</div>
+            <div class="chip sel">Just want to be prepared</div>
+          </div>
+        </div>
+        <div class="q-block">
+          <div class="q-num">03 of 03</div>
+          <div class="q-text">What's your rough monthly budget?</div>
+          <div class="slider-area">
+            <div class="slider-segs" id="segs">
+              <div class="seg fill" data-v="1"></div><div class="seg fill" data-v="2"></div>
+              <div class="seg fill" data-v="3"></div><div class="seg" data-v="4"></div><div class="seg" data-v="5"></div>
+            </div>
+            <div class="slider-labs"><span>$30</span><span>$50</span><span>$75</span><span>$100</span><span>$125+</span></div>
+            <div class="slider-out" id="sliderOut">Up to $75 / mo</div>
+            <div class="slider-hint" id="sliderHint">Suggested for French Bulldog · 9 weeks</div>
+          </div>
+        </div>
+        <div>
+          <button class="cta-btn" onclick="window.location.href='em3.html'">See Daisy's coverage →</button>
+          <div class="cta-note">Still no payment info. Just a look.</div>
+        </div>
+      </div>
+      <div class="phone-home"><div class="phone-home-bar"></div></div>
+    </div>
+  </div>
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-eyebrow">em2 — Tell us about Daisy</div>
+      <div class="sidebar-title">Investment before transaction</div>
+    </div>
+    <div class="sidebar-scroll">
+      <div class="sb-block">
+        <div class="sb-label">Only 3 questions — not 8</div>
+        <div class="sb-title">Context from em0 eliminated the rest.</div>
+        <div class="sb-body">Name, breed, life stage, and the reason she's here were confirmed or inferred upstream. What remains is genuinely unknown: vet status, primary worry, budget. Three questions instead of eight isn't a UX trick — it's what context travel actually buys.</div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">The Duolingo / Calm model</div>
+        <div class="sb-title">By the time she reaches pricing, she's already invested.</div>
+        <div class="sb-body">Three questions about Daisy — not three fields about coverage tiers. Emily is building a profile, not filling out an application. She's thinking about her dog.</div>
+        <div class="sb-tags">
+          <span class="sb-tag">goal-first not product-first</span>
+          <span class="sb-tag">self in the stakes</span>
+        </div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">Budget before pricing</div>
+        <div class="sb-title">Pricing transparency starts here, not at checkout.</div>
+        <div class="sb-body">Asking budget before showing a price means the price in em3 lands inside an expectation Emily already set. It's a confirmation, not a disclosure. That's the Gen Z pricing pattern applied at the right moment.</div>
+        <div class="sb-tags"><span class="sb-tag open">show estimated range live as she drags?</span></div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">What travels to em3</div>
+        <div class="sb-code">vet_status      = <em>"first appt soon"</em>
+primary_worry   = <em>"just_be_prepared"</em>
+budget_ceiling  = <em>"$75/mo (suggested)"</em>
+→ em3 leads with preparation, not fear</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer">
+  <a href="em1.html" class="footer-back">← em1 — Context arrival</a>
+  <a href="em3.html" class="next-btn">em3 — Daisy's coverage →</a>
+</div>
+<script>
+  const labs = ['Up to $30 / mo','Up to $50 / mo','Up to $75 / mo','Up to $100 / mo','$125+ / mo'];
+  const hints = [
+    { text: 'Lower than typical for this breed — coverage may be limited', warn: true },
+    { text: 'May not cover all Frenchie breed-specific conditions', warn: true },
+    { text: 'Suggested for French Bulldog · 9 weeks', warn: false },
+    { text: 'Good coverage — consider adding wellness for routine care', warn: false },
+    { text: 'Comprehensive — includes routine care + wellness', warn: false }
+  ];
+  document.querySelectorAll('.seg').forEach(s => {
+    s.addEventListener('click', function() {
+      const v = parseInt(this.dataset.v);
+      document.querySelectorAll('.seg').forEach(x => x.classList.toggle('fill', parseInt(x.dataset.v) <= v));
+      document.getElementById('sliderOut').textContent = labs[v-1];
+      const hint = document.getElementById('sliderHint');
+      hint.textContent = hints[v-1].text;
+      hint.classList.toggle('warn', hints[v-1].warn);
+    });
+  });
+  document.querySelectorAll('.chip').forEach(c => {
+    c.addEventListener('click', function() {
+      this.closest('.chips').querySelectorAll('.chip').forEach(x => x.classList.remove('sel'));
+      this.classList.add('sel');
+    });
+  });
+</script>
+</body>
+</html>
