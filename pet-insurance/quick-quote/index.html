@@ -1,0 +1,258 @@
+
+<style>
+  :root { --accent: #FF0090; --accent-dim: rgba(255,0,144,0.1); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  .qf-wrap { max-width: 420px; margin: 0 auto; padding: 2rem 1rem 3rem; font-family: var(--font-sans); }
+  .qf-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-tertiary); margin-bottom: 0.5rem; }
+  .qf-headline { font-size: 22px; font-weight: 500; color: var(--color-text-primary); line-height: 1.25; margin-bottom: 2rem; }
+  .step { margin-bottom: 1.5rem; transition: opacity 0.2s; }
+  .step.locked { opacity: 0.3; pointer-events: none; }
+  .step-label { font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-tertiary); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 6px; }
+  .step-label .check { display: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); align-items: center; justify-content: center; }
+  .step-label .check i { font-size: 10px; color: white; }
+  .step.done .step-label .check { display: flex; }
+
+  .breed-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+  .breed-card { border: 1.5px solid var(--color-border-secondary); border-radius: var(--border-radius-lg); padding: 10px 12px; cursor: pointer; transition: all 0.15s; background: var(--color-background-primary); }
+  .breed-card:hover { border-color: var(--accent); }
+  .breed-card.selected { background: var(--accent-dim); border-color: var(--accent); }
+  .breed-card-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); line-height: 1.2; margin-bottom: 3px; }
+  .breed-card.selected .breed-card-name { color: var(--accent); }
+  .breed-card-sub { font-size: 11px; color: var(--color-text-tertiary); line-height: 1.35; }
+
+  .more-toggle { font-size: 13px; color: var(--color-text-secondary); cursor: pointer; padding: 4px 0; display: flex; align-items: center; gap: 4px; background: none; border: none; font-family: var(--font-sans); }
+  .more-toggle:hover { color: var(--accent); }
+  .more-breeds { display: none; }
+  .more-breeds.open { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  .breed-note { font-size: 12px; color: var(--color-text-secondary); margin-top: 8px; line-height: 1.5; padding: 8px 12px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); display: none; }
+  .breed-note.show { display: block; }
+
+  .chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { padding: 8px 16px; border-radius: 24px; font-size: 14px; border: 1.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); cursor: pointer; transition: all 0.15s; text-align: center; }
+  .chip small { display: block; font-size: 11px; color: var(--color-text-tertiary); }
+  .chip:hover { border-color: var(--accent); color: var(--accent); }
+  .chip.selected { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 500; }
+  .chip.selected small { color: var(--accent); opacity: 0.7; }
+
+  .zip-input { width: 100%; font-size: 18px; font-weight: 500; padding: 12px 14px; border-radius: var(--border-radius-lg); border: 1.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); letter-spacing: 0.1em; }
+  .zip-input:focus { outline: none; border-color: var(--accent); }
+  .zip-hint { font-size: 12px; color: var(--color-text-tertiary); margin-top: 6px; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tog { border: 1.5px solid var(--color-border-secondary); border-radius: var(--border-radius-lg); padding: 11px 12px; cursor: pointer; background: var(--color-background-primary); font-size: 14px; color: var(--color-text-primary); font-family: var(--font-sans); transition: background 0.15s, border-color 0.15s, color 0.15s; text-align: center; display: block; width: 100%; }
+  .tog:hover { border-color: var(--accent); color: var(--accent); }
+  .tog.selected { background: var(--accent-dim) !important; border-color: var(--accent) !important; color: var(--accent) !important; font-weight: 500; }
+
+  .divider-line { height: 0.5px; background: var(--color-border-tertiary); margin: 1.5rem 0; }
+
+  .result-card { border-radius: var(--border-radius-lg); border: 1.5px solid var(--accent); background: var(--color-background-primary); padding: 1.25rem 1.25rem 1rem; animation: fadeUp 0.3s ease; display: none; }
+  .result-card.show { display: block; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .result-eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--color-text-tertiary); margin-bottom: 0.5rem; }
+  .result-range { font-size: 30px; font-weight: 500; color: var(--color-text-primary); line-height: 1.1; margin-bottom: 0.25rem; }
+  .result-range em { color: var(--accent); font-style: normal; }
+  .result-sub { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 1rem; line-height: 1.5; }
+  .result-factors { border-top: 0.5px solid var(--color-border-tertiary); padding-top: 0.75rem; display: flex; flex-direction: column; gap: 6px; }
+  .factor-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--color-text-secondary); }
+  .factor-row span:last-child { font-weight: 500; color: var(--color-text-primary); }
+  .result-cta { display: block; width: 100%; margin-top: 1rem; padding: 13px; background: var(--accent); color: white; border: none; border-radius: var(--border-radius-lg); font-size: 15px; font-weight: 500; cursor: pointer; text-align: center; }
+  .result-cta:hover { opacity: 0.9; }
+</style>
+
+<div class="qf-wrap">
+  <h2 class="sr-only">Quick quote estimator</h2>
+  <p class="qf-eyebrow">Get a quote range</p>
+  <h1 class="qf-headline">A few quick questions.</h1>
+
+  <div class="step" id="step-breed">
+    <div class="step-label"><div class="check"><i class="ti ti-check" aria-hidden="true"></i></div><span>01 — What kind of pet?</span></div>
+    <div class="breed-grid" id="breed-primary"></div>
+    <button class="more-toggle" id="more-toggle" onclick="toggleMore()"><i class="ti ti-chevron-down" aria-hidden="true"></i> More breeds</button>
+    <div class="more-breeds" id="more-breeds"></div>
+    <div class="breed-note" id="breed-note"></div>
+  </div>
+
+  <div class="step locked" id="step-age">
+    <div class="step-label"><div class="check"><i class="ti ti-check" aria-hidden="true"></i></div><span>02 — How old?</span></div>
+    <div class="chip-row">
+      <div class="chip" data-mult="1.0"><span>Puppy / kitten</span><small>under 1 yr</small></div>
+      <div class="chip" data-mult="0.93"><span>Young adult</span><small>1–3 yrs</small></div>
+      <div class="chip" data-mult="1.05"><span>Adult</span><small>4–7 yrs</small></div>
+      <div class="chip" data-mult="1.38"><span>Senior</span><small>8+ yrs</small></div>
+    </div>
+  </div>
+
+  <div class="step locked" id="step-zip">
+    <div class="step-label"><div class="check"><i class="ti ti-check" aria-hidden="true"></i></div><span>03 — Postal code</span></div>
+    <input type="text" class="zip-input" id="zip-input" placeholder="A1A 1A1 or 90210" maxlength="7" />
+    <p class="zip-hint">Used for regional pricing only.</p>
+  </div>
+
+  <div class="step locked" id="step-details">
+    <div class="step-label"><div class="check"><i class="ti ti-check" aria-hidden="true"></i></div><span>04 — A couple more</span></div>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <div>
+        <p style="font-size:13px; color:var(--color-text-secondary); margin-bottom:6px;">Sex</p>
+        <div class="two-col" id="sex-group">
+          <button class="tog" data-group="sex" data-val="male" data-mult="1.0">Male</button>
+          <button class="tog" data-group="sex" data-val="female" data-mult="0.97">Female</button>
+        </div>
+      </div>
+      <div>
+        <p style="font-size:13px; color:var(--color-text-secondary); margin-bottom:6px;">Spayed or neutered?</p>
+        <div class="two-col" id="spay-group">
+          <button class="tog" data-group="spay" data-val="yes" data-mult="0.95">Yes</button>
+          <button class="tog" data-group="spay" data-val="no" data-mult="1.0">No / not sure</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider-line"></div>
+
+  <div class="result-card" id="result-card">
+    <p class="result-eyebrow">Your estimated range</p>
+    <div class="result-range" id="result-range">—</div>
+    <p class="result-sub" id="result-sub"></p>
+    <div class="result-factors" id="result-factors"></div>
+    <button class="result-cta" onclick="sendPrompt('I want to see a full quote for my pet')">Get your exact quote →</button>
+  </div>
+</div>
+
+<script>
+const BREEDS = [
+  { name: "Mixed breed dog", sub: "Mutt / rescue / unknown mix", base: [40, 60], note: "Mixed breed dogs tend to be healthier than purebreds — hybrid vigor is real. Lower end of the range.", primary: true },
+  { name: "Mixed breed cat", sub: "Domestic / rescue / unknown mix", base: [28, 44], note: "Most cats in Canada and the US are mixed breed. Generally lower coverage costs than pedigree cats.", primary: true },
+  { name: "American Shorthair", sub: "Common domestic cat", base: [30, 46], note: "Hardy, relatively low-risk. Dental disease is the main concern with age.", primary: true },
+  { name: "French Bulldog", sub: "Flat-faced, higher health needs", base: [65, 92], note: "Respiratory (BOAS), spinal, and skin conditions are common. One of the higher-cost breeds to cover.", primary: true },
+  { name: "Golden Retriever", sub: "Friendly family dog", base: [50, 75], note: "Relatively healthy early. Cancer risk increases after age 6 — coverage earns its cost over time.", primary: true },
+  { name: "Labrador Retriever", sub: "Common, joint-prone", base: [45, 68], note: "Hip and joint issues are common. Good general coverage candidate.", primary: true },
+  { name: "Small dog (under 20 lbs)", sub: "Chihuahua, Shih Tzu, Pom, Yorkie…", base: [36, 54], note: "Smaller dogs typically have lower base premiums. Dental and tracheal issues common in toy breeds.", primary: false },
+  { name: "Medium dog (20–50 lbs)", sub: "Beagle, Cocker Spaniel, Aussie…", base: [42, 62], note: "Wide range within this size. Generally moderate coverage needs.", primary: false },
+  { name: "Large dog (50–90 lbs)", sub: "Shepherd, Husky, Boxer…", base: [50, 72], note: "Joint and orthopedic costs are the main driver. Bigger dogs = bigger vet bills.", primary: false },
+  { name: "Giant breed dog (90+ lbs)", sub: "Great Dane, Mastiff, Newfoundland…", base: [62, 88], note: "Shorter lifespans and significant orthopedic, cardiac, and bloat risks.", primary: false },
+  { name: "Bulldog", sub: "English / American", base: [72, 100], note: "Among the most expensive breeds to insure. Breathing, joint, and skin issues are nearly universal.", primary: false },
+  { name: "Dachshund", sub: "Standard or miniature", base: [50, 72], note: "Spinal disease (IVDD) is extremely common. Spinal coverage isn't optional for this breed.", primary: false },
+  { name: "German Shepherd", sub: "Working dog, joint-prone", base: [55, 80], note: "Hip dysplasia is the main actuarial consideration.", primary: false },
+  { name: "Cavalier King Charles", sub: "Gentle, heart-prone", base: [65, 92], note: "MVD (heart disease) is nearly universal with age. A breed where coverage really proves its value.", primary: false },
+  { name: "Poodle (any size)", sub: "Toy, miniature, or standard", base: [40, 60], note: "Generally healthy. Ear issues and some joint concerns in miniatures.", primary: false },
+  { name: "Maine Coon", sub: "Large cat, heart-prone", base: [42, 64], note: "HCM (heart disease) is a significant breed risk. Higher end for cats.", primary: false },
+  { name: "Bengal Cat", sub: "Active, digestive-prone", base: [38, 58], note: "HCM and digestive issues in some lines.", primary: false },
+  { name: "Siamese / Oriental", sub: "Vocal, slender cats", base: [35, 52], note: "Dental and respiratory concerns. Middle of the cat pricing range.", primary: false },
+  { name: "Persian / Himalayan", sub: "Flat-faced cats", base: [48, 70], note: "Respiratory, eye, and dental issues common in flat-faced breeds.", primary: false },
+];
+
+let selectedBreed = null, selectedAge = null, zipVal = "";
+let sel = { sex: null, spay: null };
+let moreOpen = false;
+
+function renderBreedGrid(id, filter) {
+  const c = document.getElementById(id);
+  c.innerHTML = "";
+  BREEDS.filter(filter).forEach(b => {
+    const d = document.createElement("div");
+    d.className = "breed-card";
+    d.dataset.name = b.name;
+    d.innerHTML = `<div class="breed-card-name">${b.name}</div><div class="breed-card-sub">${b.sub}</div>`;
+    d.addEventListener("click", () => selectBreed(b));
+    c.appendChild(d);
+  });
+}
+
+renderBreedGrid("breed-primary", b => b.primary);
+renderBreedGrid("more-breeds", b => !b.primary);
+
+function toggleMore() {
+  moreOpen = !moreOpen;
+  document.getElementById("more-breeds").classList.toggle("open", moreOpen);
+  document.getElementById("more-toggle").innerHTML = moreOpen
+    ? '<i class="ti ti-chevron-up" aria-hidden="true"></i> Fewer breeds'
+    : '<i class="ti ti-chevron-down" aria-hidden="true"></i> More breeds';
+}
+
+function selectBreed(b) {
+  selectedBreed = b;
+  document.querySelectorAll(".breed-card").forEach(c => c.classList.toggle("selected", c.dataset.name === b.name));
+  document.getElementById("breed-note").textContent = b.note;
+  document.getElementById("breed-note").classList.add("show");
+  document.getElementById("step-breed").classList.add("done");
+  document.getElementById("step-age").classList.remove("locked");
+  tryShowResult();
+}
+
+document.querySelectorAll(".chip").forEach(chip => {
+  chip.addEventListener("click", () => {
+    document.querySelectorAll(".chip").forEach(c => c.classList.remove("selected"));
+    chip.classList.add("selected");
+    selectedAge = { label: chip.querySelector("span").textContent, mult: parseFloat(chip.dataset.mult) };
+    document.getElementById("step-age").classList.add("done");
+    document.getElementById("step-zip").classList.remove("locked");
+    document.getElementById("zip-input").focus();
+    tryShowResult();
+  });
+});
+
+document.getElementById("zip-input").addEventListener("input", e => {
+  zipVal = e.target.value.trim();
+  const ok = /^[A-Za-z]\d[A-Za-z]/.test(zipVal) || /^\d{5}/.test(zipVal);
+  document.getElementById("step-zip").classList.toggle("done", ok);
+  document.getElementById("step-details").classList.toggle("locked", !ok);
+  tryShowResult();
+});
+
+document.querySelectorAll(".tog").forEach(btn => {
+  btn.addEventListener("click", function() {
+    const group = this.dataset.group;
+    document.querySelectorAll(`.tog[data-group="${group}"]`).forEach(b => {
+      b.classList.remove("selected");
+    });
+    this.classList.add("selected");
+    sel[group] = { val: this.dataset.val, mult: parseFloat(this.dataset.mult) };
+    if (sel.sex && sel.spay) document.getElementById("step-details").classList.add("done");
+    tryShowResult();
+  });
+});
+
+function getRegionMult(zip) {
+  if (!zip) return 1.0;
+  const u = zip.toUpperCase();
+  if (/^[A-Z]\d[A-Z]/.test(u)) {
+    const p = u[0];
+    if (p === "V") return 1.15;
+    if (p === "B") return 1.12;
+    if ("MKLNO".includes(p)) return 1.05;
+    return 1.0;
+  }
+  const c = parseInt(zip.slice(0, 2));
+  if (c >= 90 && c <= 96) return 1.18;
+  if (c >= 10 && c <= 14) return 1.14;
+  return 1.0;
+}
+
+function tryShowResult() {
+  const card = document.getElementById("result-card");
+  const allDone = selectedBreed && selectedAge &&
+    document.getElementById("step-zip").classList.contains("done") &&
+    sel.sex && sel.spay;
+  if (!allDone) { card.classList.remove("show"); return; }
+
+  const mult = selectedAge.mult * getRegionMult(zipVal) * sel.sex.mult * sel.spay.mult;
+  const lo = Math.round(selectedBreed.base[0] * mult);
+  const hi = Math.round(selectedBreed.base[1] * mult);
+  const isCA = /^[A-Za-z]\d[A-Za-z]/.test(zipVal);
+  const currency = isCA ? "CAD" : "USD";
+
+  document.getElementById("result-range").innerHTML = `<em>$${lo}–$${hi}</em> / mo`;
+  document.getElementById("result-sub").textContent = `Estimated range for a ${selectedAge.label.toLowerCase()} ${selectedBreed.name.toLowerCase()}. Illness, injury, and emergency vet included. ${currency}.`;
+  document.getElementById("result-factors").innerHTML = `
+    <div class="factor-row"><span>Pet type</span><span>${selectedBreed.name}</span></div>
+    <div class="factor-row"><span>Age</span><span>${selectedAge.label}</span></div>
+    <div class="factor-row"><span>Sex</span><span>${sel.sex.val === "male" ? "Male" : "Female"}</span></div>
+    <div class="factor-row"><span>Spay / neuter</span><span>${sel.spay.val === "yes" ? "Spayed / neutered" : "Intact / not sure"}</span></div>
+    <div class="factor-row"><span>Region</span><span>${isCA ? "Canadian rates" : "US rates"}</span></div>
+    <div class="factor-row"><span>Coverage</span><span>90% back · no payout cap</span></div>
+    <div class="factor-row"><span>Not included</span><span>Routine / wellness care</span></div>
+  `;
+  card.classList.add("show");
+}
+</script>
