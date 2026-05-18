@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>js0 — The Discovery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #111; --ink2: #333;
+  --gray-600: #555; --gray-500: #6b6b6b; --gray-400: #888; --gray-300: #aaa;
+  --gray-200: #d8d8d8; --gray-100: #ebebeb; --gray-50: #f3f3f1; --gray-25: #f9f9f7;
+  --white: #fff; --mono: 'Courier Prime', monospace; --sans: 'Inter', sans-serif;
+  --reddit: #ff4500;
+}
+html, body { height: 100%; }
+body { background: var(--gray-50); color: var(--ink); font-family: var(--sans); display: flex; flex-direction: column; min-height: 100vh; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 15px 32px; background: var(--white); border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.topbar-left { display: flex; flex-direction: column; gap: 3px; }
+.topbar-project { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; }
+.topbar-title { font-size: 15px; font-weight: 600; color: var(--ink); }
+.screen-nav { display: flex; gap: 6px; }
+.screen-nav a { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-decoration: none; padding: 6px 14px; border: 1.5px solid var(--gray-200); border-radius: 4px; transition: all 0.15s; background: var(--white); }
+.screen-nav a:hover { color: var(--ink); border-color: var(--gray-400); }
+.screen-nav a.active { color: var(--white); border-color: var(--ink); background: var(--ink); font-weight: 700; }
+.workspace { flex: 1; display: grid; grid-template-columns: 1fr 440px; min-height: 0; }
+.phone-stage { display: flex; align-items: center; justify-content: center; padding: 40px; background: var(--gray-50); }
+.phone-frame { width: 390px; height: 780px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 9px #1a1a1a, 0 0 0 10px #2e2e2e, 0 40px 80px rgba(0,0,0,0.22); display: flex; flex-direction: column; position: relative; background: #fff; }
+.phone-status { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px 6px; flex-shrink: 0; background: #fff; }
+.phone-status-time { font-size: 14px; font-weight: 700; color: #111; }
+.phone-status-icons { display: flex; gap: 5px; align-items: center; }
+.phone-status-dot { width: 5px; height: 5px; border-radius: 50%; background: #ccc; }
+.phone-status-dot.on { background: #333; }
+.reddit-header { background: #fff; border-bottom: 1px solid #f0f0ee; padding: 8px 16px 10px; flex-shrink: 0; }
+.reddit-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.reddit-logo { display: flex; align-items: center; gap: 6px; }
+.reddit-circle { width: 26px; height: 26px; background: var(--reddit); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.reddit-circle svg { width: 16px; height: 16px; fill: white; }
+.reddit-wordmark { font-size: 16px; font-weight: 700; color: var(--reddit); letter-spacing: -0.02em; }
+.reddit-search { flex: 1; background: #f6f7f8; border: 1px solid #ededed; border-radius: 20px; padding: 7px 14px; font-size: 13px; color: #444; font-family: var(--sans); }
+.reddit-subreddit-bar { display: flex; align-items: center; gap: 8px; }
+.subreddit-pill { font-family: var(--mono); font-size: 11px; color: #555; background: #f0f0ee; padding: 4px 10px; border-radius: 20px; font-weight: 700; }
+.post-sort { font-family: var(--mono); font-size: 11px; color: var(--gray-400); margin-left: auto; }
+.phone-scroll { flex: 1; overflow-y: auto; background: #f6f7f8; }
+.phone-scroll::-webkit-scrollbar { display: none; }
+.post-card { background: #fff; margin: 8px 10px; border-radius: 12px; overflow: hidden; border: 1px solid #e8e8e6; }
+.post-meta { padding: 12px 14px 8px; }
+.post-sub { font-family: var(--mono); font-size: 10px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 5px; }
+.post-title { font-size: 16px; font-weight: 700; color: #111; line-height: 1.3; margin-bottom: 7px; }
+.post-preview { font-size: 13px; color: #666; line-height: 1.65; }
+.post-stats { display: flex; gap: 14px; padding: 8px 14px 10px; border-top: 1px solid #f0f0ee; }
+.post-stat { font-family: var(--mono); font-size: 11px; color: var(--gray-400); }
+.post-stat span { color: #555; font-weight: 700; }
+.comments-section { background: #fff; margin: 0 10px 8px; border-radius: 12px; border: 1px solid #e8e8e6; overflow: hidden; }
+.comments-header { padding: 10px 14px; border-bottom: 1px solid #f0f0ee; }
+.comments-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray-400); }
+.comment { padding: 12px 14px; border-bottom: 1px solid #f8f8f6; }
+.comment:last-child { border-bottom: none; }
+.comment-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+.comment-avatar { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.comment-user { font-size: 12px; font-weight: 600; color: #333; }
+.comment-age { font-family: var(--mono); font-size: 10px; color: var(--gray-400); }
+.comment-votes { font-family: var(--mono); font-size: 10px; color: var(--gray-400); margin-left: auto; }
+.comment-votes span { color: #555; }
+.comment-body { font-size: 13px; line-height: 1.7; color: #444; }
+.comment-body em { font-style: normal; color: #111; font-weight: 600; }
+.comment.brand-mention { background: #fafaf8; }
+.brand-link { display: inline-flex; flex-direction: column; gap: 3px; margin-top: 10px; border: 1.5px solid #d8d8d6; border-radius: 8px; padding: 10px 14px; background: #fff; cursor: pointer; transition: border-color 0.15s; text-decoration: none; width: 100%; }
+.brand-link:hover { border-color: #999; }
+.brand-link-top { font-family: var(--mono); font-size: 10px; color: var(--gray-400); }
+.brand-link-name { font-size: 14px; font-weight: 700; color: #111; }
+.brand-link-sub { font-size: 12px; color: #777; }
+.handoff { position: absolute; inset: 0; background: rgba(255,255,255,0.97); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; opacity: 0; pointer-events: none; transition: opacity 0.35s; z-index: 20; border-radius: 48px; }
+.handoff.active { opacity: 1; pointer-events: all; }
+.handoff-ring { width: 22px; height: 22px; border: 2px solid #e0e0e0; border-top-color: #333; border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.handoff-label { font-family: var(--mono); font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 0.08em; }
+.handoff-tokens { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.handoff-token { font-family: var(--mono); font-size: 13px; color: #555; }
+.handoff-token em { color: #111; font-style: normal; font-weight: 700; }
+.handoff-caveat { font-family: var(--mono); font-size: 11px; color: #bbb; text-align: center; border-top: 1px solid #f0f0ee; padding-top: 12px; }
+.phone-home { padding: 10px 0 14px; display: flex; justify-content: center; flex-shrink: 0; background: #fff; }
+.phone-home-bar { width: 120px; height: 4px; background: #e0e0e0; border-radius: 2px; }
+.sidebar { border-left: 1.5px solid var(--gray-100); display: flex; flex-direction: column; overflow: hidden; background: var(--white); }
+.sidebar-header { padding: 26px 26px 22px; border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.sidebar-eyebrow { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+.sidebar-title { font-size: 18px; font-weight: 700; color: var(--ink); line-height: 1.35; }
+.sidebar-scroll { flex: 1; overflow-y: auto; padding: 26px; display: flex; flex-direction: column; gap: 24px; }
+.sidebar-scroll::-webkit-scrollbar { width: 4px; }
+.sidebar-scroll::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 2px; }
+.sb-block { display: flex; flex-direction: column; gap: 8px; }
+.sb-label { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+.sb-title { font-size: 16px; font-weight: 700; color: var(--ink); line-height: 1.4; }
+.sb-body { font-size: 15px; color: var(--gray-600); line-height: 1.7; }
+.sb-divider { border: none; border-top: 1.5px solid var(--gray-100); }
+.sb-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
+.sb-tag { font-family: var(--mono); font-size: 12px; color: var(--gray-500); border: 1.5px solid var(--gray-200); padding: 4px 10px; border-radius: 4px; background: var(--gray-25); }
+.sb-tag.open { border-style: dashed; color: var(--gray-400); }
+.sb-code { font-family: var(--mono); font-size: 14px; color: var(--gray-500); line-height: 2.1; background: var(--gray-25); padding: 14px 16px; border-radius: 5px; border: 1.5px solid var(--gray-100); white-space: pre; }
+.sb-code em { color: var(--ink2); font-style: normal; font-weight: 700; }
+.footer { padding: 14px 32px; border-top: 1.5px solid var(--gray-100); background: var(--white); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.footer-label { font-family: var(--mono); font-size: 12px; color: var(--gray-400); }
+.next-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: var(--ink); border: none; color: var(--white); font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; font-weight: 700; cursor: pointer; text-decoration: none; transition: opacity 0.15s; border-radius: 4px; }
+.next-btn:hover { opacity: 0.8; }
+
+/* PASSWORD GATE */
+#gate { position: fixed; inset: 0; background: var(--ink); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; z-index: 9999; }
+#gate.hidden { display: none; }
+.gate-label { font-family: var(--mono); font-size: 11px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.12em; }
+.gate-row { display: flex; border: 1.5px solid #333; border-radius: 4px; overflow: hidden; }
+.gate-row input { background: #1a1a1a; border: none; outline: none; font-family: var(--mono); font-size: 13px; color: var(--white); padding: 10px 14px; width: 180px; letter-spacing: 0.06em; }
+.gate-row input::placeholder { color: #555; }
+.gate-row button { background: var(--white); border: none; font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink); padding: 10px 16px; cursor: pointer; }
+.gate-row button:hover { background: #ddd; }
+.gate-error { font-family: var(--mono); font-size: 11px; color: #ff6b6b; letter-spacing: 0.06em; height: 16px; }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="gate-label">Trupanion Sub-Brand — Josh's Flow</div>
+  <div class="gate-row">
+    <input type="password" id="pw" placeholder="password" autocomplete="off" spellcheck="false">
+    <button onclick="checkPw()">Enter</button>
+  </div>
+  <div class="gate-error" id="pw-err"></div>
+</div>
+
+<script>
+  if (sessionStorage.getItem('joshflow') === 'ok') unlock();
+  function checkPw() {
+    if (document.getElementById('pw').value.trim().toLowerCase() === 'pets123') {
+      sessionStorage.setItem('joshflow', 'ok');
+      unlock();
+    } else {
+      var e = document.getElementById('pw-err');
+      e.textContent = 'incorrect password';
+      document.getElementById('pw').value = '';
+      document.getElementById('pw').focus();
+      setTimeout(function(){ e.textContent = ''; }, 2500);
+    }
+  }
+  function unlock() {
+    document.getElementById('gate').classList.add('hidden');
+    startAnimation();
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    if (sessionStorage.getItem('joshflow') === 'ok') unlock();
+    document.getElementById('pw').addEventListener('keydown', function(e){ if (e.key === 'Enter') checkPw(); });
+  });
+</script>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-project">Trupanion Sub-Brand — Josh's Flow</div>
+    <div class="topbar-title">What does the brand earn when it shows up where trust already lives?</div>
+  </div>
+  <div class="screen-nav">
+    <a href="js0.html" class="active">js0</a>
+    <a href="js1.html">js1</a><a href="js2.html">js2</a>
+    <a href="js3.html">js3</a><a href="js4.html">js4</a><a href="js5.html">js5</a>
+  </div>
+</div>
+<div class="workspace">
+  <div class="phone-stage">
+    <div class="phone-frame">
+      <div class="phone-status">
+        <span class="phone-status-time">11:23</span>
+        <div class="phone-status-icons">
+          <div class="phone-status-dot on"></div><div class="phone-status-dot on"></div>
+          <div class="phone-status-dot on"></div><div class="phone-status-dot"></div>
+        </div>
+      </div>
+      <div class="reddit-header">
+        <div class="reddit-top">
+          <div class="reddit-logo">
+            <div class="reddit-circle">
+              <svg viewBox="0 0 20 20"><path d="M10 0C4.478 0 0 4.478 0 10s4.478 10 10 10 10-4.478 10-10S15.522 0 10 0zm5.895 10.292a1.46 1.46 0 00-2.46-.892c-.976-.636-2.29-1.044-3.74-1.096l.7-3.088 2.217.484a1.04 1.04 0 102.033-.296 1.04 1.04 0 00-1.933.52l-2.47-.54a.232.232 0 00-.272.174l-.784 3.456c-1.48.04-2.822.45-3.814 1.094a1.46 1.46 0 10-1.618 2.376 2.86 2.86 0 000 .384c0 1.952 2.27 3.536 5.07 3.536s5.07-1.584 5.07-3.536a2.87 2.87 0 000-.382 1.46 1.46 0 00.001-2.194zM7.5 11.25a1 1 0 111-1 1 1 0 01-1 1zm3.87 2.658c-.716.716-2.086.716-2.74 0a.194.194 0 01.274-.274c.51.51 1.682.51 2.192 0a.194.194 0 01.274.274zm-.37-1.658a1 1 0 111-1 1 1 0 01-1 1z"/></svg>
+            </div>
+            <span class="reddit-wordmark">reddit</span>
+          </div>
+          <div class="reddit-search">hyperthyroid cat treatment cost long term</div>
+        </div>
+        <div class="reddit-subreddit-bar">
+          <span class="subreddit-pill">r/cats</span>
+          <span class="post-sort">Top · Past year</span>
+        </div>
+      </div>
+      <div class="phone-scroll" id="phoneScroll">
+        <div class="post-card" id="p0" style="opacity:0;transform:translateY(8px);transition:opacity 0.5s,transform 0.5s;">
+          <div class="post-meta">
+            <div class="post-sub">r/cats · u/seattlecatmom · 4 months ago</div>
+            <div class="post-title">My cat was just diagnosed with hyperthyroidism — what should I expect?</div>
+            <div class="post-preview">Miso is 12. Vet said it's manageable but used words like "lifelong treatment" and "regular bloodwork." I left feeling like I understood nothing. What does daily life actually look like? And what does this cost over time?</div>
+          </div>
+          <div class="post-stats">
+            <div class="post-stat">▲ <span>847</span></div>
+            <div class="post-stat">💬 <span>134 comments</span></div>
+          </div>
+        </div>
+        <div class="comments-section" id="p1" style="opacity:0;transform:translateY(8px);transition:opacity 0.5s 0.15s,transform 0.5s 0.15s;">
+          <div class="comments-header"><div class="comments-label">Top comments</div></div>
+          <div class="comment">
+            <div class="comment-meta">
+              <div class="comment-avatar" style="background:#dde8f0;color:#4477aa;">T</div>
+              <span class="comment-user">tabbywhisperer</span>
+              <span class="comment-age">4 mo ago</span>
+              <span class="comment-votes">▲ <span>612</span></span>
+            </div>
+            <div class="comment-body">My guy has been on methimazole for three years. The medication itself isn't bad — $30–40/month. The real cost is the bloodwork every 3–6 months to monitor kidney function and T4 levels. Budget $200–350 per panel. It adds up, but it's very manageable once you're in a routine. Miso is going to be okay.</div>
+          </div>
+          <div class="comment">
+            <div class="comment-meta">
+              <div class="comment-avatar" style="background:#f0ede0;color:#aa9944;">M</div>
+              <span class="comment-user">felineforum_mod</span>
+              <span class="comment-age">4 mo ago</span>
+              <span class="comment-votes">▲ <span>441</span></span>
+            </div>
+            <div class="comment-body">The thing nobody warns you about: treating hyperthyroidism can actually unmask kidney disease — the hyperthyroid state was masking poor kidney function. Ask your vet specifically about the kidney-thyroid relationship after treatment starts. Not scary, just important to know so you're not blindsided later.</div>
+          </div>
+          <div class="comment brand-mention" id="p2" style="opacity:0;transform:translateY(6px);transition:opacity 0.5s,transform 0.5s;">
+            <div class="comment-meta">
+              <div class="comment-avatar" style="background:#e8f0e8;color:#448844;">P</div>
+              <span class="comment-user">pnwcatdad</span>
+              <span class="comment-age">3 mo ago</span>
+              <span class="comment-votes">▲ <span>287</span></span>
+            </div>
+            <div class="comment-body">Went through this with my 13-year-old last year. On the insurance question — most won't touch a pre-existing condition, which is maddening when the diagnosis is exactly what makes you start looking. <em>One that actually worked for us:</em> they showed us what was and wasn't covered for her specific condition before we paid anything. No surprises at claim time.
+              <a class="brand-link" id="brandLink">
+                <div class="brand-link-top">[brand].trupanion.com</div>
+                <div class="brand-link-name">[Brand] by Trupanion — Senior &amp; pre-existing</div>
+                <div class="brand-link-sub">See what's covered for your cat's condition →</div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-home"><div class="phone-home-bar"></div></div>
+      <div class="handoff" id="handoff">
+        <div class="handoff-ring"></div>
+        <div class="handoff-label">Passing context</div>
+        <div class="handoff-tokens">
+          <div class="handoff-token">source: <em>r/cats</em></div>
+          <div class="handoff-token">thread: <em>hyperthyroid_diagnosis</em></div>
+          <div class="handoff-token">signal: <em>cost_anxiety · pre-existing</em></div>
+        </div>
+        <div class="handoff-caveat">that's all a Reddit link can carry</div>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-eyebrow">js0 — The Discovery</div>
+      <div class="sidebar-title">He wasn't looking for insurance. He was trying to understand a diagnosis.</div>
+    </div>
+    <div class="sidebar-scroll">
+      <div class="sb-block">
+        <div class="sb-label">Entry point</div>
+        <div class="sb-title">The search is emotional, not commercial.</div>
+        <div class="sb-body">Josh googled "hyperthyroid cat treatment cost long term" the night after the vet visit. He landed in r/cats — not a pet insurance forum, not a comparison grid. The brand surfaces inside a real conversation between people who've been through it. That's the trust transfer. Nobody in r/cats is selling anything.</div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">Why the placement works</div>
+        <div class="sb-title">Third comment. Not the top reply.</div>
+        <div class="sb-body">The brand mention sits below someone sharing their medication routine and someone warning about kidney disease. It reads as an aside from someone who found something useful — not a recommendation, not an ad. The Gen Z read on comment threads is sophisticated. They know what organic looks like.</div>
+        <div class="sb-tags">
+          <span class="sb-tag">community trust</span>
+          <span class="sb-tag">not first comment</span>
+          <span class="sb-tag">earned, not paid</span>
+        </div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">Context traveling to js1</div>
+        <div class="sb-code">source = <em>"r/cats"</em>
+thread = <em>"hyperthyroid_diagnosis"</em>
+signal = <em>"cost_anxiety"</em>
+signal = <em>"pre-existing_condition"</em>
+—
+name   = <em>unknown</em>
+cat    = <em>unknown</em>
+age    = <em>unknown</em>
+loc    = <em>unknown</em></div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">The constraint is the argument</div>
+        <div class="sb-title">Almost nothing passes through a Reddit link.</div>
+        <div class="sb-body">Source, thread topic, two intent signals. That's the realistic ceiling from a URL parameter. Josh's flow shows what the app does with almost nothing — a stronger design argument than Emily's, where six fields arrived pre-filled. The intelligence is in the product, not the handoff.</div>
+        <div class="sb-tags">
+          <span class="sb-tag open">contrast with em0 →</span>
+          <span class="sb-tag open">thin signal · smart response</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer">
+  <div class="footer-label">js0 — Josh's Flow</div>
+  <a href="js1.html" class="next-btn">js1 — Context arrival →</a>
+</div>
+<script>
+  function startAnimation() {
+    const items = [
+      { id: 'p0', delay: 500 },
+      { id: 'p1', delay: 1200 },
+      { id: 'p2', delay: 2600 },
+    ];
+    items.forEach(({ id, delay }) => {
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }, delay);
+    });
+  }
+
+  document.getElementById('brandLink').addEventListener('click', () => {
+    const h = document.getElementById('handoff');
+    h.classList.add('active');
+    setTimeout(() => { window.location.href = 'js1.html'; }, 2400);
+  });
+</script>
+</body>
+</html>

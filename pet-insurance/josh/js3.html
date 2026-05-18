@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>js3 — Miso's Reality Check</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #111; --ink2: #333;
+  --gray-600: #555; --gray-500: #6b6b6b; --gray-400: #888; --gray-300: #aaa;
+  --gray-200: #d8d8d8; --gray-100: #ebebeb; --gray-50: #f3f3f1; --gray-25: #f9f9f7;
+  --white: #fff; --mono: 'Courier Prime', monospace; --sans: 'Inter', sans-serif;
+}
+html, body { height: 100%; }
+body { background: var(--gray-50); color: var(--ink); font-family: var(--sans); display: flex; flex-direction: column; min-height: 100vh; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 15px 32px; background: var(--white); border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.topbar-left { display: flex; flex-direction: column; gap: 3px; }
+.topbar-project { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; }
+.topbar-title { font-size: 15px; font-weight: 600; color: var(--ink); }
+.screen-nav { display: flex; gap: 6px; }
+.screen-nav a { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-decoration: none; padding: 6px 14px; border: 1.5px solid var(--gray-200); border-radius: 4px; transition: all 0.15s; background: var(--white); }
+.screen-nav a:hover { color: var(--ink); border-color: var(--gray-400); }
+.screen-nav a.active { color: var(--white); border-color: var(--ink); background: var(--ink); font-weight: 700; }
+.workspace { flex: 1; display: grid; grid-template-columns: 1fr 440px; min-height: 0; }
+.phone-stage { display: flex; align-items: center; justify-content: center; padding: 40px; background: var(--gray-50); }
+.phone-frame { width: 390px; height: 780px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 9px #1a1a1a, 0 0 0 10px #2e2e2e, 0 40px 80px rgba(0,0,0,0.22); display: flex; flex-direction: column; position: relative; background: #fff; }
+.phone-status { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px 6px; flex-shrink: 0; background: #fff; }
+.phone-status-time { font-size: 14px; font-weight: 700; color: #111; }
+.phone-status-icons { display: flex; gap: 5px; align-items: center; }
+.phone-status-dot { width: 5px; height: 5px; border-radius: 50%; background: #ccc; }
+.phone-status-dot.on { background: #333; }
+.phone-brand-bar { display: flex; align-items: center; justify-content: space-between; padding: 8px 20px 12px; border-bottom: 1px solid var(--gray-100); flex-shrink: 0; }
+.phone-brand-name { font-size: 17px; font-weight: 700; color: #111; letter-spacing: -0.02em; }
+.progress-track { display: flex; gap: 4px; align-items: center; }
+.progress-pip { width: 20px; height: 3px; border-radius: 2px; background: #e0e0de; }
+.progress-pip.done { background: #111; }
+.phone-content { flex: 1; overflow-y: auto; padding: 18px 18px 16px; display: flex; flex-direction: column; gap: 14px; }
+.phone-content::-webkit-scrollbar { display: none; }
+
+/* Hero */
+.reality-hero { padding: 2px 0 4px; }
+.reality-eyebrow { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray-400); margin-bottom: 6px; font-weight: 700; }
+.reality-headline { font-size: 20px; font-weight: 700; color: #111; line-height: 1.25; margin-bottom: 6px; }
+.reality-sub { font-size: 13px; color: #666; line-height: 1.6; }
+
+/* Coverage table */
+.coverage-block { background: #fff; border: 1.5px solid var(--gray-100); border-radius: 12px; overflow: hidden; }
+.coverage-header { display: flex; padding: 10px 14px; border-bottom: 1px solid var(--gray-100); gap: 8px; }
+.coverage-header-col { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray-400); font-weight: 700; }
+.coverage-header-col.col-item { flex: 1; }
+.coverage-header-col.col-status { width: 80px; text-align: right; }
+.cov-row { display: flex; align-items: flex-start; gap: 8px; padding: 11px 14px; border-bottom: 1px solid #f8f8f6; }
+.cov-row:last-child { border-bottom: none; }
+.cov-left { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.cov-name { font-size: 14px; font-weight: 600; color: #111; }
+.cov-detail { font-size: 11px; color: #999; line-height: 1.5; }
+.cov-status { width: 80px; text-align: right; flex-shrink: 0; padding-top: 2px; }
+.cov-badge { font-family: var(--mono); font-size: 11px; font-weight: 700; }
+.cov-badge.yes { color: #447744; }
+.cov-badge.no { color: #ccc; }
+.cov-badge.partial { color: #886633; }
+
+/* Math block */
+.math-block { background: #fafaf8; border: 1.5px solid var(--gray-100); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.math-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray-400); font-weight: 700; }
+.math-headline { font-size: 16px; font-weight: 700; color: #111; line-height: 1.35; }
+.math-row { display: flex; justify-content: space-between; align-items: baseline; padding: 6px 0; border-bottom: 1px solid #f0f0ee; }
+.math-row:last-child { border-bottom: none; }
+.math-row-label { font-size: 13px; color: #555; }
+.math-row-val { font-family: var(--mono); font-size: 13px; color: #111; font-weight: 700; }
+.math-row-val.muted { color: #aaa; }
+
+/* Price hero */
+.price-hero { background: #111; border-radius: 12px; padding: 16px; color: #fff; display: flex; flex-direction: column; gap: 6px; }
+.price-hero-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #888; font-weight: 700; }
+.price-hero-amount { font-size: 40px; font-weight: 300; letter-spacing: -0.03em; line-height: 1; }
+.price-hero-unit { font-size: 16px; font-weight: 400; color: #888; }
+.price-hero-note { font-family: var(--mono); font-size: 11px; color: #666; }
+.price-hero-margin { font-family: var(--mono); font-size: 11px; color: #666; margin-top: 2px; }
+
+.enroll-btn { width: 100%; padding: 14px; background: #fff; color: #111; font-size: 15px; font-weight: 700; border: 2px solid #e0e0de; border-radius: 10px; cursor: pointer; font-family: var(--sans); transition: border-color 0.15s; margin-top: 2px; }
+.enroll-btn:hover { border-color: #aaa; }
+.enroll-sub { font-family: var(--mono); font-size: 11px; color: #888; text-align: center; margin-top: 6px; }
+
+.phone-home { padding: 10px 0 14px; display: flex; justify-content: center; flex-shrink: 0; background: #fff; }
+.phone-home-bar { width: 120px; height: 4px; background: #e0e0e0; border-radius: 2px; }
+.sidebar { border-left: 1.5px solid var(--gray-100); display: flex; flex-direction: column; overflow: hidden; background: var(--white); }
+.sidebar-header { padding: 26px 26px 22px; border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.sidebar-eyebrow { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+.sidebar-title { font-size: 18px; font-weight: 700; color: var(--ink); line-height: 1.35; }
+.sidebar-scroll { flex: 1; overflow-y: auto; padding: 26px; display: flex; flex-direction: column; gap: 24px; }
+.sidebar-scroll::-webkit-scrollbar { width: 4px; }
+.sidebar-scroll::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 2px; }
+.sb-block { display: flex; flex-direction: column; gap: 8px; }
+.sb-label { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+.sb-title { font-size: 16px; font-weight: 700; color: var(--ink); line-height: 1.4; }
+.sb-body { font-size: 15px; color: var(--gray-600); line-height: 1.7; }
+.sb-divider { border: none; border-top: 1.5px solid var(--gray-100); }
+.sb-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
+.sb-tag { font-family: var(--mono); font-size: 12px; color: var(--gray-500); border: 1.5px solid var(--gray-200); padding: 4px 10px; border-radius: 4px; background: var(--gray-25); }
+.sb-tag.open { border-style: dashed; color: var(--gray-400); }
+.sb-code { font-family: var(--mono); font-size: 14px; color: var(--gray-500); line-height: 2.1; background: var(--gray-25); padding: 14px 16px; border-radius: 5px; border: 1.5px solid var(--gray-100); white-space: pre; }
+.sb-code em { color: var(--ink2); font-style: normal; font-weight: 700; }
+.footer { padding: 14px 32px; border-top: 1.5px solid var(--gray-100); background: var(--white); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.footer-back { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-decoration: none; font-weight: 700; }
+.footer-back:hover { color: var(--ink); }
+.next-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: var(--ink); border: none; color: var(--white); font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; font-weight: 700; cursor: pointer; text-decoration: none; transition: opacity 0.15s; border-radius: 4px; }
+.next-btn:hover { opacity: 0.8; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-project">Trupanion Sub-Brand — Josh's Flow</div>
+    <div class="topbar-title">What does the brand earn when it shows up where trust already lives?</div>
+  </div>
+  <div class="screen-nav">
+    <a href="js0.html">js0</a><a href="js1.html">js1</a><a href="js2.html">js2</a>
+    <a href="js3.html" class="active">js3</a>
+    <a href="js4.html">js4</a><a href="js5.html">js5</a>
+  </div>
+</div>
+<div class="workspace">
+  <div class="phone-stage">
+    <div class="phone-frame">
+      <div class="phone-status">
+        <span class="phone-status-time">11:29</span>
+        <div class="phone-status-icons">
+          <div class="phone-status-dot on"></div><div class="phone-status-dot on"></div>
+          <div class="phone-status-dot on"></div><div class="phone-status-dot"></div>
+        </div>
+      </div>
+      <div class="phone-brand-bar">
+        <div class="phone-brand-name">[Brand]</div>
+        <div class="progress-track">
+          <div class="progress-pip done"></div><div class="progress-pip done"></div>
+          <div class="progress-pip done"></div><div class="progress-pip done"></div>
+        </div>
+      </div>
+      <div class="phone-content">
+
+        <div class="reality-hero">
+          <div class="reality-eyebrow">Miso's reality check</div>
+          <div class="reality-headline">Here's the honest picture. No surprises saved for later.</div>
+          <div class="reality-sub">Based on her records. Hyperthyroidism diagnosed — managed on methimazole. Age 12.</div>
+        </div>
+
+        <div class="coverage-block">
+          <div class="coverage-header">
+            <div class="coverage-header-col col-item">What you're dealing with</div>
+            <div class="coverage-header-col col-status">Covered?</div>
+          </div>
+          <div class="cov-row">
+            <div class="cov-left">
+              <div class="cov-name">Hyperthyroidism treatment</div>
+              <div class="cov-detail">Medication, monitoring, dose adjustments</div>
+            </div>
+            <div class="cov-status"><span class="cov-badge no">Not covered</span></div>
+          </div>
+          <div class="cov-row">
+            <div class="cov-left">
+              <div class="cov-name">Thyroid bloodwork &amp; T4 panels</div>
+              <div class="cov-detail">Ongoing monitoring every 3–6 months</div>
+            </div>
+            <div class="cov-status"><span class="cov-badge no">Not covered</span></div>
+          </div>
+          <div class="cov-row">
+            <div class="cov-left">
+              <div class="cov-name">Kidney disease — if diagnosed after today</div>
+              <div class="cov-detail">New conditions from enrollment forward</div>
+            </div>
+            <div class="cov-status"><span class="cov-badge yes">Covered</span></div>
+          </div>
+          <div class="cov-row">
+            <div class="cov-left">
+              <div class="cov-name">Emergency illness &amp; injury</div>
+              <div class="cov-detail">Unrelated to pre-existing conditions</div>
+            </div>
+            <div class="cov-status"><span class="cov-badge yes">Covered</span></div>
+          </div>
+          <div class="cov-row">
+            <div class="cov-left">
+              <div class="cov-name">Cancer, cardiac, GI — new onset</div>
+              <div class="cov-detail">Senior cats face elevated risk — this is why it matters</div>
+            </div>
+            <div class="cov-status"><span class="cov-badge yes">Covered</span></div>
+          </div>
+          <div class="cov-row">
+            <div class="cov-left">
+              <div class="cov-name">Our margin</div>
+              <div class="cov-detail">What we keep per dollar you pay us</div>
+            </div>
+            <div class="cov-status"><span class="cov-badge partial">28¢ per $1</span></div>
+          </div>
+        </div>
+
+        <div class="math-block">
+          <div class="math-label">The math · 3-year outlook for Miso</div>
+          <div class="math-headline">Senior cats average $1,800–4,200/yr in new-condition costs.</div>
+          <div class="math-row">
+            <div class="math-row-label">Your premiums over 3 yrs</div>
+            <div class="math-row-val">~$2,160</div>
+          </div>
+          <div class="math-row">
+            <div class="math-row-label">Avg covered claim payout</div>
+            <div class="math-row-val">~$1,940/yr</div>
+          </div>
+          <div class="math-row">
+            <div class="math-row-label">Single worst-case event (cardiac, cancer)</div>
+            <div class="math-row-val">$4,000–9,000</div>
+          </div>
+          <div class="math-row">
+            <div class="math-row-label">Your cap on that event</div>
+            <div class="math-row-val">10% copay — no annual limit</div>
+          </div>
+        </div>
+
+        <div class="price-hero">
+          <div class="price-hero-label">Your plan · Miso Senior</div>
+          <div><span class="price-hero-amount">$54</span><span class="price-hero-unit">/month</span></div>
+          <div class="price-hero-note">← within your $40–70 range · locked 12 months</div>
+          <div class="price-hero-margin">28¢ of every dollar goes to our margin. 72¢ pays vets.</div>
+        </div>
+
+        <div>
+          <button class="enroll-btn" onclick="window.location.href='js4.html'">Enroll Miso $54/mo →</button>
+          <div class="enroll-sub">Coverage starts in 5 days. Pre-existing conditions noted above excluded.</div>
+        </div>
+
+      </div>
+      <div class="phone-home"><div class="phone-home-bar"></div></div>
+    </div>
+  </div>
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-eyebrow">js3 — The Reality Check</div>
+      <div class="sidebar-title">Transparency about exclusions is the trust mechanism — not a liability</div>
+    </div>
+    <div class="sidebar-scroll">
+      <div class="sb-block">
+        <div class="sb-label">The design challenge · Josh</div>
+        <div class="sb-title">Every other brand hid what wasn't covered. This one leads with it.</div>
+        <div class="sb-body">Josh walked away from three quotes because he couldn't get a straight answer on pre-existing conditions. This screen exists entirely to give him that answer before he pays anything. The hyperthyroid exclusion is named clearly — and so is everything the policy does cover. The honesty is the conversion mechanic.</div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">Why the math block matters</div>
+        <div class="sb-title">Josh doesn't need a sales pitch. He needs the numbers.</div>
+        <div class="sb-body">He's already done the Reddit research. He knows methimazole is $30–40/month. What he can't calculate is his exposure to the next thing — kidney disease, cardiac, cancer — which senior cats face at elevated rates. The 3-year outlook gives him that frame without overselling it.</div>
+        <div class="sb-tags">
+          <span class="sb-tag">hedge, not savings account</span>
+          <span class="sb-tag">worst-case is visible</span>
+        </div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">End of Josh's onboarding</div>
+        <div class="sb-code">js0 → discovery, no intent signal
+js1 → recognition, thin context
+js2 → record upload, real read
+js3 → reality check, no surprises
+—
+questions Josh answered:     <em>3</em>
+things he had to explain:    <em>0</em>
+exclusions hidden from him:  <em>0</em></div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">What comes next</div>
+        <div class="sb-title">The story doesn't end here. js4 is why he becomes an advocate.</div>
+        <div class="sb-body">The reality check earns enrollment. The moment of truth earns loyalty. What happens at the vet when Miso gets sick is what Josh posts about, texts about, replies about in r/cats. The acquisition loop closes.</div>
+        <div class="sb-tags">
+          <span class="sb-tag open">js4 → moment of truth</span>
+          <span class="sb-tag open">js5 → the aftermath</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer">
+  <a href="js2.html" class="footer-back">← js2 — Tell us about your cat</a>
+  <a href="js4.html" class="next-btn">js4 — Moment of truth →</a>
+</div>
+</body>
+</html>

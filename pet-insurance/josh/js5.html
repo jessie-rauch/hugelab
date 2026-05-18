@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>js5 — The Aftermath</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #111; --ink2: #333;
+  --gray-600: #555; --gray-500: #6b6b6b; --gray-400: #888; --gray-300: #aaa;
+  --gray-200: #d8d8d8; --gray-100: #ebebeb; --gray-50: #f3f3f1; --gray-25: #f9f9f7;
+  --white: #fff; --mono: 'Courier Prime', monospace; --sans: 'Inter', sans-serif;
+}
+html, body { height: 100%; }
+body { background: var(--gray-50); color: var(--ink); font-family: var(--sans); display: flex; flex-direction: column; min-height: 100vh; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 15px 32px; background: var(--white); border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.topbar-left { display: flex; flex-direction: column; gap: 3px; }
+.topbar-project { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; }
+.topbar-title { font-size: 15px; font-weight: 600; color: var(--ink); }
+.screen-nav { display: flex; gap: 6px; }
+.screen-nav a { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-decoration: none; padding: 6px 14px; border: 1.5px solid var(--gray-200); border-radius: 4px; transition: all 0.15s; background: var(--white); }
+.screen-nav a:hover { color: var(--ink); border-color: var(--gray-400); }
+.screen-nav a.active { color: var(--white); border-color: var(--ink); background: var(--ink); font-weight: 700; }
+
+.workspace { flex: 1; display: grid; grid-template-columns: 1fr 440px; min-height: 0; overflow: hidden; }
+
+/* Artifact stage — scrollable, cards aligned top */
+.artifact-stage { overflow-y: auto; padding: 40px; background: var(--gray-50); }
+.artifact-stage-inner { display: flex; gap: 20px; align-items: flex-start; justify-content: center; min-width: 0; }
+
+/* Shared card shell */
+.artifact-card { background: #fff; border: 1.5px solid var(--gray-200); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; flex: 1; min-width: 0; box-shadow: 0 6px 24px rgba(0,0,0,0.06); }
+.artifact-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray-400); padding: 12px 14px 0; font-weight: 700; }
+
+/* ── TEXT MESSAGE ── */
+.sms-header { display: flex; flex-direction: column; align-items: center; padding: 14px 14px 10px; border-bottom: 1px solid #f0f0ee; gap: 5px; }
+.sms-avatar { width: 42px; height: 42px; border-radius: 50%; background: #dde8f5; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700; color: #3366aa; }
+.sms-name { font-size: 14px; font-weight: 700; color: #111; }
+.sms-sub { font-family: var(--mono); font-size: 10px; color: #bbb; }
+.sms-body { padding: 14px; display: flex; flex-direction: column; gap: 9px; background: #f8f8f6; flex: 1; }
+.sms-bubble { max-width: 88%; }
+.sms-bubble.josh { align-self: flex-end; }
+.sms-bubble.marcus { align-self: flex-start; }
+.sms-text { padding: 9px 13px; border-radius: 16px; font-size: 13px; line-height: 1.55; }
+/* Josh = right = blue iMessage */
+.sms-bubble.josh .sms-text { background: #3478f6; color: #fff; border-radius: 16px 4px 16px 16px; }
+/* Marcus = left = gray */
+.sms-bubble.marcus .sms-text { background: #e8e8e6; color: #111; border-radius: 4px 16px 16px 16px; }
+.sms-timestamp { font-family: var(--mono); font-size: 10px; color: #bbb; text-align: center; margin: 2px 0; }
+
+/* ── INSTAGRAM ── */
+.ig-header { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid #f0f0ee; }
+.ig-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.ig-handle { font-size: 13px; font-weight: 700; color: #111; }
+.ig-time { font-family: var(--mono); font-size: 10px; color: #bbb; margin-left: auto; }
+.ig-image { width: 100%; aspect-ratio: 1; background: linear-gradient(145deg, #f0ede0, #e8e4d0); display: flex; align-items: center; justify-content: center; font-size: 64px; }
+.ig-caption-block { padding: 12px 14px; flex: 1; }
+.ig-caption { font-size: 13px; line-height: 1.7; color: #111; }
+.ig-caption strong { font-weight: 700; }
+.ig-caption .ig-tag { color: #3478f6; }
+.ig-caption .ig-hash { color: #888; }
+.ig-actions { display: flex; gap: 14px; padding: 8px 14px 12px; border-top: 1px solid #f8f8f6; }
+.ig-action { font-family: var(--mono); font-size: 11px; color: #aaa; }
+.ig-action span { color: #555; font-weight: 700; }
+
+/* ── REDDIT ── */
+.reddit-post-header { display: flex; align-items: center; gap: 8px; padding: 12px 14px 8px; }
+.reddit-circle-sm { width: 20px; height: 20px; background: #ff4500; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.reddit-circle-sm svg { width: 12px; height: 12px; fill: white; }
+.reddit-post-sub { font-size: 12px; font-weight: 700; color: #333; }
+.reddit-post-age { font-family: var(--mono); font-size: 10px; color: #bbb; margin-left: auto; }
+.reddit-post-body { padding: 0 14px 10px; }
+.reddit-post-title { font-size: 14px; font-weight: 700; color: #111; line-height: 1.35; margin-bottom: 5px; }
+.reddit-post-text { font-size: 12px; color: #888; line-height: 1.6; font-style: italic; }
+.reddit-divider { border: none; border-top: 1px solid #f0f0ee; margin: 0 14px; }
+.reddit-comment { padding: 12px 14px; }
+.reddit-comment-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 7px; }
+.reddit-comment-avatar { width: 22px; height: 22px; border-radius: 50%; background: #e8f0e8; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #448844; flex-shrink: 0; }
+.reddit-comment-user { font-size: 12px; font-weight: 700; color: #333; }
+.reddit-comment-age { font-family: var(--mono); font-size: 10px; color: #bbb; }
+.reddit-comment-votes { font-family: var(--mono); font-size: 10px; color: #bbb; margin-left: auto; }
+.reddit-comment-votes span { color: #555; }
+.reddit-comment-body { font-size: 13px; line-height: 1.75; color: #333; }
+.reddit-comment-body em { font-style: normal; font-weight: 700; color: #111; }
+
+/* SIDEBAR */
+.sidebar { border-left: 1.5px solid var(--gray-100); display: flex; flex-direction: column; overflow: hidden; background: var(--white); }
+.sidebar-header { padding: 26px 26px 22px; border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.sidebar-eyebrow { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-bottom: 8px; }
+.sidebar-title { font-size: 18px; font-weight: 700; color: var(--ink); line-height: 1.35; }
+.sidebar-scroll { flex: 1; overflow-y: auto; padding: 26px; display: flex; flex-direction: column; gap: 24px; }
+.sidebar-scroll::-webkit-scrollbar { width: 4px; }
+.sidebar-scroll::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 2px; }
+.sb-block { display: flex; flex-direction: column; gap: 8px; }
+.sb-label { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+.sb-title { font-size: 16px; font-weight: 700; color: var(--ink); line-height: 1.4; }
+.sb-body { font-size: 15px; color: var(--gray-600); line-height: 1.7; }
+.sb-divider { border: none; border-top: 1.5px solid var(--gray-100); }
+.sb-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
+.sb-tag { font-family: var(--mono); font-size: 12px; color: var(--gray-500); border: 1.5px solid var(--gray-200); padding: 4px 10px; border-radius: 4px; background: var(--gray-25); }
+.sb-tag.open { border-style: dashed; color: var(--gray-400); }
+.sb-code { font-family: var(--mono); font-size: 13px; color: var(--gray-500); line-height: 2.1; background: var(--gray-25); padding: 14px 16px; border-radius: 5px; border: 1.5px solid var(--gray-100); white-space: pre; }
+.sb-code em { color: var(--ink2); font-style: normal; font-weight: 700; }
+.footer { padding: 14px 32px; border-top: 1.5px solid var(--gray-100); background: var(--white); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.footer-back { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-decoration: none; font-weight: 700; }
+.footer-back:hover { color: var(--ink); }
+.footer-end { font-family: var(--mono); font-size: 12px; color: var(--gray-300); }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-project">Trupanion Sub-Brand — Josh's Flow</div>
+    <div class="topbar-title">What does the brand earn when it shows up where trust already lives?</div>
+  </div>
+  <div class="screen-nav">
+    <a href="js0.html">js0</a><a href="js1.html">js1</a><a href="js2.html">js2</a>
+    <a href="js3.html">js3</a><a href="js4.html">js4</a>
+    <a href="js5.html" class="active">js5</a>
+  </div>
+</div>
+
+<div class="workspace">
+  <div class="artifact-stage">
+    <div class="artifact-stage-inner">
+
+      <!-- 1. TEXT MESSAGE -->
+      <div class="artifact-card">
+        <div class="artifact-label">Text — Emergency vet · 11pm to 1am</div>
+        <div class="sms-header">
+          <div class="sms-avatar">M</div>
+          <div class="sms-name">Marcus</div>
+          <div class="sms-sub">iMessage · 11pm – 1am</div>
+        </div>
+        <div class="sms-body">
+          <div class="sms-timestamp">11:04 PM</div>
+          <div class="sms-bubble josh">
+            <div class="sms-text">bro you up? miso is at the emergency vet. GI thing. i'm freaking out</div>
+          </div>
+          <div class="sms-bubble marcus">
+            <div class="sms-text">omg yes. is she okay?? what's happening</div>
+          </div>
+          <div class="sms-bubble josh">
+            <div class="sms-text">don't know yet, she's in surgery. it's going to be like $4000</div>
+          </div>
+          <div class="sms-bubble marcus">
+            <div class="sms-text">dang man. want me to set up a gofundme</div>
+          </div>
+          <div class="sms-timestamp">1:14 AM</div>
+          <div class="sms-bubble josh">
+            <div class="sms-text">she's going to be ok. i'm still in the waiting room. insurance is covering the bill. i just have to pay $510</div>
+          </div>
+          <div class="sms-bubble marcus">
+            <div class="sms-text">wait what?? you have cat insurance? that's a thing??</div>
+          </div>
+          <div class="sms-bubble josh">
+            <div class="sms-text">it's called [Brand]. get the app for Cheeto. seriously bro just get it</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. INSTAGRAM -->
+      <div class="artifact-card">
+        <div class="artifact-label">Instagram — The next morning</div>
+        <div class="ig-header">
+          <div class="ig-avatar">J</div>
+          <div>
+            <div class="ig-handle">@joshuakinney</div>
+          </div>
+          <div class="ig-time">8 hours ago</div>
+        </div>
+        <div class="ig-image"><img src="miso-the-cat.jpg" alt="Miso" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+        <div class="ig-caption-block">
+          <div class="ig-caption">
+            she's home. she's okay. i ugly cried in the parking lot at 4am and i'm not apologizing for it.<br><br>
+            miso had emergency GI surgery last night. $3,840. my insurance paid $3,330 of it <strong>directly to the vet while I was in the waiting room.</strong> i walked out paying $510. no paperwork. no waiting weeks for a check. just done.<br><br>
+            if you have a pet get the <span class="ig-tag">@[brand]</span> app. especially if they have a pre-existing thing — they actually told me upfront what was covered and what wasn't before i signed up. no bs.<br><br>
+            <span class="ig-hash">#miso #shesokay #catsofinstagram #petinsurance</span>
+          </div>
+        </div>
+        <div class="ig-actions">
+          <div class="ig-action">♥ <span>847</span></div>
+          <div class="ig-action">💬 <span>134</span></div>
+          <div class="ig-action">↗ <span>312</span></div>
+        </div>
+      </div>
+
+      <!-- 3. REDDIT REPLY -->
+      <div class="artifact-card">
+        <div class="artifact-label">Reddit — r/cats · 3 days later</div>
+        <div class="reddit-post-header">
+          <div class="reddit-circle-sm">
+            <svg viewBox="0 0 20 20"><path d="M10 0C4.478 0 0 4.478 0 10s4.478 10 10 10 10-4.478 10-10S15.522 0 10 0zm5.895 10.292a1.46 1.46 0 00-2.46-.892c-.976-.636-2.29-1.044-3.74-1.096l.7-3.088 2.217.484a1.04 1.04 0 102.033-.296 1.04 1.04 0 00-1.933.52l-2.47-.54a.232.232 0 00-.272.174l-.784 3.456c-1.48.04-2.822.45-3.814 1.094a1.46 1.46 0 10-1.618 2.376 2.86 2.86 0 000 .384c0 1.952 2.27 3.536 5.07 3.536s5.07-1.584 5.07-3.536a2.87 2.87 0 000-.382 1.46 1.46 0 00.001-2.194zM7.5 11.25a1 1 0 111-1 1 1 0 01-1 1zm3.87 2.658c-.716.716-2.086.716-2.74 0a.194.194 0 01.274-.274c.51.51 1.682.51 2.192 0a.194.194 0 01.274.274zm-.37-1.658a1 1 0 111-1 1 1 0 01-1 1z"/></svg>
+          </div>
+          <div class="reddit-post-sub">r/cats</div>
+          <div class="reddit-post-age">3 days ago</div>
+        </div>
+        <div class="reddit-post-body">
+          <div class="reddit-post-title">Is pet insurance worth it for a senior cat with a pre-existing condition?</div>
+          <div class="reddit-post-text">My 11-year-old has hyperthyroidism. Every insurer I've looked at won't cover him or the exclusions are so broad it feels pointless. Has anyone actually had a good experience?</div>
+        </div>
+        <div class="reddit-divider"></div>
+        <div class="reddit-comment">
+          <div class="reddit-comment-meta">
+            <div class="reddit-comment-avatar">J</div>
+            <span class="reddit-comment-user">joshuakinney</span>
+            <span class="reddit-comment-age">2 days ago</span>
+            <span class="reddit-comment-votes">▲ <span>1.2k</span></span>
+          </div>
+          <div class="reddit-comment-body">I was literally you six months ago asking this exact question in this exact sub.<br><br>My cat Miso has hyperthyroid. Most places either declined her outright or buried everything in exclusions. The one that worked for me: <em>[Brand] app</em>. They showed me exactly what was and wasn't covered before I paid anything. Hyperthyroid treatment: not covered, pre-existing. Everything else: covered. At least I knew going in.<br><br>Three days ago Miso had emergency GI surgery. $3,840. They paid $3,330 directly to the vet while I was sitting in the waiting room at 2am. I walked out paying $510.<br><br><em>It literally saved her life.</em> Not even being dramatic. Get the app.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-eyebrow">js5 — The Aftermath</div>
+      <div class="sidebar-title">Three channels. One emotional truth. Zero paid media.</div>
+    </div>
+    <div class="sidebar-scroll">
+      <div class="sb-block">
+        <div class="sb-label">Why this screen closes the pitch</div>
+        <div class="sb-title">The acquisition loop closes here.</div>
+        <div class="sb-body">Josh found the brand in a r/cats comment. Six months later, he's writing the comment that brings the next Josh in. That's not a campaign — it's the product working exactly as designed. Marcus is now going to get it for Cheeto. Everyone who reads that Reddit reply is the person Josh was six months ago.</div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">Three registers, three functions</div>
+        <div class="sb-title">Each channel carries a different kind of trust.</div>
+        <div class="sb-body">The text is raw and private — from the waiting room, before he knows she's okay, tipping off his best friend. The Instagram is processed and public, with a photo and a face on it. The Reddit reply is the most strategically valuable: searchable, specific, answers the exact question Josh was asking when he found the brand.</div>
+        <div class="sb-tags">
+          <span class="sb-tag">text → intimate</span>
+          <span class="sb-tag">instagram → visible</span>
+          <span class="sb-tag">reddit → searchable</span>
+        </div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">The voice check</div>
+        <div class="sb-title">Nobody says "Brand by Trupanion." They say "get the app."</div>
+        <div class="sb-body">The text: "it's called [Brand]. get it for Cheeto." The Instagram: "get the [Brand] app." The Reddit reply: "Get the app." That's how 29-year-olds talk about products they actually like. The brand name appears once per channel, at most. The recommendation carries the weight.</div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">The full arc</div>
+        <div class="sb-code">js0 → community thread, no intent
+js1 → thin handoff, smart read
+js2 → 3 questions + upload
+js3 → reality check, no surprises
+js4 → claim at 2am, $3330 paid
+js5 → three posts, loop closed
+—
+paid media in this story: <em>zero</em>
+brand mentions earned:     <em>every one</em></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <a href="js4.html" class="footer-back">← js4 — Moment of truth</a>
+  <div class="footer-end">Josh's Flow v1 · end</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>js4 — Moment of Truth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #111; --ink2: #333;
+  --gray-600: #555; --gray-500: #6b6b6b; --gray-400: #888; --gray-300: #aaa;
+  --gray-200: #d8d8d8; --gray-100: #ebebeb; --gray-50: #f3f3f1; --gray-25: #f9f9f7;
+  --white: #fff; --mono: 'Courier Prime', monospace; --sans: 'Inter', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+
+/* Full-height page shell */
+html, body { height: 100%; overflow: hidden; }
+body { background: var(--gray-50); color: var(--ink); font-family: var(--sans); display: flex; flex-direction: column; }
+
+/* Top bar — fixed height */
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 15px 32px; background: var(--white); border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.topbar-left { display: flex; flex-direction: column; gap: 3px; }
+.topbar-project { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; }
+.topbar-title { font-size: 15px; font-weight: 600; color: var(--ink); }
+.screen-nav { display: flex; gap: 6px; }
+.screen-nav a { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-decoration: none; padding: 6px 14px; border: 1.5px solid var(--gray-200); border-radius: 4px; transition: all 0.15s; background: var(--white); }
+.screen-nav a:hover { color: var(--ink); border-color: var(--gray-400); }
+.screen-nav a.active { color: var(--white); border-color: var(--ink); background: var(--ink); font-weight: 700; }
+
+/* Footer — fixed height */
+.footer { padding: 14px 32px; border-top: 1.5px solid var(--gray-100); background: var(--white); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.footer-back { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-decoration: none; font-weight: 700; }
+.footer-back:hover { color: var(--ink); }
+.next-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: var(--ink); border: none; color: var(--white); font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; font-weight: 700; cursor: pointer; text-decoration: none; transition: opacity 0.15s; border-radius: 4px; }
+.next-btn:hover { opacity: 0.8; }
+
+/* Main workspace — fills remaining height, two columns */
+.workspace { flex: 1; display: grid; grid-template-columns: 1fr 440px; min-height: 0; }
+
+/* Left column: scrollable stage that can accommodate the phone */
+.phone-stage { overflow-y: auto; display: flex; align-items: center; justify-content: center; padding: 40px; background: var(--gray-50); }
+
+/* The phone frame — fixed size, internal scroll */
+.phone-frame {
+  width: 390px;
+  height: 780px;
+  border-radius: 48px;
+  overflow: hidden;
+  box-shadow: 0 0 0 9px #1a1a1a, 0 0 0 10px #2e2e2e, 0 40px 80px rgba(0,0,0,0.22);
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.phone-status { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px 6px; flex-shrink: 0; background: #fff; }
+.phone-status-time { font-size: 14px; font-weight: 700; color: #111; }
+.phone-status-icons { display: flex; gap: 5px; align-items: center; }
+.phone-status-dot { width: 5px; height: 5px; border-radius: 50%; background: #ccc; }
+.phone-status-dot.on { background: #333; }
+
+.push-notif { background: #f9f9f7; border-bottom: 1px solid #ebebeb; padding: 10px 18px; display: flex; gap: 10px; align-items: flex-start; flex-shrink: 0; }
+.push-icon { width: 32px; height: 32px; background: #111; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.push-body { flex: 1; }
+.push-app { font-family: var(--mono); font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px; }
+.push-text { font-size: 13px; color: #111; font-weight: 600; line-height: 1.4; }
+.push-time { font-family: var(--mono); font-size: 10px; color: #bbb; margin-top: 2px; }
+
+.phone-brand-bar { display: flex; align-items: center; justify-content: space-between; padding: 8px 22px 10px; border-bottom: 1px solid var(--gray-100); flex-shrink: 0; }
+.phone-brand-name { font-size: 17px; font-weight: 700; color: #111; letter-spacing: -0.02em; }
+.brand-pill { font-family: var(--mono); font-size: 10px; color: #447744; background: #f0f5f0; border: 1px solid #d0e0d0; padding: 3px 10px; border-radius: 20px; font-weight: 700; }
+
+/* The scrollable body — this is where the magic needs to happen */
+.phone-content {
+  flex: 1;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  padding: 18px 18px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: #fff;
+  min-height: 0;
+}
+.phone-content::-webkit-scrollbar { display: none; }
+
+/* Claim hero */
+.claim-hero { background: #111; border-radius: 14px; padding: 18px 16px; color: #fff; flex-shrink: 0; }
+.claim-eyebrow { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 8px; font-weight: 700; }
+.claim-headline { font-size: 20px; font-weight: 700; line-height: 1.2; margin-bottom: 4px; }
+.claim-sub { font-size: 13px; color: #888; margin-bottom: 14px; }
+.claim-status-row { display: flex; align-items: flex-start; gap: 8px; }
+.claim-dot { width: 8px; height: 8px; border-radius: 50%; background: #44cc66; flex-shrink: 0; margin-top: 4px; animation: pulse 1.5s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+.claim-status-text { font-family: var(--mono); font-size: 12px; color: #888; line-height: 1.6; }
+.claim-status-text strong { color: #44cc66; }
+
+/* Timeline */
+.timeline { display: flex; flex-direction: column; flex-shrink: 0; }
+.tl-step { display: flex; gap: 12px; }
+.tl-left { display: flex; flex-direction: column; align-items: center; width: 28px; flex-shrink: 0; }
+.tl-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #d0d0d0; background: #fff; flex-shrink: 0; margin-top: 3px; }
+.tl-dot.done { background: #111; border-color: #111; }
+.tl-dot.active { background: #44cc66; border-color: #44cc66; box-shadow: 0 0 0 3px rgba(68,204,102,0.2); }
+.tl-line { flex: 1; width: 1px; background: #e0e0de; margin: 2px 0; min-height: 20px; }
+.tl-step:last-child .tl-line { display: none; }
+.tl-right { padding-bottom: 14px; flex: 1; }
+.tl-step:last-child .tl-right { padding-bottom: 0; }
+.tl-label { font-family: var(--mono); font-size: 10px; color: #ccc; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px; }
+.tl-label.done { color: #888; }
+.tl-label.active { color: #44cc66; }
+.tl-title { font-size: 14px; font-weight: 600; color: #bbb; line-height: 1.3; }
+.tl-title.done { color: #111; }
+.tl-title.active { color: #111; }
+.tl-detail { font-size: 12px; color: #ccc; margin-top: 2px; line-height: 1.5; }
+.tl-detail.done { color: #888; }
+
+/* Bill */
+.payment-card { background: var(--gray-25); border: 1.5px solid var(--gray-100); border-radius: 12px; overflow: hidden; flex-shrink: 0; }
+.payment-header { padding: 10px 14px; border-bottom: 1px solid var(--gray-100); }
+.payment-header-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray-400); font-weight: 700; }
+.payment-row { display: flex; justify-content: space-between; align-items: baseline; padding: 11px 14px; border-bottom: 1px solid #f0f0ee; }
+.payment-row:last-child { border-bottom: none; }
+.payment-label { font-size: 14px; color: #555; }
+.payment-val { font-family: var(--mono); font-size: 14px; color: #111; font-weight: 700; }
+.payment-val.green { color: #447744; }
+.payment-val.big { font-size: 22px; letter-spacing: -0.02em; }
+.payment-note { font-size: 11px; color: #aaa; text-align: center; padding: 10px 14px; border-top: 1px solid #f0f0ee; font-family: var(--mono); line-height: 1.6; }
+
+.phone-home { padding: 10px 0 14px; display: flex; justify-content: center; flex-shrink: 0; background: #fff; }
+.phone-home-bar { width: 120px; height: 4px; background: #e0e0e0; border-radius: 2px; }
+
+/* Sidebar */
+.sidebar { border-left: 1.5px solid var(--gray-100); display: flex; flex-direction: column; overflow: hidden; background: var(--white); }
+.sidebar-header { padding: 26px 26px 22px; border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.sidebar-eyebrow { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-bottom: 8px; }
+.sidebar-title { font-size: 18px; font-weight: 700; color: var(--ink); line-height: 1.35; }
+.sidebar-scroll { flex: 1; overflow-y: auto; padding: 26px; display: flex; flex-direction: column; gap: 24px; }
+.sidebar-scroll::-webkit-scrollbar { width: 4px; }
+.sidebar-scroll::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 2px; }
+.sb-block { display: flex; flex-direction: column; gap: 8px; }
+.sb-label { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+.sb-title { font-size: 16px; font-weight: 700; color: var(--ink); line-height: 1.4; }
+.sb-body { font-size: 15px; color: var(--gray-600); line-height: 1.7; }
+.sb-divider { border: none; border-top: 1.5px solid var(--gray-100); }
+.sb-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
+.sb-tag { font-family: var(--mono); font-size: 12px; color: var(--gray-500); border: 1.5px solid var(--gray-200); padding: 4px 10px; border-radius: 4px; background: var(--gray-25); }
+.sb-code { font-family: var(--mono); font-size: 13px; color: var(--gray-500); line-height: 2.1; background: var(--gray-25); padding: 14px 16px; border-radius: 5px; border: 1.5px solid var(--gray-100); white-space: pre; }
+.sb-code em { color: var(--ink2); font-style: normal; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-project">Trupanion Sub-Brand — Josh's Flow</div>
+    <div class="topbar-title">What does the brand earn when it shows up where trust already lives?</div>
+  </div>
+  <div class="screen-nav">
+    <a href="js0.html">js0</a><a href="js1.html">js1</a><a href="js2.html">js2</a><a href="js3.html">js3</a>
+    <a href="js4.html" class="active">js4</a>
+    <a href="js5.html">js5</a>
+  </div>
+</div>
+
+<div class="workspace">
+  <div class="phone-stage">
+    <div class="phone-frame">
+
+      <div class="phone-status">
+        <span class="phone-status-time">2:14 AM</span>
+        <div class="phone-status-icons">
+          <div class="phone-status-dot on"></div><div class="phone-status-dot on"></div>
+          <div class="phone-status-dot on"></div><div class="phone-status-dot"></div>
+        </div>
+      </div>
+
+      <div class="push-notif">
+        <div class="push-icon">🐱</div>
+        <div class="push-body">
+          <div class="push-app">[Brand] by Trupanion</div>
+          <div class="push-text">Miso's claim is processing. We're talking to Emerald City Vet now.</div>
+          <div class="push-time">2:11 AM · 3 minutes ago</div>
+        </div>
+      </div>
+
+      <div class="phone-brand-bar">
+        <div class="phone-brand-name">[Brand]</div>
+        <div class="brand-pill">VetDirect Active</div>
+      </div>
+
+      <div class="phone-content" id="phoneContent">
+
+        <div class="claim-hero">
+          <div class="claim-eyebrow">Miso's claim · tonight</div>
+          <div class="claim-headline">Acute GI obstruction. She's going to be okay.</div>
+          <div class="claim-sub">Emerald City Veterinary Emergency · Seattle, WA</div>
+          <div class="claim-status-row">
+            <div class="claim-dot"></div>
+            <div class="claim-status-text"><strong>Paying the clinic directly.</strong> You don't have to do anything.</div>
+          </div>
+        </div>
+
+        <div class="timeline">
+          <div class="tl-step">
+            <div class="tl-left"><div class="tl-dot done"></div><div class="tl-line"></div></div>
+            <div class="tl-right">
+              <div class="tl-label done">1:48 AM</div>
+              <div class="tl-title done">Clinic verified in network</div>
+              <div class="tl-detail done">Emerald City Vet · VetDirect enabled</div>
+            </div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-left"><div class="tl-dot done"></div><div class="tl-line"></div></div>
+            <div class="tl-right">
+              <div class="tl-label done">1:52 AM</div>
+              <div class="tl-title done">Diagnosis received from vet system</div>
+              <div class="tl-detail done">GI obstruction · unrelated to pre-existing conditions</div>
+            </div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-left"><div class="tl-dot done"></div><div class="tl-line"></div></div>
+            <div class="tl-right">
+              <div class="tl-label done">2:03 AM</div>
+              <div class="tl-title done">Coverage confirmed · claim approved</div>
+              <div class="tl-detail done">90% of eligible costs covered · no review needed</div>
+            </div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-left"><div class="tl-dot active"></div><div class="tl-line"></div></div>
+            <div class="tl-right">
+              <div class="tl-label active">Now · 2:14 AM</div>
+              <div class="tl-title active">Paying clinic directly</div>
+              <div class="tl-detail done">You'll walk out paying your share only</div>
+            </div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-right">
+              <div class="tl-label">At checkout</div>
+              <div class="tl-title">Your total at the desk</div>
+              <div class="tl-detail">10% copay on covered costs + any excluded items</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="payment-card">
+          <div class="payment-header"><div class="payment-header-label">Tonight's bill · Miso</div></div>
+          <div class="payment-row">
+            <div class="payment-label">Full treatment cost</div>
+            <div class="payment-val">$3,840</div>
+          </div>
+          <div class="payment-row">
+            <div class="payment-label">[Brand] pays the clinic</div>
+            <div class="payment-val green">−$3,330</div>
+          </div>
+          <div class="payment-row">
+            <div class="payment-label">Your total at checkout</div>
+            <div class="payment-val big">$510</div>
+          </div>
+          <div class="payment-note">Paid in 38 seconds.<br>No form. No reimbursement wait. No surprises.</div>
+        </div>
+
+      </div>
+
+      <div class="phone-home"><div class="phone-home-bar"></div></div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-eyebrow">js4 — Moment of Truth</div>
+      <div class="sidebar-title">The claim isn't a revelation. It's a confirmation.</div>
+    </div>
+    <div class="sidebar-scroll">
+      <div class="sb-block">
+        <div class="sb-label">Why this screen matters</div>
+        <div class="sb-title">Josh already knew what would be covered. js3 told him.</div>
+        <div class="sb-body">GI obstruction isn't hyperthyroidism. It's a new condition — exactly what the reality check said was covered. There are no surprises at 2 AM in an emergency waiting room. The trust was built in the quiet months between enrollment and tonight. This is the proof.</div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">VetDirect Pay</div>
+        <div class="sb-title">38 seconds. No form. No reimbursement wait.</div>
+        <div class="sb-body">This is Trupanion's strongest differentiator — the only pet insurer that pays the vet directly at the point of care. Josh walks out paying $510 instead of $3,840, without submitting anything. The design job here is making that legible when someone is terrified at 2 AM.</div>
+        <div class="sb-tags">
+          <span class="sb-tag">VetDirect Pay</span>
+          <span class="sb-tag">pays vet directly</span>
+          <span class="sb-tag">38 seconds</span>
+        </div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">The 2 AM detail</div>
+        <div class="sb-title">Time of day is intentional.</div>
+        <div class="sb-body">Josh is in a waiting room at 2 AM not knowing if Miso is okay. The push notification arrived while he was sitting there. The claim timeline shows it had already been processing for 26 minutes. By the time he opens the app, the hard part is done.</div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">What happens next</div>
+        <div class="sb-code">claim processed → <em>$3,330 paid</em>
+josh's bill    → <em>$510 at checkout</em>
+miso           → <em>going to be okay</em>
+—
+josh texts marcus from the parking lot
+josh posts on instagram at 4am
+josh replies in r/cats three days later</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <a href="js3.html" class="footer-back">← js3 — Reality check</a>
+  <a href="js5.html" class="next-btn">js5 — The aftermath →</a>
+</div>
+
+
+
+</body>
+</html>

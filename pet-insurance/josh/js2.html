@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>js2 — Tell us about your cat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #111; --ink2: #333;
+  --gray-600: #555; --gray-500: #6b6b6b; --gray-400: #888; --gray-300: #aaa;
+  --gray-200: #d8d8d8; --gray-100: #ebebeb; --gray-50: #f3f3f1; --gray-25: #f9f9f7;
+  --white: #fff; --mono: 'Courier Prime', monospace; --sans: 'Inter', sans-serif;
+}
+html, body { height: 100%; }
+body { background: var(--gray-50); color: var(--ink); font-family: var(--sans); display: flex; flex-direction: column; min-height: 100vh; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 15px 32px; background: var(--white); border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.topbar-left { display: flex; flex-direction: column; gap: 3px; }
+.topbar-project { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; }
+.topbar-title { font-size: 15px; font-weight: 600; color: var(--ink); }
+.screen-nav { display: flex; gap: 6px; }
+.screen-nav a { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-decoration: none; padding: 6px 14px; border: 1.5px solid var(--gray-200); border-radius: 4px; transition: all 0.15s; background: var(--white); }
+.screen-nav a:hover { color: var(--ink); border-color: var(--gray-400); }
+.screen-nav a.active { color: var(--white); border-color: var(--ink); background: var(--ink); font-weight: 700; }
+.workspace { flex: 1; display: grid; grid-template-columns: 1fr 440px; min-height: 0; overflow: hidden; }
+.phone-stage { display: flex; align-items: center; justify-content: center; padding: 40px; background: var(--gray-50); }
+.phone-frame { width: 390px; min-width: 390px; height: 780px; border-radius: 48px; overflow: hidden; box-shadow: 0 0 0 9px #1a1a1a, 0 0 0 10px #2e2e2e, 0 40px 80px rgba(0,0,0,0.22); display: flex; flex-direction: column; background: #fff; flex-shrink: 0; }
+.phone-status { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px 6px; flex-shrink: 0; background: #fff; }
+.phone-status-time { font-size: 14px; font-weight: 700; color: #111; }
+.phone-status-icons { display: flex; gap: 5px; align-items: center; }
+.phone-status-dot { width: 5px; height: 5px; border-radius: 50%; background: #ccc; }
+.phone-status-dot.on { background: #333; }
+.phone-brand-bar { padding: 9px 22px 13px; border-bottom: 1.5px solid var(--gray-100); background: var(--white); flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; }
+.phone-brand-name { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; }
+.progress-track { display: flex; gap: 5px; }
+.progress-pip { width: 24px; height: 3px; background: var(--gray-100); border-radius: 2px; }
+.progress-pip.done { background: var(--ink); }
+.progress-pip.active { background: var(--gray-400); }
+.phone-content { flex: 1; overflow-y: auto; padding: 18px 18px 16px; display: flex; flex-direction: column; gap: 12px; background: var(--gray-50); }
+.phone-content::-webkit-scrollbar { display: none; }
+@keyframes pageIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.phone-content { animation: pageIn 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+
+/* Pet card */
+.pet-card { background: var(--white); border: 1.5px solid var(--gray-100); border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 13px; }
+.pet-avatar { width: 44px; height: 44px; background: var(--gray-50); border: 1.5px solid var(--gray-100); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.pet-name { font-size: 16px; font-weight: 700; color: var(--ink); }
+.pet-detail { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+
+/* Q blocks */
+.q-block { background: var(--white); border: 1.5px solid var(--gray-100); border-radius: 12px; padding: 16px; }
+.q-num { font-family: var(--mono); font-size: 11px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; font-weight: 700; }
+.q-text { font-size: 16px; font-weight: 400; color: var(--ink); line-height: 1.4; margin-bottom: 13px; }
+.q-text strong { font-weight: 700; }
+
+/* Chips */
+.chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.chip { padding: 8px 13px; border: 1.5px solid var(--gray-200); border-radius: 7px; font-size: 13px; color: var(--gray-600); cursor: pointer; transition: all 0.12s; background: var(--white); }
+.chip:hover { border-color: var(--gray-400); color: var(--ink); }
+.chip.sel { border-color: var(--ink); color: var(--ink); background: var(--gray-50); font-weight: 700; }
+
+/* Slider — exact match to Emily's */
+.slider-area { padding: 2px 0; }
+.slider-segs { display: flex; gap: 4px; margin-bottom: 9px; }
+.seg { height: 5px; flex: 1; background: var(--gray-100); border-radius: 3px; cursor: pointer; transition: background 0.1s; }
+.seg.fill { background: var(--ink); }
+.slider-labs { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--gray-400); }
+.slider-out { font-size: 15px; font-weight: 700; color: var(--ink); margin-top: 9px; }
+.slider-hint { font-family: var(--mono); font-size: 11px; color: var(--gray-400); margin-top: 4px; transition: color 0.2s; line-height: 1.6; }
+.slider-hint.warn { color: #c0703a; }
+
+/* Upload */
+.upload-block { background: var(--white); border: 1.5px solid var(--gray-100); border-radius: 12px; padding: 16px; }
+.upload-label-mono { font-family: var(--mono); font-size: 11px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; font-weight: 700; }
+.upload-title { font-size: 16px; font-weight: 400; color: var(--ink); line-height: 1.4; margin-bottom: 13px; }
+.upload-area { border: 1.5px dashed var(--gray-200); border-radius: 8px; padding: 20px 14px; display: flex; flex-direction: column; align-items: center; gap: 7px; cursor: pointer; transition: border-color 0.2s, background 0.2s; background: var(--gray-25); }
+.upload-area:hover { border-color: var(--gray-400); }
+.upload-area.done { border-style: solid; border-color: #447744; background: #f0f5f0; }
+.upload-icon { font-size: 22px; }
+.upload-main { font-size: 13px; font-weight: 600; color: #333; text-align: center; }
+.upload-sub { font-size: 12px; color: var(--gray-400); text-align: center; line-height: 1.55; }
+
+/* CTA */
+.cta-btn { width: 100%; padding: 14px; background: var(--ink); color: var(--white); border: none; font-size: 15px; font-weight: 600; border-radius: 10px; cursor: pointer; transition: opacity 0.15s; font-family: var(--sans); }
+.cta-btn:hover { opacity: 0.85; }
+.cta-note { font-size: 12px; color: var(--gray-400); text-align: center; margin-top: 7px; font-family: var(--mono); }
+
+/* Processing overlay */
+.processing { position: absolute; inset: 0; background: rgba(255,255,255,0.97); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 10; border-radius: 48px; }
+.processing.active { opacity: 1; pointer-events: all; }
+.proc-ring { width: 28px; height: 28px; border: 2.5px solid #e0e0e0; border-top-color: #333; border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.proc-label { font-size: 16px; font-weight: 700; color: #111; }
+.proc-steps { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.proc-step { font-family: var(--mono); font-size: 12px; color: #ccc; transition: color 0.4s; }
+.proc-step.active { color: #555; }
+.proc-step.done { color: #447744; }
+
+.phone-home { padding: 10px 0 14px; display: flex; justify-content: center; flex-shrink: 0; background: #fff; }
+.phone-home-bar { width: 120px; height: 4px; background: #e0e0e0; border-radius: 2px; }
+
+/* SIDEBAR */
+.sidebar { border-left: 1.5px solid var(--gray-100); display: flex; flex-direction: column; overflow: hidden; background: var(--white); }
+.sidebar-header { padding: 26px 26px 22px; border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.sidebar-eyebrow { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-bottom: 8px; }
+.sidebar-title { font-size: 18px; font-weight: 700; color: var(--ink); line-height: 1.35; }
+.sidebar-scroll { flex: 1; overflow-y: auto; padding: 26px; display: flex; flex-direction: column; gap: 24px; }
+.sidebar-scroll::-webkit-scrollbar { width: 4px; }
+.sidebar-scroll::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 2px; }
+.sb-block { display: flex; flex-direction: column; gap: 8px; }
+.sb-label { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+.sb-title { font-size: 16px; font-weight: 700; color: var(--ink); line-height: 1.4; }
+.sb-body { font-size: 15px; color: var(--gray-600); line-height: 1.7; }
+.sb-divider { border: none; border-top: 1.5px solid var(--gray-100); }
+.sb-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
+.sb-tag { font-family: var(--mono); font-size: 12px; color: var(--gray-500); border: 1.5px solid var(--gray-200); padding: 4px 10px; border-radius: 4px; background: var(--gray-25); }
+.sb-tag.open { border-style: dashed; color: var(--gray-400); }
+.sb-code { font-family: var(--mono); font-size: 14px; color: var(--gray-500); line-height: 2.1; background: var(--gray-25); padding: 14px 16px; border-radius: 5px; border: 1.5px solid var(--gray-100); white-space: pre; }
+.sb-code em { color: var(--ink2); font-style: normal; font-weight: 700; }
+.footer { padding: 14px 32px; border-top: 1.5px solid var(--gray-100); background: var(--white); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.footer-back { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-decoration: none; transition: color 0.15s; font-weight: 700; }
+.footer-back:hover { color: var(--ink); }
+.next-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: var(--ink); border: none; color: var(--white); font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; font-weight: 700; cursor: pointer; text-decoration: none; transition: opacity 0.15s; border-radius: 4px; }
+.next-btn:hover { opacity: 0.8; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-project">Trupanion Sub-Brand — Josh's Flow</div>
+    <div class="topbar-title">What does the brand earn when it shows up where trust already lives?</div>
+  </div>
+  <div class="screen-nav">
+    <a href="js0.html">js0</a><a href="js1.html">js1</a>
+    <a href="js2.html" class="active">js2</a>
+    <a href="js3.html">js3</a><a href="js4.html">js4</a><a href="js5.html">js5</a>
+  </div>
+</div>
+<div class="workspace">
+  <div class="phone-stage">
+    <div class="phone-frame">
+      <div class="phone-status">
+        <span class="phone-status-time">11:26</span>
+        <div class="phone-status-icons">
+          <div class="phone-status-dot on"></div><div class="phone-status-dot on"></div>
+          <div class="phone-status-dot on"></div><div class="phone-status-dot"></div>
+        </div>
+      </div>
+      <div class="phone-brand-bar">
+        <div class="phone-brand-name">[Brand]</div>
+        <div class="progress-track">
+          <div class="progress-pip done"></div>
+          <div class="progress-pip active"></div>
+          <div class="progress-pip"></div>
+          <div class="progress-pip"></div>
+        </div>
+      </div>
+      <div class="phone-content">
+
+        <div class="pet-card">
+          <div class="pet-avatar">🐱</div>
+          <div>
+            <div class="pet-name">Miso</div>
+            <div class="pet-detail">Senior cat · via r/cats</div>
+          </div>
+        </div>
+
+        <div class="q-block">
+          <div class="q-num">01 of 03</div>
+          <div class="q-text">Where are you right now with <strong>Miso</strong>?</div>
+          <div class="chips">
+            <div class="chip sel">Just got a diagnosis</div>
+            <div class="chip">Already managing it</div>
+            <div class="chip">Something feels off, no dx yet</div>
+          </div>
+        </div>
+
+        <div class="q-block">
+          <div class="q-num">02 of 03</div>
+          <div class="q-text">What's your main worry?</div>
+          <div class="chips">
+            <div class="chip sel">Can I even get coverage with a pre-existing condition?</div>
+            <div class="chip">What if something new happens on top of this?</div>
+            <div class="chip">I just want to know the math</div>
+          </div>
+        </div>
+
+        <div class="q-block">
+          <div class="q-num">03 of 03</div>
+          <div class="q-text">What's a workable monthly number?</div>
+          <div class="slider-area">
+            <div class="slider-segs" id="segs">
+              <div class="seg" data-v="1"></div>
+              <div class="seg" data-v="2"></div>
+              <div class="seg fill" data-v="3"></div>
+              <div class="seg" data-v="4"></div>
+              <div class="seg" data-v="5"></div>
+            </div>
+            <div class="slider-labs"><span>$20</span><span>$35</span><span>$55</span><span>$75</span><span>$100+</span></div>
+            <div class="slider-out" id="sliderOut">Up to $55 / mo</div>
+            <div class="slider-hint" id="sliderHint">Covers new illness, injury, and emergencies — anything that starts after today. Won't cover Miso's hyperthyroid treatment, but that's true everywhere.</div>
+          </div>
+        </div>
+
+        <div class="upload-block">
+          <div class="upload-label-mono">The most important part</div>
+          <div class="upload-title">Snap or upload Miso's vet records.</div>
+          <div class="upload-area" id="uploadArea" onclick="handleUpload()">
+            <div class="upload-icon">📋</div>
+            <div class="upload-main">Tap to take a photo or upload a file</div>
+            <div class="upload-sub">Discharge summary, lab results, or any vet doc.<br>We read them so you don't have to explain twice.</div>
+          </div>
+        </div>
+
+        <div>
+          <button class="cta-btn" id="ctaBtn" onclick="handleContinue()">See Miso's reality check →</button>
+          <div class="cta-note">We'll show exactly what's covered and what isn't.</div>
+        </div>
+
+      </div>
+
+      <div class="processing" id="processing">
+        <div class="proc-ring"></div>
+        <div class="proc-label">Reading Miso's records</div>
+        <div class="proc-steps">
+          <div class="proc-step" id="step1">Reading diagnosis — hyperthyroidism</div>
+          <div class="proc-step" id="step2">Flagging pre-existing conditions</div>
+          <div class="proc-step" id="step3">Mapping to coverage rules</div>
+          <div class="proc-step" id="step4">Building your reality check</div>
+        </div>
+      </div>
+
+      <div class="phone-home"><div class="phone-home-bar"></div></div>
+    </div>
+  </div>
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-eyebrow">js2 — Tell us about your cat</div>
+      <div class="sidebar-title">The slider is a conversation, not just an input</div>
+    </div>
+    <div class="sidebar-scroll">
+      <div class="sb-block">
+        <div class="sb-label">Why three questions, not eight</div>
+        <div class="sb-title">The thread signal already told us what this is about.</div>
+        <div class="sb-body">Situation, worry, budget. That's what's actually unknown. Josh doesn't fill in a breed selector or an age field — the app inferred a senior cat with a pre-existing condition from the thread context. What remains is human: where he is emotionally, and what he can afford.</div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">The slider as education</div>
+        <div class="sb-title">Gen Z doesn't know how pet insurance works. The slider teaches them.</div>
+        <div class="sb-body">Each position on the slider tells Josh what that budget actually means for a cat like Miso — not just a price range, but what it covers and what the tradeoffs are. The hint copy is the product doing the work of an insurance agent, without the sales pressure.</div>
+        <div class="sb-tags">
+          <span class="sb-tag">explain before asking</span>
+          <span class="sb-tag">no jargon</span>
+          <span class="sb-tag">honest about limits</span>
+        </div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">The upload is the GenUI moment</div>
+        <div class="sb-title">The records do what a form never could.</div>
+        <div class="sb-body">Josh doesn't explain Miso's condition. He hands over the document the vet already produced. The app reads it — diagnosis, medications, existing conditions — and builds the reality check from real data. That's the Medical Record Summary as a live UX surface.</div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">What carries to js3</div>
+        <div class="sb-code">cat_name   = <em>"Miso"</em>
+situation  = <em>"just got a diagnosis"</em>
+worry      = <em>"pre-existing coverage"</em>
+budget     = <em>"~$55/mo"</em>
+diagnosis  = <em>hyperthyroidism · managed</em>
+meds       = <em>methimazole</em></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer">
+  <a href="js1.html" class="footer-back">← js1 — Context arrival</a>
+  <a href="js3.html" class="next-btn">js3 — Reality check →</a>
+</div>
+<script>
+  const labs = ['Up to $20 / mo', 'Up to $35 / mo', 'Up to $55 / mo', 'Up to $75 / mo', '$100+ / mo'];
+  const hints = [
+    { text: 'Below the minimum for meaningful senior cat coverage — accidents only, very limited illness protection.', warn: true },
+    { text: 'Covers new emergencies and some illness. Won\'t help with anything Miso had before today — that\'s normal.', warn: false },
+    { text: 'A good starting point for senior cats. Here\'s what that actually covers — and what it doesn\'t.', warn: false },
+    { text: 'Solid coverage for new conditions — illness, injury, emergency. Still won\'t cover pre-existing, but that\'s every insurer.', warn: false },
+    { text: 'Comprehensive. If something new happens to Miso, this covers it well. Add wellness for routine care too.', warn: false }
+  ];
+  document.querySelectorAll('.seg').forEach(s => {
+    s.addEventListener('click', function() {
+      const v = parseInt(this.dataset.v);
+      document.querySelectorAll('.seg').forEach(x => x.classList.toggle('fill', parseInt(x.dataset.v) <= v));
+      document.getElementById('sliderOut').textContent = labs[v - 1];
+      const hint = document.getElementById('sliderHint');
+      hint.textContent = hints[v - 1].text;
+      hint.classList.toggle('warn', hints[v - 1].warn);
+    });
+  });
+  document.querySelectorAll('.chip').forEach(c => {
+    c.addEventListener('click', function() {
+      this.closest('.chips').querySelectorAll('.chip').forEach(x => x.classList.remove('sel'));
+      this.classList.add('sel');
+    });
+  });
+  let uploaded = false;
+  function handleUpload() {
+    if (uploaded) return;
+    uploaded = true;
+    const area = document.getElementById('uploadArea');
+    area.classList.add('done');
+    area.innerHTML = '<div class="upload-icon">✓</div><div class="upload-main" style="color:#447744;">MisoVetRecords_May2026.pdf</div><div class="upload-sub">3 pages · ready to read</div>';
+  }
+  function handleContinue() {
+    const proc = document.getElementById('processing');
+    proc.classList.add('active');
+    const steps = ['step1','step2','step3','step4'];
+    steps.forEach((id, i) => {
+      setTimeout(() => {
+        if (i > 0) document.getElementById(steps[i-1]).classList.replace('active','done');
+        document.getElementById(id).classList.add('active');
+      }, i * 700);
+    });
+    setTimeout(() => { document.getElementById(steps[3]).classList.replace('active','done'); }, steps.length * 700);
+    setTimeout(() => { window.location.href = 'js3.html'; }, steps.length * 700 + 600);
+  }
+</script>
+</body>
+</html>
