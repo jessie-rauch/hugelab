@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function() {
+    var key = 'beacon_auth_petinsurance';
+    if (sessionStorage.getItem(key) !== '1') {
+      var pw = prompt('Password required:');
+      if (pw !== 'pets123') {
+        document.documentElement.innerHTML = '<body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#000;color:#fff;font-size:14px;">Access denied.</body>';
+        throw new Error('Access denied');
+      }
+      sessionStorage.setItem(key, '1');
+    }
+  })();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>zach4 — The Ordinary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #111; --ink2: #333;
+  --gray-600: #555; --gray-500: #6b6b6b; --gray-400: #888; --gray-300: #aaa;
+  --gray-200: #d8d8d8; --gray-100: #ebebeb; --gray-50: #f3f3f1; --gray-25: #f9f9f7;
+  --white: #fff; --mono: 'Courier Prime', monospace; --sans: 'Inter', sans-serif;
+}
+html, body { height: 100%; }
+body { background: var(--gray-50); color: var(--ink); font-family: var(--sans); display: flex; flex-direction: column; min-height: 100vh; }
+
+/* TOP BAR */
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 15px 32px; background: var(--white); border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.topbar-left { display: flex; flex-direction: column; gap: 3px; }
+.topbar-project { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; }
+.topbar-title { font-size: 15px; font-weight: 600; color: var(--ink); }
+.screen-nav { display: flex; gap: 6px; }
+.screen-nav a { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-decoration: none; padding: 6px 14px; border: 1.5px solid var(--gray-200); border-radius: 4px; transition: all 0.15s; background: var(--white); }
+.screen-nav a:hover { color: var(--ink); border-color: var(--gray-400); }
+.screen-nav a.active { color: var(--white); border-color: var(--ink); background: var(--ink); font-weight: 700; }
+.workspace { flex: 1; display: grid; grid-template-columns: 1fr 440px; min-height: 0; overflow: hidden; }
+.phone-stage { display: flex; align-items: center; justify-content: center; padding: 48px 40px; background: var(--gray-50); }
+.phone-frame { width: 340px; min-width: 340px; height: 680px; border-radius: 42px; overflow: hidden; box-shadow: 0 0 0 9px #1a1a1a, 0 0 0 10px #2e2e2e, 0 40px 80px rgba(0,0,0,0.22); display: flex; flex-direction: column; background: #fff; flex-shrink: 0; }
+.phone-status { display: flex; align-items: center; justify-content: space-between; padding: 13px 22px 6px; flex-shrink: 0; background: #fff; }
+.phone-status-time { font-size: 13px; font-weight: 700; color: #111; }
+.phone-status-icons { display: flex; gap: 5px; }
+.phone-status-dot { width: 5px; height: 5px; border-radius: 50%; background: #ccc; }
+.phone-status-dot.on { background: #333; }
+@keyframes pageIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+/* App nav bar */
+.app-nav { display: flex; align-items: center; justify-content: space-between; padding: 9px 18px 11px; border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; background: var(--white); }
+.app-nav-avatar { width: 28px; height: 28px; background: var(--gray-100); border: 1.5px solid var(--gray-200); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--gray-500); cursor: pointer; font-family: var(--mono); }
+.app-nav-logo { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--ink); letter-spacing: 0.02em; }
+.app-nav-menu { width: 28px; height: 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; }
+.app-nav-menu span { display: block; width: 16px; height: 1.5px; background: var(--ink); border-radius: 1px; }
+
+/* Dashboard scroll area */
+.dash-scroll { flex: 1; overflow-y: auto; background: var(--gray-50); animation: pageIn 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+.dash-scroll::-webkit-scrollbar { display: none; }
+
+/* ── Pet header ── */
+.pet-header { background: var(--white); border-bottom: 1.5px solid var(--gray-100); padding: 14px 18px; display: flex; align-items: center; gap: 14px; }
+.pet-photo { width: 56px; height: 56px; border-radius: 14px; overflow: hidden; flex-shrink: 0; background: var(--gray-100); }
+.pet-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pet-info { flex: 1; min-width: 0; }
+.pet-info-name { font-size: 22px; font-weight: 700; color: var(--ink); line-height: 1.1; margin-bottom: 4px; }
+.pet-info-detail { font-size: 12px; color: var(--gray-400); font-family: var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pet-status-pill { font-family: var(--mono); font-size: 10px; color: var(--gray-500); border: 1px solid var(--gray-200); padding: 4px 9px; border-radius: 4px; background: var(--gray-25); white-space: nowrap; flex-shrink: 0; line-height: 1.3; }
+
+/* ── Bento container ── */
+.bento { padding: 12px 14px 20px; display: flex; flex-direction: column; gap: 10px; }
+
+/* ── Hero proactive card ── */
+.bento-hero { background: var(--white); border: 1.5px solid var(--ink); border-radius: 12px; overflow: hidden; }
+.bento-hero-tag { background: var(--ink); color: var(--white); font-family: var(--mono); font-size: 10px; font-weight: 700; padding: 6px 14px; letter-spacing: 0.08em; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+.hero-pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--white); animation: pulse 2s ease-in-out infinite; flex-shrink: 0; }
+@keyframes pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+.bento-hero-body { padding: 15px 16px 16px; }
+.bento-hero-title { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 7px; line-height: 1.35; }
+.bento-hero-sub { font-size: 13px; color: var(--gray-600); line-height: 1.7; margin-bottom: 13px; }
+
+/* Outcome blocks — chip as label, text full width below */
+.outcomes { display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px; }
+.outcome { display: flex; flex-direction: column; gap: 5px; }
+.outcome-chip { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--gray-500); padding: 3px 9px; border: 1.5px solid var(--gray-200); border-radius: 3px; display: inline-block; width: fit-content; background: var(--gray-25); letter-spacing: 0.03em; }
+.outcome-text { font-size: 13px; color: var(--gray-600); line-height: 1.7; }
+
+/* Covered callout */
+.covered-note { background: var(--gray-50); border: 1px solid var(--gray-100); border-radius: 8px; padding: 10px 12px; font-size: 12px; color: var(--gray-500); line-height: 1.6; font-family: var(--mono); margin-bottom: 12px; }
+.covered-note strong { color: var(--ink); font-style: normal; }
+.hero-link { font-size: 13px; color: var(--ink); font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+
+/* ── 2-col stat tiles ── */
+.tile-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat-tile { background: var(--white); border: 1.5px solid var(--gray-100); border-radius: 10px; padding: 14px 14px 13px; }
+.tile-eyebrow { font-family: var(--mono); font-size: 10px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; margin-bottom: 8px; }
+.tile-value { font-size: 20px; font-weight: 700; color: var(--ink); line-height: 1.1; margin-bottom: 4px; }
+.tile-sub { font-size: 11px; color: var(--gray-400); font-family: var(--mono); line-height: 1.55; }
+.tile-empty { font-size: 12px; color: var(--gray-300); font-family: var(--mono); font-style: italic; line-height: 1.5; }
+
+/* ── Milestone tile ── */
+.milestone-tile { background: var(--white); border: 1.5px solid var(--gray-100); border-radius: 10px; padding: 14px 16px 15px; }
+.milestone-track { display: flex; align-items: center; margin: 10px 0 10px; position: relative; }
+.milestone-line { position: absolute; left: 8px; right: 8px; top: 50%; height: 1.5px; background: var(--gray-100); transform: translateY(-50%); z-index: 0; }
+.milestone-dots { display: flex; justify-content: space-between; width: 100%; position: relative; z-index: 1; }
+.m-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--gray-200); background: var(--white); flex-shrink: 0; }
+.m-dot.done { background: var(--ink); border-color: var(--ink); }
+.m-dot.now { background: var(--white); border-color: var(--ink); border-width: 2.5px; box-shadow: 0 0 0 3px rgba(17,17,17,0.1); }
+.milestone-labels { display: flex; justify-content: space-between; }
+.m-lbl { font-family: var(--mono); font-size: 9px; color: var(--gray-400); text-align: center; width: 14px; line-height: 1.4; overflow: visible; }
+.m-lbl.now { color: var(--ink); font-weight: 700; }
+
+/* ── Vet log tile ── */
+.vet-tile { background: var(--white); border: 1.5px solid var(--gray-100); border-radius: 10px; padding: 14px 16px; }
+.vet-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 5px; }
+.vet-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+.vet-date { font-family: var(--mono); font-size: 11px; color: var(--gray-400); white-space: nowrap; }
+.vet-note { font-family: var(--mono); font-size: 11px; color: var(--gray-400); }
+
+.phone-home { padding: 10px 0 12px; display: flex; justify-content: center; flex-shrink: 0; background: #fff; }
+.phone-home-bar { width: 110px; height: 4px; background: #e0e0e0; border-radius: 2px; }
+
+/* SIDEBAR */
+.sidebar { border-left: 1.5px solid var(--gray-100); display: flex; flex-direction: column; overflow: hidden; background: var(--white); }
+.sidebar-header { padding: 26px 26px 22px; border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.sidebar-eyebrow { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-bottom: 8px; }
+.sidebar-title { font-size: 18px; font-weight: 700; color: var(--ink); line-height: 1.35; }
+.sidebar-scroll { flex: 1; overflow-y: auto; padding: 26px; display: flex; flex-direction: column; gap: 24px; }
+.sidebar-scroll::-webkit-scrollbar { width: 4px; }
+.sidebar-scroll::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 2px; }
+.sb-block { display: flex; flex-direction: column; gap: 8px; }
+.sb-label { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+.sb-title { font-size: 16px; font-weight: 700; color: var(--ink); line-height: 1.4; }
+.sb-body { font-size: 15px; color: var(--gray-600); line-height: 1.7; }
+.sb-divider { border: none; border-top: 1.5px solid var(--gray-100); }
+.sb-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
+.sb-tag { font-family: var(--mono); font-size: 12px; color: var(--gray-500); border: 1.5px solid var(--gray-200); padding: 4px 10px; border-radius: 4px; background: var(--gray-25); }
+.sb-tag.open { border-style: dashed; color: var(--gray-400); }
+.sb-code { font-family: var(--mono); font-size: 13px; color: var(--gray-500); line-height: 2.1; background: var(--gray-25); padding: 14px 16px; border-radius: 5px; border: 1.5px solid var(--gray-100); white-space: pre; }
+.sb-code em { color: var(--ink2); font-style: normal; font-weight: 700; }
+.footer { padding: 14px 32px; border-top: 1.5px solid var(--gray-100); background: var(--white); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.footer-back { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-decoration: none; transition: color 0.15s; font-weight: 700; }
+.footer-back:hover { color: var(--ink); }
+.footer-end { font-family: var(--mono); font-size: 12px; color: var(--gray-300); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-project">Trupanion Sub-Brand — Zach's Flow</div>
+    <div class="topbar-title">How does institutional context travel to reduce onboarding friction?</div>
+  </div>
+  <div class="screen-nav">
+    <a href="zach0.html">zach0</a>
+    <a href="zach1.html">zach1</a>
+    <a href="zach2.html">zach2</a>
+    <a href="zach3.html">zach3</a>
+    <a href="zach4.html" class="active">zach4</a>
+  </div>
+</div>
+
+<div class="workspace">
+  <div class="phone-stage">
+    <div class="phone-frame">
+
+      <!-- Status bar -->
+      <div class="phone-status">
+        <span class="phone-status-time">6:47</span>
+        <div class="phone-status-icons">
+          <div class="phone-status-dot on"></div><div class="phone-status-dot on"></div>
+          <div class="phone-status-dot on"></div><div class="phone-status-dot on"></div>
+        </div>
+      </div>
+
+      <!-- App nav -->
+      <div class="app-nav">
+        <div class="app-nav-avatar">Z</div>
+        <div class="app-nav-logo">[Brand]</div>
+        <div class="app-nav-menu"><span></span><span></span><span></span></div>
+      </div>
+
+      <!-- Scrollable dashboard -->
+      <div class="dash-scroll">
+
+        <!-- Pet header -->
+        <div class="pet-header">
+          <div class="pet-photo">
+            <img src="yoshi.jpg" alt="Yoshi">
+          </div>
+          <div class="pet-info">
+            <div class="pet-info-name">Yoshi</div>
+            <div class="pet-info-detail">DSH · 16 weeks · Toronto, ON</div>
+          </div>
+          <div class="pet-status-pill">Active · May 17</div>
+        </div>
+
+        <!-- Bento tiles -->
+        <div class="bento">
+
+          <!-- Hero: proactive recheck card -->
+          <div class="bento-hero">
+            <div class="bento-hero-tag">
+              <div class="hero-pulse"></div>
+              Heads up for tomorrow
+            </div>
+            <div class="bento-hero-body">
+              <div class="bento-hero-title">Yoshi's 16-week recheck is tomorrow.</div>
+              <div class="bento-hero-sub">Follow-up for his Grade 2/6 heart murmur. Common in kittens — here's what to expect at the appointment.</div>
+              <div class="outcomes">
+                <div class="outcome">
+                  <div class="outcome-chip">If resolved</div>
+                  <div class="outcome-text">The murmur has closed on its own — normal for kittens. No further cardiology needed unless symptoms appear.</div>
+                </div>
+                <div class="outcome">
+                  <div class="outcome-chip">If still present</div>
+                  <div class="outcome-text">Vet will likely refer to a cardiologist for an echo. Ask about timing — this is a common next step, not an emergency.</div>
+                </div>
+              </div>
+              <div class="covered-note"><strong>Covered</strong> — because you enrolled before his first appointment. The murmur was found during covered care, not flagged as pre-existing.</div>
+              <div class="hero-link">Questions to ask the vet tomorrow →</div>
+            </div>
+          </div>
+
+          <!-- 2-col: Coverage + Claims -->
+          <div class="tile-row">
+            <div class="stat-tile">
+              <div class="tile-eyebrow">Coverage</div>
+              <div class="tile-value">Active</div>
+              <div class="tile-sub">$47/mo CAD<br>Kitten Complete</div>
+            </div>
+            <div class="stat-tile">
+              <div class="tile-eyebrow">Claims</div>
+              <div class="tile-value">—</div>
+              <div class="tile-empty">No claims yet</div>
+            </div>
+          </div>
+
+          <!-- Milestone timeline -->
+          <div class="milestone-tile">
+            <div class="tile-eyebrow">Yoshi's milestones</div>
+            <div class="milestone-track">
+              <div class="milestone-line"></div>
+              <div class="milestone-dots">
+                <div class="m-dot done"></div>
+                <div class="m-dot done"></div>
+                <div class="m-dot now"></div>
+                <div class="m-dot"></div>
+                <div class="m-dot"></div>
+              </div>
+            </div>
+            <div class="milestone-labels">
+              <div class="m-lbl">Adopt</div>
+              <div class="m-lbl">Enroll</div>
+              <div class="m-lbl now">16 wk</div>
+              <div class="m-lbl">Neuter</div>
+              <div class="m-lbl">1 yr</div>
+            </div>
+          </div>
+
+          <!-- Vet log -->
+          <div class="vet-tile">
+            <div class="tile-eyebrow">Vet visits</div>
+            <div class="vet-row">
+              <div class="vet-name">First exam</div>
+              <div class="vet-date">May 22 · Toronto Cat Clinic</div>
+            </div>
+            <div class="vet-note">Grade 2/6 murmur noted · recheck scheduled</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="phone-home"><div class="phone-home-bar"></div></div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-eyebrow">zach4 — The Ordinary</div>
+      <div class="sidebar-title">The product already knew. Zach didn't have to ask.</div>
+    </div>
+    <div class="sidebar-scroll">
+      <div class="sb-block">
+        <div class="sb-label">The Wonder Weeks model</div>
+        <div class="sb-title">Anticipatory, not reactive.</div>
+        <div class="sb-body">This card surfaced the evening before Yoshi's recheck — not because Zach opened the app, not because he submitted a question. The product knew the appointment date from enrollment, knew the flagged condition from the first vet visit Zach logged, and surfaced the content before he knew he needed it. This is the Zone 3 argument made concrete.</div>
+        <div class="sb-tags">
+          <span class="sb-tag">date-triggered</span>
+          <span class="sb-tag">condition-aware</span>
+          <span class="sb-tag">no prompt from Zach</span>
+        </div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">The dashboard context</div>
+        <div class="sb-title">A few weeks post-enrollment — not onboarding.</div>
+        <div class="sb-body">The register shift is deliberate: 6:47 PM, not 9:41 AM. Progress pips are gone. The bento gives the screen a settled, lived-in feel — coverage, claims, milestones, vet log. The proactive card is visually dominant not because it's a notification, but because something is actually happening tomorrow.</div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">The per-pet architecture</div>
+        <div class="sb-title">Yoshi is the header, not a tile.</div>
+        <div class="sb-body">Every tile below is about Yoshi specifically — his coverage, his milestones, his vet history. When a second pet is added, the header becomes a switcher. The IA pattern is implied without needing to show it.</div>
+        <div class="sb-tags">
+          <span class="sb-tag open">future state: pet switcher in header</span>
+        </div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">The "covered" line</div>
+        <div class="sb-title">The payoff of enrolling early, at the moment it matters.</div>
+        <div class="sb-body">The murmur is covered because Zach enrolled before his first appointment. The card says so explicitly — not in the coverage table fine print, but in the context of the actual event it applies to.</div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">Data the product already held</div>
+        <div class="sb-code">enrollment_date   = <em>"May 17"</em>
+first_vet_visit   = <em>"May 22"</em>
+flagged_condition = <em>"Grade 2/6 murmur"</em>
+recheck_date      = <em>"[tomorrow]"</em>  ← logged at visit
+→ card triggered by <em>recheck_date - 1 day</em></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <a href="zach3.html" class="footer-back">← zach3 — Yoshi's coverage</a>
+  <div class="footer-end">Zach's Flow · end</div>
+</div>
+</body>
+</html>

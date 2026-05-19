@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function() {
+    var key = 'beacon_auth_petinsurance';
+    if (sessionStorage.getItem(key) !== '1') {
+      var pw = prompt('Password required:');
+      if (pw !== 'pets123') {
+        document.documentElement.innerHTML = '<body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#000;color:#fff;font-size:14px;">Access denied.</body>';
+        throw new Error('Access denied');
+      }
+      sessionStorage.setItem(key, '1');
+    }
+  })();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>zach1 — Context Arrival</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #111; --ink2: #333;
+  --gray-600: #555; --gray-500: #6b6b6b; --gray-400: #888; --gray-300: #aaa;
+  --gray-200: #d8d8d8; --gray-100: #ebebeb; --gray-50: #f3f3f1; --gray-25: #f9f9f7;
+  --white: #fff; --mono: 'Courier Prime', monospace; --sans: 'Inter', sans-serif;
+}
+html, body { height: 100%; }
+body { background: var(--gray-50); color: var(--ink); font-family: var(--sans); display: flex; flex-direction: column; min-height: 100vh; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 15px 32px; background: var(--white); border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.topbar-left { display: flex; flex-direction: column; gap: 3px; }
+.topbar-project { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; }
+.topbar-title { font-size: 15px; font-weight: 600; color: var(--ink); }
+.screen-nav { display: flex; gap: 6px; }
+.screen-nav a { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-decoration: none; padding: 6px 14px; border: 1.5px solid var(--gray-200); border-radius: 4px; transition: all 0.15s; background: var(--white); }
+.screen-nav a:hover { color: var(--ink); border-color: var(--gray-400); }
+.screen-nav a.active { color: var(--white); border-color: var(--ink); background: var(--ink); font-weight: 700; }
+.workspace { flex: 1; display: grid; grid-template-columns: 1fr 440px; min-height: 0; overflow: hidden; }
+.phone-stage { display: flex; align-items: center; justify-content: center; padding: 48px 40px; background: var(--gray-50); }
+.phone-frame { width: 340px; min-width: 340px; height: 680px; border-radius: 42px; overflow: hidden; box-shadow: 0 0 0 9px #1a1a1a, 0 0 0 10px #2e2e2e, 0 40px 80px rgba(0,0,0,0.22); display: flex; flex-direction: column; background: #fff; flex-shrink: 0; }
+.phone-status { display: flex; align-items: center; justify-content: space-between; padding: 13px 22px 6px; flex-shrink: 0; background: #fff; }
+.phone-status-time { font-size: 13px; font-weight: 700; color: #111; }
+.phone-status-icons { display: flex; gap: 5px; }
+.phone-status-dot { width: 5px; height: 5px; border-radius: 50%; background: #ccc; }
+.phone-status-dot.on { background: #333; }
+.phone-brand-bar { padding: 9px 20px 13px; border-bottom: 1.5px solid var(--gray-100); background: var(--white); flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; }
+.phone-brand-name { font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--ink); letter-spacing: 0.03em; }
+.phone-brand-pill { font-family: var(--mono); font-size: 11px; color: var(--gray-400); border: 1.5px solid var(--gray-200); padding: 3px 9px; border-radius: 4px; display: flex; align-items: center; gap: 6px; background: var(--gray-25); }
+.pill-dot { width: 7px; height: 7px; background: var(--gray-300); border-radius: 50%; }
+.phone-content { flex: 1; overflow-y: auto; min-height: 0; padding: 20px 18px; display: flex; flex-direction: column; gap: 16px; background: var(--gray-50); }
+.phone-content::-webkit-scrollbar { display: none; }
+@keyframes pageIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.phone-content { animation: pageIn 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+
+.greeting-block { background: var(--white); border: 1.5px solid var(--gray-100); border-radius: 12px; padding: 20px; }
+.greeting-h { font-size: 22px; font-weight: 300; color: var(--ink); line-height: 1.3; margin-bottom: 10px; }
+.greeting-h strong { font-weight: 700; }
+.greeting-sub { font-size: 14px; color: var(--gray-500); line-height: 1.65; }
+
+.inference-block { background: var(--white); border: 1.5px solid var(--gray-100); border-radius: 12px; }
+.inference-hdr { padding: 12px 16px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; justify-content: space-between; }
+.inference-hdr-label { font-family: var(--mono); font-size: 11px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; }
+.inference-source-pill { font-family: var(--mono); font-size: 10px; color: var(--gray-400); border: 1px solid var(--gray-200); padding: 2px 8px; border-radius: 3px; background: var(--gray-25); }
+
+.inf-row { display: flex; align-items: center; gap: 10px; padding: 11px 16px; border-bottom: 1px solid var(--gray-100); cursor: pointer; transition: background 0.12s; position: relative; }
+.inf-row:last-child { border-bottom: none; }
+.inf-row.miss-row { cursor: default; }
+.inf-badge { font-family: var(--mono); font-size: 10px; padding: 3px 8px; border-radius: 3px; flex-shrink: 0; letter-spacing: 0.04em; border: 1px solid; min-width: 76px; text-align: center; font-weight: 700; }
+.inf-badge.conf { background: var(--gray-50); color: var(--gray-600); border-color: var(--gray-200); }
+.inf-badge.inf { background: transparent; color: var(--gray-400); border-color: var(--gray-200); }
+.inf-badge.miss { background: transparent; color: var(--gray-300); border-color: var(--gray-200); border-style: dashed; }
+.inf-key { color: var(--gray-500); min-width: 90px; font-size: 13px; flex-shrink: 0; }
+.inf-val { color: var(--ink); font-weight: 700; font-size: 14px; flex: 1; }
+.inf-val.soft { color: var(--gray-400); font-weight: 400; font-style: italic; font-size: 13px; }
+.inf-edit { font-size: 12px; color: var(--gray-300); flex-shrink: 0; }
+.inf-input { flex: 1; border: none; border-bottom: 1.5px solid var(--ink); background: transparent; font-size: 14px; font-weight: 700; color: var(--ink); font-family: var(--sans); outline: none; padding: 0 0 2px; display: none; }
+.inf-row.editing .inf-val { display: none; }
+.inf-row.editing .inf-edit { display: none; }
+.inf-row.editing .inf-input { display: block; }
+.inf-row.editing { background: var(--gray-25); }
+
+/* Pre-education nudge */
+.nudge-block { background: var(--white); border: 1.5px solid var(--gray-200); border-left: 3px solid var(--ink); border-radius: 0 12px 12px 0; padding: 14px 15px; }
+.nudge-label { font-family: var(--mono); font-size: 10px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; margin-bottom: 6px; }
+.nudge-text { font-size: 13px; color: var(--ink2); line-height: 1.7; }
+.nudge-text strong { color: var(--ink); font-weight: 700; }
+
+.cta-block { display: flex; flex-direction: column; gap: 8px; }
+.cta-btn { width: 100%; padding: 14px; background: var(--ink); color: var(--white); border: none; font-size: 14px; font-weight: 600; border-radius: 10px; cursor: pointer; transition: opacity 0.15s; font-family: var(--sans); line-height: 1.3; }
+.cta-btn:hover { opacity: 0.85; }
+.cta-note { font-size: 12px; color: var(--gray-400); text-align: center; }
+
+.phone-home { padding: 10px 0 12px; display: flex; justify-content: center; flex-shrink: 0; background: #fff; }
+.phone-home-bar { width: 110px; height: 4px; background: #e0e0e0; border-radius: 2px; }
+
+.sidebar { border-left: 1.5px solid var(--gray-100); display: flex; flex-direction: column; overflow: hidden; background: var(--white); }
+.sidebar-header { padding: 26px 26px 22px; border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.sidebar-eyebrow { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-bottom: 8px; }
+.sidebar-title { font-size: 18px; font-weight: 700; color: var(--ink); line-height: 1.35; }
+.sidebar-scroll { flex: 1; overflow-y: auto; padding: 26px; display: flex; flex-direction: column; gap: 24px; }
+.sidebar-scroll::-webkit-scrollbar { width: 4px; }
+.sidebar-scroll::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 2px; }
+.sb-block { display: flex; flex-direction: column; gap: 8px; }
+.sb-label { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+.sb-title { font-size: 16px; font-weight: 700; color: var(--ink); line-height: 1.4; }
+.sb-body { font-size: 15px; color: var(--gray-600); line-height: 1.7; }
+.sb-divider { border: none; border-top: 1.5px solid var(--gray-100); }
+.sb-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
+.sb-tag { font-family: var(--mono); font-size: 12px; color: var(--gray-500); border: 1.5px solid var(--gray-200); padding: 4px 10px; border-radius: 4px; background: var(--gray-25); }
+.sb-tag.open { border-style: dashed; color: var(--gray-400); }
+.sb-code { font-family: var(--mono); font-size: 13px; color: var(--gray-500); line-height: 2.1; background: var(--gray-25); padding: 14px 16px; border-radius: 5px; border: 1.5px solid var(--gray-100); white-space: pre; }
+.sb-code em { color: var(--ink2); font-style: normal; font-weight: 700; }
+.footer { padding: 14px 32px; border-top: 1.5px solid var(--gray-100); background: var(--white); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.footer-back { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-decoration: none; transition: color 0.15s; font-weight: 700; }
+.footer-back:hover { color: var(--ink); }
+.next-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: var(--ink); border: none; color: var(--white); font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; font-weight: 700; cursor: pointer; text-decoration: none; transition: opacity 0.15s; border-radius: 4px; }
+.next-btn:hover { opacity: 0.8; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-project">Trupanion Sub-Brand — Zach's Flow</div>
+    <div class="topbar-title">How does institutional context travel to reduce onboarding friction?</div>
+  </div>
+  <div class="screen-nav">
+    <a href="zach0.html">zach0</a>
+    <a href="zach1.html" class="active">zach1</a>
+    <a href="zach2.html">zach2</a>
+    <a href="zach3.html">zach3</a>
+    <a href="zach4.html">zach4</a>
+  </div>
+</div>
+<div class="workspace">
+  <div class="phone-stage">
+    <div class="phone-frame">
+      <div class="phone-status">
+        <span class="phone-status-time">9:41</span>
+        <div class="phone-status-icons">
+          <div class="phone-status-dot on"></div><div class="phone-status-dot on"></div>
+          <div class="phone-status-dot on"></div><div class="phone-status-dot"></div>
+        </div>
+      </div>
+      <div class="phone-brand-bar">
+        <div class="phone-brand-name">[Brand]</div>
+        <div class="phone-brand-pill">
+          <div class="pill-dot"></div>
+          via Toronto Humane Society
+        </div>
+      </div>
+      <div class="phone-content">
+        <div class="greeting-block">
+          <div class="greeting-h">Sounds like <strong>Yoshi</strong> just came home.</div>
+          <div class="greeting-sub">The shelter passed us some context. Here's what we have — tell us what to fix.</div>
+        </div>
+        <div class="inference-block">
+          <div class="inference-hdr">
+            <div class="inference-hdr-label">What we know</div>
+            <div class="inference-source-pill">via THS</div>
+          </div>
+          <div class="inf-row" onclick="startEdit(this)"><span class="inf-badge conf">confirmed</span><span class="inf-key">Pet name</span><span class="inf-val">Yoshi</span><input class="inf-input" value="Yoshi"><span class="inf-edit">✎</span></div>
+          <div class="inf-row" onclick="startEdit(this)"><span class="inf-badge conf">confirmed</span><span class="inf-key">Species</span><span class="inf-val">Cat</span><input class="inf-input" value="Cat"><span class="inf-edit">✎</span></div>
+          <div class="inf-row" onclick="startEdit(this)"><span class="inf-badge conf">confirmed</span><span class="inf-key">Breed</span><span class="inf-val">Domestic Shorthair</span><input class="inf-input" value="Domestic Shorthair"><span class="inf-edit">✎</span></div>
+          <div class="inf-row" onclick="startEdit(this)"><span class="inf-badge conf">confirmed</span><span class="inf-key">Life stage</span><span class="inf-val">Kitten · ~10 wks</span><input class="inf-input" value="Kitten · ~10 wks"><span class="inf-edit">✎</span></div>
+          <div class="inf-row" onclick="startEdit(this)"><span class="inf-badge conf">confirmed</span><span class="inf-key">Health</span><span class="inf-val">Intake healthy · vaccinated</span><input class="inf-input" value="Intake healthy · vaccinated"><span class="inf-edit">✎</span></div>
+          <div class="inf-row" onclick="startEdit(this)"><span class="inf-badge conf">confirmed</span><span class="inf-key">Location</span><span class="inf-val">Toronto, ON</span><input class="inf-input" value="Toronto, ON"><span class="inf-edit">✎</span></div>
+          <div class="inf-row miss-row"><span class="inf-badge miss">missing</span><span class="inf-key">Vet visit</span><span class="inf-val soft">we'll ask in a moment</span></div>
+          <div class="inf-row miss-row"><span class="inf-badge miss">missing</span><span class="inf-key">Budget</span><span class="inf-val soft">we'll ask in a moment</span></div>
+        </div>
+
+        <!-- Pre-education nudge — triggered by missing vet visit -->
+        <div class="nudge-block">
+          <div class="nudge-label">Before you continue</div>
+          <div class="nudge-text"><strong>If Yoshi hasn't seen a vet yet, now is the right time to enroll.</strong> Any condition identified at that first appointment becomes pre-existing and won't be covered — no matter how minor. This isn't pressure. It's just how it works.</div>
+        </div>
+
+        <div class="cta-block">
+          <button class="cta-btn" onclick="window.location.href='zach2.html'">Tell us more about Yoshi →</button>
+          <div class="cta-note">About 2 minutes. No payment info yet.</div>
+        </div>
+      </div>
+      <div class="phone-home"><div class="phone-home-bar"></div></div>
+    </div>
+  </div>
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-eyebrow">zach1 — Context Arrival</div>
+      <div class="sidebar-title">The first screen already knows Yoshi's name, breed, and health status</div>
+    </div>
+    <div class="sidebar-scroll">
+      <div class="sb-block">
+        <div class="sb-label">Enrollment as recognition</div>
+        <div class="sb-title">Fields Zach never filled: 6.</div>
+        <div class="sb-body">Same mechanic as Emily's flow — confirmed vs. inferred vs. missing — but the source is different. The "via Toronto Humane Society" pill replaces "via ChatGPT." The inference log shows institutional data, not AI inference. All six rows came from the shelter record. The transparency mechanic is identical; the trust provenance is stronger.</div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">The pre-education moment</div>
+        <div class="sb-title">The single most important content decision in the flow.</div>
+        <div class="sb-body">The nudge card surfaces because the vet visit is listed as missing. It's honest urgency — not a fear tactic, not manufactured scarcity. The window is real. The brand that explains it, unprompted, at this exact moment earns the enrollment. No major incumbent is doing this today. The window closes as the category matures.</div>
+        <div class="sb-tags">
+          <span class="sb-tag">honest urgency</span>
+          <span class="sb-tag open">tone: warm, not alarming</span>
+        </div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">Friction eliminated</div>
+        <div class="sb-code">pet name        → <em>skipped</em>
+species         → <em>skipped</em>
+breed selector  → <em>skipped</em>
+life stage      → <em>skipped</em>
+health status   → <em>skipped</em>
+location        → <em>skipped</em>
+—
+remaining       → <em>vet status · worry · budget</em></div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">Design question</div>
+        <div class="sb-title">How explicit is the source attribution?</div>
+        <div class="sb-body">The "via THS" pill is intentional transparency — same reasoning as Emily's "via ChatGPT." Could also be invisible. But for B2B2C to work as a moat argument, the handoff source probably earns acknowledgment. It's what makes this feel different from a form.</div>
+        <div class="sb-tags">
+          <span class="sb-tag open">visible ←→ invisible attribution</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer">
+  <a href="zach0.html" class="footer-back">← zach0 — Shelter handoff</a>
+  <a href="zach2.html" class="next-btn">zach2 — Tell us about Yoshi →</a>
+</div>
+<script>
+function startEdit(row) {
+  if (row.classList.contains('miss-row')) return;
+  if (row.classList.contains('editing')) return;
+  row.classList.add('editing');
+  const input = row.querySelector('.inf-input');
+  input.focus(); input.select();
+  function finish() {
+    const val = input.value.trim();
+    if (val) {
+      const valSpan = row.querySelector('.inf-val');
+      valSpan.textContent = val;
+      const badge = row.querySelector('.inf-badge');
+      if (badge.classList.contains('inf')) {
+        badge.classList.remove('inf'); badge.classList.add('conf');
+        badge.textContent = 'confirmed';
+        valSpan.classList.remove('soft');
+      }
+    }
+    row.classList.remove('editing');
+    input.removeEventListener('blur', finish);
+    input.removeEventListener('keydown', onKey);
+  }
+  function onKey(e) {
+    if (e.key === 'Enter') { e.preventDefault(); finish(); }
+    if (e.key === 'Escape') { row.classList.remove('editing'); }
+  }
+  input.addEventListener('blur', finish);
+  input.addEventListener('keydown', onKey);
+}
+</script>
+</body>
+</html>
