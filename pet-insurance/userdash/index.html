@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Zach + Emily</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #111; --ink2: #333;
+  --gray-600: #555; --gray-500: #6b6b6b; --gray-400: #888; --gray-300: #aaa;
+  --gray-200: #d8d8d8; --gray-100: #ebebeb; --gray-50: #f3f3f1; --gray-25: #f9f9f7;
+  --white: #fff; --mono: 'Courier Prime', monospace; --sans: 'Inter', sans-serif;
+}
+html, body { height: 100%; }
+body { background: var(--gray-50); color: var(--ink); font-family: var(--sans); display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ── Top bar ── */
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 15px 32px; background: var(--white); border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.topbar-left { display: flex; flex-direction: column; gap: 3px; }
+.topbar-eyebrow { font-family: var(--mono); font-size: 11px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; }
+.topbar-title { font-size: 15px; font-weight: 600; color: var(--ink); }
+.view-nav { display: flex; gap: 6px; }
+.view-nav button { font-family: var(--mono); font-size: 12px; color: var(--gray-400); padding: 6px 14px; border: 1.5px solid var(--gray-200); border-radius: 4px; background: var(--white); cursor: pointer; transition: all 0.15s; }
+.view-nav button:hover { color: var(--ink); border-color: var(--gray-400); }
+.view-nav button.active { color: var(--white); border-color: var(--ink); background: var(--ink); font-weight: 700; }
+
+/* ── Views ── */
+.view { display: none; flex: 1; min-height: 0; }
+.view.active { display: flex; }
+
+/* ── Annotated view: phone left, sidebar right ── */
+.annotated { flex: 1; display: grid; grid-template-columns: 1fr 440px; min-height: 0; overflow: hidden; }
+.phone-stage { display: flex; align-items: center; justify-content: center; padding: 48px 40px; background: var(--gray-50); overflow-y: auto; }
+.phone-frame { width: 340px; min-width: 340px; height: 680px; border-radius: 42px; overflow: hidden; box-shadow: 0 0 0 9px #1a1a1a, 0 0 0 10px #2e2e2e, 0 40px 80px rgba(0,0,0,0.22); display: flex; flex-direction: column; background: #fff; flex-shrink: 0; position: relative; }
+
+/* ── Side-by-side view ── */
+.sbs { flex: 1; display: flex; align-items: center; justify-content: center; gap: 48px; padding: 48px 60px; background: var(--gray-50); overflow-y: auto; }
+
+/* ── Phone internals ── */
+.phone-status { display: flex; align-items: center; justify-content: space-between; padding: 13px 22px 6px; flex-shrink: 0; background: #fff; }
+.phone-status-time { font-size: 13px; font-weight: 700; color: #111; }
+.phone-status-icons { display: flex; gap: 5px; }
+.phone-status-dot { width: 5px; height: 5px; border-radius: 50%; background: #ccc; }
+.phone-status-dot.on { background: #333; }
+@keyframes pageIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+
+.app-nav { display: flex; align-items: center; justify-content: space-between; padding: 9px 18px 11px; border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; background: var(--white); }
+.app-nav-avatar { width: 28px; height: 28px; background: var(--gray-100); border: 1.5px solid var(--gray-200); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--gray-500); cursor: pointer; font-family: var(--mono); }
+.app-nav-logo { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--ink); letter-spacing: 0.02em; }
+.app-nav-right { display: flex; gap: 10px; align-items: center; }
+.app-nav-chat { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.app-nav-chat svg { width: 18px; height: 18px; }
+.app-nav-menu { width: 28px; height: 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; }
+.app-nav-menu span { display: block; width: 16px; height: 1.5px; background: var(--ink); border-radius: 1px; }
+
+.dash-scroll { flex: 1; overflow-y: auto; background: var(--gray-50); animation: pageIn 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+.dash-scroll::-webkit-scrollbar { display: none; }
+
+/* ── Pet headers ── */
+.pet-header-z { background: var(--white); border-bottom: 1.5px solid var(--gray-100); padding: 14px 18px; display: flex; align-items: center; gap: 14px; }
+.pet-photo-z { width: 56px; height: 56px; border-radius: 14px; overflow: hidden; flex-shrink: 0; background: var(--gray-100); display: flex; align-items: center; justify-content: center; font-size: 28px; }
+.pet-header-e { display: flex; align-items: center; gap: 12px; padding: 14px 16px 13px; background: var(--white); border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.pet-photo-e { width: 42px; height: 42px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: var(--gray-100); }
+.pet-photo-e img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pet-info { flex: 1; min-width: 0; }
+.pet-info-name-lg { font-size: 22px; font-weight: 700; color: var(--ink); line-height: 1.1; margin-bottom: 4px; }
+.pet-info-name-sm { font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.2; }
+.pet-info-detail { font-size: 12px; color: var(--gray-400); font-family: var(--mono); }
+.pet-status-pill { font-family: var(--mono); font-size: 10px; color: var(--gray-500); border: 1px solid var(--gray-200); padding: 4px 9px; border-radius: 4px; background: var(--gray-25); white-space: nowrap; flex-shrink: 0; }
+
+/* ── Bento ── */
+.bento { padding: 12px 14px 20px; display: flex; flex-direction: column; gap: 10px; }
+
+/* ── Hero card ── */
+.bento-hero { background: var(--white); border: 1.5px solid var(--ink); border-radius: 12px; overflow: hidden; }
+.bento-hero-tag { background: var(--ink); color: var(--white); font-family: var(--mono); font-size: 10px; font-weight: 700; padding: 6px 14px; letter-spacing: 0.08em; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+.hero-pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--white); animation: pulse 2s ease-in-out infinite; flex-shrink: 0; }
+.bento-hero-body { padding: 15px 16px 16px; }
+.bento-hero-title { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 7px; line-height: 1.35; }
+.bento-hero-sub { font-size: 13px; color: var(--gray-600); line-height: 1.7; margin-bottom: 13px; }
+.outcomes { display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px; }
+.outcome { display: flex; flex-direction: column; gap: 5px; }
+.outcome-chip { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--gray-500); padding: 3px 9px; border: 1.5px solid var(--gray-200); border-radius: 3px; display: inline-block; width: fit-content; background: var(--gray-25); letter-spacing: 0.03em; }
+.outcome-text { font-size: 13px; color: var(--gray-600); line-height: 1.7; }
+.covered-note { background: var(--gray-50); border: 1px solid var(--gray-100); border-radius: 8px; padding: 10px 12px; font-size: 12px; color: var(--gray-500); line-height: 1.6; font-family: var(--mono); margin-bottom: 12px; }
+.covered-note strong { color: var(--ink); }
+.hero-link { font-size: 13px; color: var(--ink); font-weight: 600; cursor: pointer; }
+
+/* ── Claim CTA ── */
+.claim-cta { background: var(--ink); border-radius: 10px; padding: 13px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; gap: 10px; }
+.claim-cta-left { display: flex; flex-direction: column; gap: 3px; }
+.claim-cta-label { font-family: var(--mono); font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.08em; }
+.claim-cta-title { font-size: 14px; font-weight: 700; color: var(--white); line-height: 1.3; }
+.claim-cta-arrow { font-size: 18px; color: var(--white); opacity: 0.6; flex-shrink: 0; }
+
+/* ── Stat tiles ── */
+.tile-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat-tile { background: var(--white); border: 1.5px solid var(--gray-100); border-radius: 10px; padding: 14px 14px 13px; }
+.tile-eyebrow { font-family: var(--mono); font-size: 10px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; margin-bottom: 8px; }
+.tile-value { font-size: 20px; font-weight: 700; color: var(--ink); line-height: 1.1; margin-bottom: 4px; }
+.tile-sub { font-size: 11px; color: var(--gray-400); font-family: var(--mono); line-height: 1.55; }
+.tile-empty { font-size: 12px; color: var(--gray-300); font-family: var(--mono); font-style: italic; line-height: 1.5; }
+
+/* ── Milestone ── */
+.milestone-tile { background: var(--white); border: 1.5px solid var(--gray-100); border-radius: 10px; padding: 14px 16px 15px; }
+.milestone-track { display: flex; align-items: center; margin: 10px 0; position: relative; }
+.milestone-line { position: absolute; left: 8px; right: 8px; top: 50%; height: 1.5px; background: var(--gray-100); transform: translateY(-50%); z-index: 0; }
+.milestone-dots { display: flex; justify-content: space-between; width: 100%; position: relative; z-index: 1; }
+.m-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--gray-200); background: var(--white); flex-shrink: 0; }
+.m-dot.done { background: var(--ink); border-color: var(--ink); }
+.m-dot.now { background: var(--white); border-color: var(--ink); border-width: 2.5px; box-shadow: 0 0 0 3px rgba(17,17,17,0.1); }
+.milestone-labels { display: flex; justify-content: space-between; }
+.m-lbl { font-family: var(--mono); font-size: 9px; color: var(--gray-400); text-align: center; width: 14px; line-height: 1.4; overflow: visible; }
+.m-lbl.now { color: var(--ink); font-weight: 700; }
+
+/* ── Vet tile ── */
+.vet-tile { background: var(--white); border: 1.5px solid var(--gray-100); border-radius: 10px; padding: 14px 16px; }
+.vet-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 5px; }
+.vet-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+.vet-date { font-family: var(--mono); font-size: 11px; color: var(--gray-400); white-space: nowrap; }
+.vet-note { font-family: var(--mono); font-size: 11px; color: var(--gray-400); }
+
+/* ── Peace tile ── */
+.peace-tile { background: var(--white); border: 1.5px solid var(--gray-100); border-radius: 10px; padding: 14px 16px 15px; }
+.peace-label { font-family: var(--mono); font-size: 10px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; margin-bottom: 10px; }
+.peace-split { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.peace-col { display: flex; flex-direction: column; gap: 3px; }
+.peace-col-label { font-family: var(--mono); font-size: 9px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+.peace-col-value { font-size: 18px; font-weight: 700; color: var(--ink); line-height: 1.1; }
+.peace-col-sub { font-family: var(--mono); font-size: 10px; color: var(--gray-400); line-height: 1.5; }
+.peace-divider { border: none; border-top: 1px solid var(--gray-100); margin-bottom: 10px; }
+.peace-sub { font-size: 12px; color: var(--gray-500); font-family: var(--mono); line-height: 1.6; }
+
+/* ── Renewal tile ── */
+.renewal-tile { background: var(--white); border: 1.5px solid var(--gray-200); border-radius: 10px; padding: 14px 16px 15px; }
+.renewal-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.renewal-label { font-family: var(--mono); font-size: 10px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+.renewal-date { font-family: var(--mono); font-size: 11px; color: var(--gray-400); }
+.renewal-rate { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.renewal-note { font-size: 12px; color: var(--gray-500); font-family: var(--mono); line-height: 1.6; }
+.renewal-link { font-size: 12px; color: var(--ink); font-weight: 600; font-family: var(--mono); margin-top: 8px; cursor: pointer; }
+
+/* ── Watch section ── */
+.watch-section { padding: 0 14px 20px; display: flex; flex-direction: column; gap: 10px; }
+.watch-header-label { font-family: var(--mono); font-size: 10px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 0 8px; }
+.watch-cards { display: flex; flex-direction: column; gap: 10px; }
+.watch-card { background: var(--white); border: 1.5px solid var(--gray-300); border-radius: 10px; overflow: hidden; }
+.watch-card-visual { height: 80px; background: var(--gray-100); border-bottom: 1.5px solid var(--gray-300); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 5px; }
+.watch-card-visual-icon { font-size: 26px; opacity: 0.35; }
+.watch-card-visual-label { font-family: var(--mono); font-size: 9px; color: var(--gray-300); text-transform: uppercase; letter-spacing: 0.06em; }
+.watch-card-body { padding: 10px 11px 11px; display: flex; flex-direction: column; gap: 8px; }
+.watch-card-title { font-size: 12px; font-weight: 700; color: var(--ink); }
+.watch-card-note { font-family: var(--mono); font-size: 10px; color: var(--gray-400); line-height: 1.55; }
+.watch-card-btn { width: 100%; padding: 7px 0; background: var(--white); border: 1.5px solid var(--gray-200); border-radius: 5px; font-family: var(--mono); font-size: 10px; font-weight: 700; color: var(--gray-500); cursor: pointer; text-align: center; }
+
+/* ── Pulse feed ── */
+.pulse-section { padding: 0 14px 20px; display: flex; flex-direction: column; gap: 10px; }
+.pulse-header { display: flex; align-items: baseline; justify-content: space-between; padding: 4px 0 2px; }
+.pulse-header-label { font-family: var(--mono); font-size: 10px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; }
+.pulse-header-sub { font-family: var(--mono); font-size: 10px; color: var(--gray-300); }
+.pulse-feed { display: flex; flex-direction: column; gap: 8px; }
+.pulse-card { background: var(--white); border: 1.5px solid var(--gray-100); border-radius: 10px; padding: 11px 13px 12px; display: flex; flex-direction: column; gap: 5px; }
+.pulse-card.active { border-color: var(--ink); }
+.pulse-card-meta { display: flex; align-items: center; gap: 7px; }
+.pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gray-300); flex-shrink: 0; }
+.pulse-dot.now { background: var(--ink); animation: pulse 2s ease-in-out infinite; }
+.pulse-dot.milestone { background: #888; }
+.pulse-dot.vet { background: #333; }
+.pulse-dot.tip { background: #aaa; }
+.pulse-type { font-family: var(--mono); font-size: 9px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; }
+.pulse-when { font-family: var(--mono); font-size: 9px; color: var(--gray-300); }
+.pulse-title { font-size: 12px; font-weight: 700; color: var(--ink); line-height: 1.35; }
+.pulse-body { font-family: var(--mono); font-size: 10px; color: var(--gray-500); line-height: 1.6; }
+.pulse-link { font-family: var(--mono); font-size: 10px; color: var(--ink); font-weight: 700; cursor: pointer; }
+
+/* ── Phone home bar ── */
+.phone-home { padding: 10px 0 12px; display: flex; justify-content: center; flex-shrink: 0; background: #fff; }
+.phone-home-bar { width: 110px; height: 4px; background: #e0e0e0; border-radius: 2px; }
+
+/* ── Bottom sheet ── */
+.sheet-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.35); z-index: 10; border-radius: 42px; display: flex; flex-direction: column; justify-content: flex-end; }
+.sheet { background: var(--white); border-radius: 20px 20px 0 0; display: flex; flex-direction: column; max-height: 78%; }
+.sheet-handle { width: 36px; height: 4px; background: var(--gray-200); border-radius: 2px; margin: 10px auto 0; flex-shrink: 0; }
+.sheet-header { padding: 12px 16px 10px; border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.sheet-title { font-size: 14px; font-weight: 700; color: var(--ink); }
+.sheet-sub { font-family: var(--mono); font-size: 10px; color: var(--gray-400); margin-top: 2px; }
+.sheet-messages { flex: 1; overflow-y: auto; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.sheet-messages::-webkit-scrollbar { display: none; }
+.msg { display: flex; flex-direction: column; gap: 3px; max-width: 88%; }
+.msg.user { align-self: flex-end; align-items: flex-end; }
+.msg.ai { align-self: flex-start; }
+.msg-label { font-family: var(--mono); font-size: 9px; color: var(--gray-300); text-transform: uppercase; letter-spacing: 0.06em; }
+.msg-bubble { padding: 9px 12px; border-radius: 12px; font-size: 12px; line-height: 1.55; }
+.msg.user .msg-bubble { background: var(--ink); color: var(--white); border-bottom-right-radius: 3px; }
+.msg.ai .msg-bubble { background: var(--gray-50); border: 1px solid var(--gray-100); color: var(--ink); border-bottom-left-radius: 3px; }
+.msg-claim-link { font-family: var(--mono); font-size: 10px; font-weight: 700; color: var(--ink); border: 1.5px solid var(--ink); border-radius: 5px; padding: 5px 10px; display: inline-block; margin-top: 4px; cursor: pointer; }
+.sheet-input { display: flex; gap: 8px; padding: 10px 14px 14px; border-top: 1.5px solid var(--gray-100); flex-shrink: 0; align-items: center; }
+.sheet-input-field { flex: 1; background: var(--gray-50); border: 1.5px solid var(--gray-100); border-radius: 20px; padding: 8px 14px; font-size: 12px; color: var(--gray-400); font-family: var(--sans); outline: none; }
+.sheet-send { width: 30px; height: 30px; background: var(--ink); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+.sheet-send svg { width: 13px; height: 13px; }
+
+/* ── Claim sheet ── */
+.claim-step-header { padding: 14px 16px 12px; border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.claim-step-eyebrow { font-family: var(--mono); font-size: 10px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; margin-bottom: 4px; }
+.claim-step-title { font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.3; }
+.claim-step-body { flex: 1; overflow-y: auto; padding: 16px 14px 20px; display: flex; flex-direction: column; gap: 12px; }
+.claim-step-body::-webkit-scrollbar { display: none; }
+.claim-upload-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.claim-upload-tile { border: 1.5px dashed var(--gray-200); border-radius: 12px; padding: 24px 12px 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; background: var(--gray-25); transition: all 0.15s; }
+.claim-upload-tile:hover, .claim-upload-tile:active { border-color: var(--ink); background: var(--white); }
+.claim-upload-icon { font-size: 28px; opacity: 0.5; }
+.claim-upload-label { font-size: 13px; font-weight: 600; color: var(--ink); text-align: center; line-height: 1.3; }
+.claim-upload-sub { font-family: var(--mono); font-size: 10px; color: var(--gray-300); text-align: center; }
+.claim-express-note { background: var(--gray-50); border: 1px solid var(--gray-100); border-radius: 8px; padding: 10px 12px; font-size: 12px; color: var(--gray-500); font-family: var(--mono); line-height: 1.6; }
+.claim-express-note strong { color: var(--ink); }
+.claim-confirm { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; gap: 12px; padding: 24px 20px; text-align: center; }
+.claim-confirm-icon { font-size: 40px; }
+.claim-confirm-title { font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.3; }
+.claim-confirm-sub { font-family: var(--mono); font-size: 12px; color: var(--gray-500); line-height: 1.7; }
+.claim-confirm-eta { font-family: var(--mono); font-size: 11px; color: var(--gray-400); border: 1.5px solid var(--gray-100); border-radius: 4px; padding: 5px 12px; display: inline-block; margin-top: 4px; }
+.claim-done-btn { margin: 0 14px 14px; width: calc(100% - 28px); padding: 12px; background: var(--ink); color: var(--white); border: none; border-radius: 8px; font-family: var(--mono); font-size: 13px; font-weight: 700; cursor: pointer; flex-shrink: 0; }
+
+/* ── Sidebar ── */
+.sidebar { border-left: 1.5px solid var(--gray-100); display: flex; flex-direction: column; overflow: hidden; background: var(--white); }
+.sidebar-header { padding: 26px 26px 22px; border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.sidebar-eyebrow { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-bottom: 8px; }
+.sidebar-title { font-size: 18px; font-weight: 700; color: var(--ink); line-height: 1.35; }
+.sidebar-scroll { flex: 1; overflow-y: auto; padding: 26px; display: flex; flex-direction: column; gap: 24px; }
+.sidebar-scroll::-webkit-scrollbar { width: 4px; }
+.sidebar-scroll::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 2px; }
+.sb-block { display: flex; flex-direction: column; gap: 8px; }
+.sb-label { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+.sb-title { font-size: 16px; font-weight: 700; color: var(--ink); line-height: 1.4; }
+.sb-body { font-size: 15px; color: var(--gray-600); line-height: 1.7; }
+.sb-divider { border: none; border-top: 1.5px solid var(--gray-100); }
+.sb-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
+.sb-tag { font-family: var(--mono); font-size: 12px; color: var(--gray-500); border: 1.5px solid var(--gray-200); padding: 4px 10px; border-radius: 4px; background: var(--gray-25); }
+.sb-tag.open { border-style: dashed; color: var(--gray-400); }
+.sb-code { font-family: var(--mono); font-size: 13px; color: var(--gray-500); line-height: 2.1; background: var(--gray-25); padding: 14px 16px; border-radius: 5px; border: 1.5px solid var(--gray-100); white-space: pre; }
+.sb-code em { color: var(--ink2); font-style: normal; font-weight: 700; }
+
+/* ── Side-by-side labels ── */
+.sbs-col { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.sbs-label { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-eyebrow">Trupanion Sub-Brand · Dashboard</div>
+    <div class="topbar-title">One system. Two users. Completely different moments.</div>
+  </div>
+  <div class="view-nav">
+    <button class="active" onclick="setView('emily')">Emily</button>
+    <button onclick="setView('zach')">Zach</button>
+    <button onclick="setView('sbs')">Side by side</button>
+  </div>
+</div>
+
+<!-- ══ VIEW: EMILY ══ -->
+<div class="view active" id="view-emily">
+  <div class="annotated">
+    <div class="phone-stage">
+      <div class="phone-frame">
+        <div class="phone-status">
+          <span class="phone-status-time">7:22</span>
+          <div class="phone-status-icons">
+            <div class="phone-status-dot on"></div><div class="phone-status-dot on"></div>
+            <div class="phone-status-dot on"></div><div class="phone-status-dot on"></div>
+          </div>
+        </div>
+        <div class="app-nav">
+          <div class="app-nav-avatar">E</div>
+          <div class="app-nav-logo">[Brand]</div>
+          <div class="app-nav-right">
+            <div class="app-nav-chat" onclick="document.getElementById('sheet-emily').style.display='flex'">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 2C5.58 2 2 5.13 2 9c0 1.9.82 3.63 2.17 4.9L3 17l3.6-1.4C7.63 16.18 8.79 16.4 10 16.4 14.42 16.4 18 13.27 18 9S14.42 2 10 2Z" stroke="#111" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="app-nav-menu"><span></span><span></span><span></span></div>
+          </div>
+        </div>
+        <div class="dash-scroll">
+          <div class="pet-header-e">
+            <div class="pet-photo-e"><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCABUAFQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD6KNUNX1GDTbQz3BOM7VUdWPoKvNXlPxyvpLazs40LKrK7Z7ZyBSlLlVwhDmlZnQ23jNZLgCSGHyT18qXc6jPXGOce1ddFKksayRsHRgGVgeCK+StKluo7j7SNxUYIfdjH4ivfPhvrDT7rCbgFPOi+bOD/ABAe3OfzrKFX3uVm9WguXmid3mjNHFH410HHYTNITSMQO9cL8Q/Fn9lwTWVk2LnZmWQHBjBBwAf7x6+w+tKUlFXY4wc3yo6LUvEuk6dcfZ7u9RZx1RAXK/XHStK0uYby3jntpFlhkGVdTkEV8jX+vXc98xicRQoTtVeNx9T6mvXvgPr8119v0+X/AFSKJkBOcHOD+fFZxm29TWdKKjdM9h2iiqdxqMUEmx92cZ6UVqc5ovIOwrzX40aVLqek2kkCBnjZh83bv+oBr0oiuY+JA2+C9TmAUmBFmAJxnaw4z+dZT1izppu00eYeAfD2/TrsX1s4I4KyL274roNCs30JbG4jLTBbhhHu4byTwR7/AP1q0LOe5ttLt7uOFvIuYBIcn5lO3OK5nxLcXdzb+Ek0WRXe8ZvMK5YjOMscdhjmuC7vdbnsOK5bPZnsSsXRWRsqwyCO4oIPcmud0nU003TIbS7uRe3iEh5FwoJz0H06fhVpdfhLKGgbmR48q4P3Qcn9K7o1oNbnkyw1RPY1Z2SGF5ZWxGilmPsK8H8UQ3d9OJJ0Ky30zSKzDgLxx7npXpfjXXiuh+bp9tJd24+a42EFkHUEr1KnviuPfUIdY0DRNTsogEjuZI5FP8Lf3c+nHFc9epzOy2R14Whyq8t2ed+KvD40G1jaTaRJ0BXpXbfs+Wci3uoXLIVTyAoz3y3/ANatPxMLDxBalZUJNsoZ9pBwew/Guw+GOkxWPh1LmJSGvcS884UDavP4E/jToS5mLGQ9nE6p4Y5Dl0BNFTAGiu08szLnWrr7BEYtMma5HDICOPXmsPxHqF7feH72KbRJpI9oZ4mwd6ggkYB9s/hXaRpx0p+3HaubW1jttFO9jznQNUg1PQboly9vEVhMar+8LEAhRjgdRU0lvBaQutvDbxz3Gd3kqFABPQfj+Z5o8X6dp3h2W58QRqIRPxcIXIjaT+GQjoD1Bx14ryrxL49W/tJE8OfaxfsDsvXUorgA7gmRjpngHtXPySbtY7fbRtzN/I2/GKHRrZ3EztKPm+VuEXofx965aw8YXRa0iQFooJGl6kszNgflVXSvGto/gu3tNVQy3Ee+OQ55KHkH65xWb8PbjSI9WeW9c4dykMecfKc8E07WTv0Fz8zVnuexaYZN63UM8UysCP3TfKwP3kIqlf8Ahu7t9KuLHQpEWwaUX/lHJkYr1jX16k/Sufn8d26eKhodrIPsWxYw5j4hkH8QI56cEdK762umfyYknRpcb4bhMYYjt6g1DTW5opJ/D0MjxNZ21z4WutH0oKt5dx7lZVIyw5ILAcdCK9FsJ47Lw5YoqeVsto1CAfcwg4ryDUv7e13ULi9mEum6CZQsXG2W5Vcg7cHgZzz7967Qa7Nfaa9lCiIVA+ctyBUrERo3j1M61J12mXm8Q30TFTFu54NFYaQX23PnqQ3IyOlFZrGPuyfqi7HpujXQvLCO4JA3jdjPSroAbIVskVw0ljfx3bQafcCCwZCB/eU+1XfBdvdabez/ANoXjzowwrOfeuqFeOkWzJ0ZWcjD+KkxufDN1buiFUPmYYZBIIwP5187JC1zqK20WoXMfmEsLWdCEh75OG24HJyBz6Zr6R+JUL3OjzS26q6RSBpkGfniPXp1xwa+Y76W5iubxmYRqiGMEDkFh0z3wO9OhJtNXCuoqzKdxpG+/khimVkDYaQDr746L9OvrUV1paQ4NtOk0OOTyoBz6np+PFWdI1C702xdrVIy5YYd2ClU77R/PFWp9buL+zu/tcSvvUeTNu+YN346kcnPFdNmczaKa2V5DGZ4wtxv++pYhn9QRkE44zg8jB6V6J8JbW7m122LSTwWQBM9s0jOE9MEnI6jg9PxrzmzBOnKkqLKBJlVB5AxnA/Wvafg3bxLqEcdunyTRByMfdAOTn8qyqu0bG1GN5c1z2LWIINS0428cQjnjXEaDpgen4Vwc+k2unoJ4tyXTHa4J/pXazZMoZG2vG2Aai1LSoNZCGUBLlRyR/EPeuDEUvae8tzupP2ej2PN5b+W3cx/ahx29KK60+CE3EieE5OfmTP9aK4/ZVOxtzx7nSjPQgdKMFuw+lQ/aBtwqnNIBO2CsZzn1o5uwWE1MlLKWMYVpUZRgZ7HoO9fIOq3KPPjCoqucZxnOeSffOc19Z6q00YQyEBl5AHpmvm/4q6CJPFiS2FqIzeybSI/uySk8nHY+vrXpYSSSs+px4qDaUkc3Gy3jAR2zS4HDHhfqTUIEEUqpMphmH4hvpXsNv4ae00KCKfSri2nRQHeBFlDDPUEHIP4V5pqeg6rqE0i2elXrFeQ7Q7Mc9Tk11Kom7HJKDSuZtm2ycpEVB3Bl543A5HB6dK+kfhvYwaPoh1CRWR5IhtDdUXJbH4k/livnXQNIluNRuY9RvIbVLRh52TliM9Fx3969wh8RQ37Q2Vo+LdIlAGcZUcAfyrOtNdDfDwb3PQLWdiHkD7gRxx3zzWlp8+Tu9e4rGWZW0xZIjw3yqR3xjBp+nXPlCYEjCOxBNc8ZWZ2ShdHQvAjMSAOfSiltzuiU7v1oqvZQetjG7Whx8V3KsQYEbsnmtFb2YEYYcgGiivHi2dLOY8bXcwubcBsboWJx7GvLNYmkvNa0vznYlZwFI6rlsEj34oorvw+6JrfAe+anEo0/AHRBg9/SsDTLWKVQ7LhmXnFFFdcl76ORfAeHeO7SGw8fSxwIPLmUMytyM+1aHhA7Vu3wMlMAdhnk4oop1fhHQ+I9c8NyNJpQjkYssZ3Lnr2q2rMllcMpO7aTn6GiiuWJ3yNKyv5zbqSw/KiiirTJaVz/9k=" style="width:100%;height:100%;object-fit:cover;"></div>
+            <div class="pet-info">
+              <div class="pet-info-name-sm">Daisy</div>
+              <div class="pet-info-detail">French Bulldog · 11 months · Austin, TX</div>
+            </div>
+            <div class="pet-status-pill">Active · Jul 14</div>
+          </div>
+          <div class="bento">
+            <div class="bento-hero">
+              <div class="bento-hero-tag"><div class="hero-pulse"></div>Heads up for this month</div>
+              <div class="bento-hero-body">
+                <div class="bento-hero-title">Daisy's heading into her first-year stretch.</div>
+                <div class="bento-hero-sub">French Bulldogs often show their first breed-specific signs between 10–14 months. Nothing's wrong — but there are a few things worth keeping an eye on.</div>
+                <div class="hero-link">What to mention at her 1-year checkup →</div>
+              </div>
+            </div>
+            <div class="claim-cta" onclick="openClaim('claim-emily')">
+              <div class="claim-cta-left"><div class="claim-cta-label">Something happen?</div><div class="claim-cta-title">Start a claim for Daisy →</div></div>
+              <div class="claim-cta-arrow">＋</div>
+            </div>
+            <div class="tile-row">
+              <div class="stat-tile"><div class="tile-eyebrow">Coverage</div><div class="tile-value">Active</div><div class="tile-sub">$71/mo · Frenchie<br>Complete</div></div>
+              <div class="stat-tile"><div class="tile-eyebrow">Claims filed</div><div class="tile-value">0</div><div class="tile-sub">$781 paid in<br>since Jul 14</div></div>
+            </div>
+            <div class="peace-tile">
+              <div class="peace-label">11 months protected</div>
+              <div class="peace-split">
+                <div class="peace-col"><div class="peace-col-label">We paid out</div><div class="peace-col-value">$0</div><div class="peace-col-sub">No claims filed<br>yet. That's good.</div></div>
+                <div class="peace-col"><div class="peace-col-label">You paid in</div><div class="peace-col-value">$781</div><div class="peace-col-sub">$71/mo since<br>Jul 14</div></div>
+              </div>
+              <div class="peace-divider"></div>
+              <div class="peace-sub">Daisy's been healthy. That's the goal. Your coverage is ready the moment you need it.</div>
+            </div>
+            <div class="renewal-tile">
+              <div class="renewal-row"><div class="renewal-label">Renewal</div><div class="renewal-date">Coming Jul 14</div></div>
+              <div class="renewal-rate">$76/mo starting year two</div>
+              <div class="renewal-note">$5 increase · age-based pricing. Same coverage.</div>
+              <div class="renewal-link">See what changes, what doesn't →</div>
+            </div>
+            <div class="milestone-tile">
+              <div class="tile-eyebrow">Daisy's milestones</div>
+              <div class="milestone-track"><div class="milestone-line"></div><div class="milestone-dots"><div class="m-dot done"></div><div class="m-dot done"></div><div class="m-dot done"></div><div class="m-dot now"></div><div class="m-dot"></div></div></div>
+              <div class="milestone-labels"><div class="m-lbl">Home</div><div class="m-lbl">Enroll</div><div class="m-lbl">6 mo</div><div class="m-lbl now">11 mo</div><div class="m-lbl">1 yr</div></div>
+            </div>
+            <div class="vet-tile">
+              <div class="tile-eyebrow">Vet visits</div>
+              <div class="vet-row"><div class="vet-name">Well visit</div><div class="vet-date">Jan 8 · Austin Animal Clinic</div></div>
+              <div class="vet-note">Healthy · next visit recommended at 12 months</div>
+            </div>
+          </div>
+          <div class="watch-section">
+            <div class="watch-header-label">Things to watch · month 11</div>
+            <div class="watch-cards">
+              <div class="watch-card"><div class="watch-card-visual"><div class="watch-card-visual-icon">🐽</div><div class="watch-card-visual-label">illustration / video</div></div><div class="watch-card-body"><div class="watch-card-title">Breathing changes</div><div class="watch-card-note">Louder snoring or slow recovery after play.</div><button class="watch-card-btn">I've seen this</button></div></div>
+              <div class="watch-card"><div class="watch-card-visual"><div class="watch-card-visual-icon">🌿</div><div class="watch-card-visual-label">illustration / video</div></div><div class="watch-card-body"><div class="watch-card-title">Skin fold irritation</div><div class="watch-card-note">Redness or odor around facial folds or tail pocket.</div><button class="watch-card-btn">I've seen this</button></div></div>
+              <div class="watch-card"><div class="watch-card-visual"><div class="watch-card-visual-icon">🐾</div><div class="watch-card-visual-label">illustration / video</div></div><div class="watch-card-body"><div class="watch-card-title">Back sensitivity</div><div class="watch-card-note">Hesitation on stairs or jumping.</div><button class="watch-card-btn">I've seen this</button></div></div>
+            </div>
+          </div>
+          <div class="pulse-section">
+            <div class="pulse-header"><div class="pulse-header-label">Daisy's feed</div><div class="pulse-header-sub">recent + upcoming</div></div>
+            <div class="pulse-feed">
+              <div class="pulse-card active"><div class="pulse-card-meta"><div class="pulse-dot now"></div><div class="pulse-type">Heads up</div><div class="pulse-when">· This month</div></div><div class="pulse-title">Daisy's entering her first-year stretch.</div><div class="pulse-body">French Bulldogs often show first breed-specific signs 10–14 months. Nothing flagged — just worth knowing what to watch.</div><div class="pulse-link">What to mention at her 1-year checkup →</div></div>
+              <div class="pulse-card"><div class="pulse-card-meta"><div class="pulse-dot milestone"></div><div class="pulse-type">Milestone</div><div class="pulse-when">· 30 days out</div></div><div class="pulse-title">Renewal coming Jul 14.</div><div class="pulse-body">$76/mo starting year two — $5 increase, age-based. Same coverage. No action needed yet.</div></div>
+              <div class="pulse-card"><div class="pulse-card-meta"><div class="pulse-dot vet"></div><div class="pulse-type">Vet</div><div class="pulse-when">· Jan 8</div></div><div class="pulse-title">Well visit. All clear.</div><div class="pulse-body">Austin Animal Clinic. Healthy. Next visit recommended at 12 months.</div></div>
+              <div class="pulse-card"><div class="pulse-card-meta"><div class="pulse-dot tip"></div><div class="pulse-type">Tip</div><div class="pulse-when">· Ongoing</div></div><div class="pulse-title">Frenchies and heat don't mix.</div><div class="pulse-body">Austin summers are rough for brachycephalic breeds. Early morning walks only once temps hit 80°F.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-home"><div class="phone-home-bar"></div></div>
+        <div class="sheet-overlay" id="sheet-emily" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
+          <div class="sheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-header"><div class="sheet-title">Ask anything about Daisy</div><div class="sheet-sub">AI · human available in under 90 sec for urgent questions</div></div>
+            <div class="sheet-messages">
+              <div class="msg user"><div class="msg-bubble">Daisy's been scratching her ears a lot this week. Should I be worried?</div></div>
+              <div class="msg ai"><div class="msg-label">AI</div><div class="msg-bubble">Could be a few things — ear infections are common in French Bulldogs, especially if she swims or gets water in her ears. Also worth checking for grass allergies if she's been outside more. If there's odor or discharge, that's a vet visit. If it's just scratching, try keeping ears dry and check again in 48 hours.</div></div>
+              <div class="msg user"><div class="msg-bubble">If I take her in, would that be covered?</div></div>
+              <div class="msg ai"><div class="msg-label">AI</div><div class="msg-bubble">Yes — ear infections are covered under Daisy's plan. The exam fee is covered too. If she's diagnosed and needs medication, that's covered as part of the treatment. Just bring the itemized invoice after the visit and snap a photo in the app.</div><div class="msg-claim-link">Start a claim after the visit →</div></div>
+            </div>
+            <div class="sheet-input"><div class="sheet-input-field">Ask about Daisy's coverage…</div><div class="sheet-send"><svg viewBox="0 0 13 13" fill="none"><path d="M1 6.5h11M7 2l5 4.5L7 11" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-eyebrow">Emily · 11 months in</div>
+        <div class="sidebar-title">No event. Still paying attention.</div>
+      </div>
+      <div class="sidebar-scroll">
+        <div class="sb-block">
+          <div class="sb-label">The hero card</div>
+          <div class="sb-title">No clinical event. The product still surfaced something useful.</div>
+          <div class="sb-body">Daisy is healthy. Nothing is wrong. But French Bulldogs show their first breed-specific signs between 10–14 months, and Daisy is 11 months old. Breed + age is enough data to be useful. This is the scalable version of the Zach argument — the product doesn't need a medical event to know what to surface.</div>
+          <div class="sb-tags"><span class="sb-tag">breed-triggered</span><span class="sb-tag">age-triggered</span><span class="sb-tag">no clinical event</span></div>
+        </div>
+        <hr class="sb-divider">
+        <div class="sb-block">
+          <div class="sb-label">The claim CTA</div>
+          <div class="sb-title">Evergreen. First time she needs it, it's right there.</div>
+          <div class="sb-body">Emily hasn't filed a claim in 11 months. The button doesn't know that — it's always right below the hero card. "Something happen?" is a different register than Zach's context-aware label, but same position, same destination. She's never had to find it before. The first time she does, she won't have to look.</div>
+          <div class="sb-tags"><span class="sb-tag">evergreen label</span><span class="sb-tag">always above the fold</span><span class="sb-tag">opens concierge</span></div>
+        </div>
+        <hr class="sb-divider">
+        <div class="sb-block">
+          <div class="sb-label">The zero-claims tile</div>
+          <div class="sb-title">$781 in. $0 claimed. The math, shown warmly.</div>
+          <div class="sb-body">The we-paid / you-paid split does the math Emily was already doing in her head — and reframes it. The industry's failure is treating this moment as neutral. This tile says: Daisy's been healthy. That's the goal. Below it, the $5 renewal increase lands with context, not as a surprise invoice.</div>
+          <div class="sb-tags"><span class="sb-tag">pre-empts cancellation thinking</span><span class="sb-tag">renewal disclosed in context</span></div>
+        </div>
+        <hr class="sb-divider">
+        <div class="sb-block">
+          <div class="sb-label">The concierge sheet</div>
+          <div class="sb-title">User-initiated. Breed-aware. Same sheet as Zach.</div>
+          <div class="sb-body">No pre-loaded context — Emily drives it. But the AI knows she has a French Bulldog in Austin. The conversation shown is real Zone 3: she noticed something, asked about it, learned it's covered. The claim link surfaces naturally at the end. Same sheet, same AI, same handoff as Zach — different entry point, different conversation.</div>
+          <div class="sb-tags"><span class="sb-tag">user-initiated</span><span class="sb-tag">breed-aware AI</span><span class="sb-tag">answer → handoff</span></div>
+        </div>
+        <hr class="sb-divider">
+        <div class="sb-block">
+          <div class="sb-label">Data the product already held</div>
+          <div class="sb-code">breed            = <em>"French Bulldog"</em>
+age              = <em>"11 months"</em>
+enrollment_date  = <em>"Jul 14"</em>
+claims_filed     = <em>0</em>
+premium_paid_in  = <em>"$781"</em>
+renewal_window   = <em>"30 days out"</em>
+→ hero + feed + peace tile <em>auto-populated</em></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ VIEW: ZACH ══ -->
+<div class="view" id="view-zach">
+  <div class="annotated">
+    <div class="phone-stage">
+      <div class="phone-frame">
+        <div class="phone-status">
+          <span class="phone-status-time">6:47</span>
+          <div class="phone-status-icons">
+            <div class="phone-status-dot on"></div><div class="phone-status-dot on"></div>
+            <div class="phone-status-dot on"></div><div class="phone-status-dot on"></div>
+          </div>
+        </div>
+        <div class="app-nav">
+          <div class="app-nav-avatar">Z</div>
+          <div class="app-nav-logo">[Brand]</div>
+          <div class="app-nav-right">
+            <div class="app-nav-chat" onclick="document.getElementById('sheet-zach').style.display='flex'">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 2C5.58 2 2 5.13 2 9c0 1.9.82 3.63 2.17 4.9L3 17l3.6-1.4C7.63 16.18 8.79 16.4 10 16.4 14.42 16.4 18 13.27 18 9S14.42 2 10 2Z" stroke="#111" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="app-nav-menu"><span></span><span></span><span></span></div>
+          </div>
+        </div>
+        <div class="dash-scroll">
+          <div class="pet-header-z">
+            <div class="pet-photo-z">🐱</div>
+            <div class="pet-info">
+              <div class="pet-info-name-lg">Yoshi</div>
+              <div class="pet-info-detail">DSH · 16 weeks · Toronto, ON</div>
+            </div>
+            <div class="pet-status-pill">Active · May 17</div>
+          </div>
+          <div class="bento">
+            <div class="bento-hero">
+              <div class="bento-hero-tag"><div class="hero-pulse"></div>Heads up for tomorrow</div>
+              <div class="bento-hero-body">
+                <div class="bento-hero-title">Yoshi's 16-week recheck is tomorrow.</div>
+                <div class="bento-hero-sub">Follow-up for his Grade 2/6 heart murmur. Common in kittens — here's what to expect at the appointment.</div>
+                <div class="outcomes">
+                  <div class="outcome"><div class="outcome-chip">If resolved</div><div class="outcome-text">The murmur has closed on its own — normal for kittens. No further cardiology needed unless symptoms appear.</div></div>
+                  <div class="outcome"><div class="outcome-chip">If still present</div><div class="outcome-text">Vet will likely refer to a cardiologist for an echo. Ask about timing — this is a common next step, not an emergency.</div></div>
+                </div>
+                <div class="covered-note"><strong>Covered</strong> — because you enrolled before his first appointment. The murmur was found during covered care, not flagged as pre-existing.</div>
+                <div class="hero-link">Questions to ask the vet tomorrow →</div>
+              </div>
+            </div>
+            <div class="claim-cta" onclick="openClaim('claim-zach')">
+              <div class="claim-cta-left"><div class="claim-cta-label">After tomorrow's visit</div><div class="claim-cta-title">Start a claim for Yoshi →</div></div>
+              <div class="claim-cta-arrow">＋</div>
+            </div>
+            <div class="tile-row">
+              <div class="stat-tile"><div class="tile-eyebrow">Coverage</div><div class="tile-value">Active</div><div class="tile-sub">$47/mo CAD<br>Kitten Complete</div></div>
+              <div class="stat-tile"><div class="tile-eyebrow">Claims</div><div class="tile-value">—</div><div class="tile-empty">No claims yet</div></div>
+            </div>
+            <div class="milestone-tile">
+              <div class="tile-eyebrow">Yoshi's milestones</div>
+              <div class="milestone-track"><div class="milestone-line"></div><div class="milestone-dots"><div class="m-dot done"></div><div class="m-dot done"></div><div class="m-dot now"></div><div class="m-dot"></div><div class="m-dot"></div></div></div>
+              <div class="milestone-labels"><div class="m-lbl">Adopt</div><div class="m-lbl">Enroll</div><div class="m-lbl now">16 wk</div><div class="m-lbl">Neuter</div><div class="m-lbl">1 yr</div></div>
+            </div>
+            <div class="vet-tile">
+              <div class="tile-eyebrow">Vet visits</div>
+              <div class="vet-row"><div class="vet-name">First exam</div><div class="vet-date">May 22 · Toronto Cat Clinic</div></div>
+              <div class="vet-note">Grade 2/6 murmur noted · recheck scheduled</div>
+            </div>
+          </div>
+          <div class="pulse-section">
+            <div class="pulse-header"><div class="pulse-header-label">Yoshi's feed</div><div class="pulse-header-sub">recent + upcoming</div></div>
+            <div class="pulse-feed">
+              <div class="pulse-card active"><div class="pulse-card-meta"><div class="pulse-dot now"></div><div class="pulse-type">Heads up</div><div class="pulse-when">· Tonight</div></div><div class="pulse-title">Recheck is tomorrow morning.</div><div class="pulse-body">Toronto Cat Clinic · 9:00 AM.</div><div class="pulse-link">Two questions to ask Dr. Park →</div></div>
+              <div class="pulse-card"><div class="pulse-card-meta"><div class="pulse-dot vet"></div><div class="pulse-type">Vet</div><div class="pulse-when">· 3 weeks ago</div></div><div class="pulse-title">First exam. Grade 2/6 murmur noted.</div><div class="pulse-body">Common in kittens. Recheck scheduled. No claim needed — covered care.</div></div>
+              <div class="pulse-card"><div class="pulse-card-meta"><div class="pulse-dot milestone"></div><div class="pulse-type">Milestone</div><div class="pulse-when">· Last week</div></div><div class="pulse-title">Yoshi hit 16 weeks.</div><div class="pulse-body">Immune system is maturing. First FVRCP booster due soon — wellness, not covered, but worth scheduling.</div><div class="pulse-link">What vaccines are coming up →</div></div>
+              <div class="pulse-card"><div class="pulse-card-meta"><div class="pulse-dot tip"></div><div class="pulse-type">Tip</div><div class="pulse-when">· Ongoing</div></div><div class="pulse-title">Indoor cats still need heartworm prevention.</div><div class="pulse-body">We don't cover wellness — but a $15 monthly dose prevents a $4,000 surgery.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-home"><div class="phone-home-bar"></div></div>
+        <div class="sheet-overlay" id="sheet-zach" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
+          <div class="sheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-header"><div class="sheet-title">Ask anything about Yoshi</div><div class="sheet-sub">AI · human available in under 90 sec for urgent questions</div></div>
+            <div class="sheet-messages">
+              <div class="msg user"><div class="msg-bubble">Is the murmur definitely covered if the vet finds it's still there tomorrow?</div></div>
+              <div class="msg ai"><div class="msg-label">AI</div><div class="msg-bubble">Yes — because you enrolled before Yoshi's first appointment, the murmur was discovered during covered care. It's not flagged as pre-existing. If the vet refers you to a cardiologist for an echo, that's covered too.</div><div class="msg-claim-link">Start a claim after the visit →</div></div>
+              <div class="msg user"><div class="msg-bubble">What do I need to bring to start a claim?</div></div>
+              <div class="msg ai"><div class="msg-label">AI</div><div class="msg-bubble">Just the itemized invoice from the clinic — not the totals page, the line-by-line one. Snap a photo in the app and we extract everything. If Toronto Cat Clinic is on Trupanion Express, they submit it automatically the second they print it.</div></div>
+            </div>
+            <div class="sheet-input"><div class="sheet-input-field">Ask about Yoshi's coverage…</div><div class="sheet-send"><svg viewBox="0 0 13 13" fill="none"><path d="M1 6.5h11M7 2l5 4.5L7 11" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-eyebrow">Zach · 3 weeks in</div>
+        <div class="sidebar-title">A medical event. The product already knows about it.</div>
+      </div>
+      <div class="sidebar-scroll">
+        <div class="sb-block">
+          <div class="sb-label">The hero card</div>
+          <div class="sb-title">The product surfaced this. Zach didn't ask.</div>
+          <div class="sb-body">Yoshi's recheck is tomorrow. The card appeared tonight — triggered by the appointment date logged at his first vet visit, cross-referenced with the flagged murmur. Zach didn't open the app looking for this. The product knew it was relevant before he did. Anticipatory, not reactive.</div>
+          <div class="sb-tags"><span class="sb-tag">date-triggered</span><span class="sb-tag">condition-aware</span><span class="sb-tag">no prompt from Zach</span></div>
+        </div>
+        <hr class="sb-divider">
+        <div class="sb-block">
+          <div class="sb-label">The claim CTA</div>
+          <div class="sb-title">Context-aware. Right where you need it.</div>
+          <div class="sb-body">Not "File a claim" — "After tomorrow's visit, start a claim for Yoshi." The label knows what's happening. It sits immediately below the hero card that explained why it matters. Tapping it opens the concierge — not a form. Reassurance before paperwork. Compare to Emily's: same position, different register.</div>
+          <div class="sb-tags"><span class="sb-tag">context-aware label</span><span class="sb-tag">opens concierge</span></div>
+        </div>
+        <hr class="sb-divider">
+        <div class="sb-block">
+          <div class="sb-label">The concierge sheet</div>
+          <div class="sb-title">Pre-loaded with context. Answers the actual question.</div>
+          <div class="sb-body">The sheet opens knowing who Zach is and what's happening tomorrow. The AI confirms coverage, explains why the murmur isn't pre-existing, and hands off to the claim flow with a single link. Two entry points (nav icon + claim CTA), one sheet. Emily's version opens clean — same UI, Zach's opens pre-seeded.</div>
+          <div class="sb-tags"><span class="sb-tag">pre-loaded context</span><span class="sb-tag">bottom sheet</span><span class="sb-tag">answer → handoff</span></div>
+        </div>
+        <hr class="sb-divider">
+        <div class="sb-block">
+          <div class="sb-label">The feed</div>
+          <div class="sb-title">A timeline the product assembles. Not a notification center.</div>
+          <div class="sb-body">Chronological, typed, timestamped. The active card echoes the hero (recheck tonight). Below it: the vet visit that started this, the 16-week milestone, an evergreen tip. Zach reads top to bottom and understands the full picture. The feed types are identical to Emily's — the signals are different.</div>
+          <div class="sb-tags"><span class="sb-tag">chronological</span><span class="sb-tag">condition-aware</span><span class="sb-tag">no manual logging</span></div>
+        </div>
+        <hr class="sb-divider">
+        <div class="sb-block">
+          <div class="sb-label">Data the product already held</div>
+          <div class="sb-code">enrollment_date   = <em>"May 17"</em>
+first_vet_visit   = <em>"May 22"</em>
+flagged_condition = <em>"Grade 2/6 murmur"</em>
+recheck_date      = <em>"[tomorrow]"</em>
+→ hero + CTA + feed <em>auto-populated</em></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ VIEW: SIDE BY SIDE ══ -->
+<div class="view" id="view-sbs">
+  <div class="sbs">
+    <div class="sbs-col">
+      <div class="sbs-label">Emily · 11 months in</div>
+      <div class="phone-frame">
+        <div class="phone-status">
+          <span class="phone-status-time">7:22</span>
+          <div class="phone-status-icons"><div class="phone-status-dot on"></div><div class="phone-status-dot on"></div><div class="phone-status-dot on"></div><div class="phone-status-dot on"></div></div>
+        </div>
+        <div class="app-nav">
+          <div class="app-nav-avatar">E</div>
+          <div class="app-nav-logo">[Brand]</div>
+          <div class="app-nav-right">
+            <div class="app-nav-chat" onclick="document.getElementById('sheet-emily-sbs').style.display='flex'">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 2C5.58 2 2 5.13 2 9c0 1.9.82 3.63 2.17 4.9L3 17l3.6-1.4C7.63 16.18 8.79 16.4 10 16.4 14.42 16.4 18 13.27 18 9S14.42 2 10 2Z" stroke="#111" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="app-nav-menu"><span></span><span></span><span></span></div>
+          </div>
+        </div>
+        <div class="dash-scroll">
+          <div class="pet-header-e">
+            <div class="pet-photo-e"><img src="data:image/jpeg;base64,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" style="width:100%;height:100%;object-fit:cover;"></div>
+            <div class="pet-info"><div class="pet-info-name-sm">Daisy</div><div class="pet-info-detail">French Bulldog · 11 months · Austin, TX</div></div>
+            <div class="pet-status-pill">Active · Jul 14</div>
+          </div>
+          <div class="bento">
+            <div class="bento-hero"><div class="bento-hero-tag"><div class="hero-pulse"></div>Heads up for this month</div><div class="bento-hero-body"><div class="bento-hero-title">Daisy's heading into her first-year stretch.</div><div class="bento-hero-sub">French Bulldogs often show their first breed-specific signs between 10–14 months. Nothing's wrong — but there are a few things worth keeping an eye on.</div><div class="hero-link">What to mention at her 1-year checkup →</div></div></div>
+            <div class="claim-cta" onclick="openClaim('claim-emily-sbs')"><div class="claim-cta-left"><div class="claim-cta-label">Something happen?</div><div class="claim-cta-title">Start a claim for Daisy →</div></div><div class="claim-cta-arrow">＋</div></div>
+            <div class="tile-row"><div class="stat-tile"><div class="tile-eyebrow">Coverage</div><div class="tile-value">Active</div><div class="tile-sub">$71/mo · Frenchie<br>Complete</div></div><div class="stat-tile"><div class="tile-eyebrow">Claims filed</div><div class="tile-value">0</div><div class="tile-sub">$781 paid in<br>since Jul 14</div></div></div>
+            <div class="peace-tile"><div class="peace-label">11 months protected</div><div class="peace-split"><div class="peace-col"><div class="peace-col-label">We paid out</div><div class="peace-col-value">$0</div><div class="peace-col-sub">No claims filed<br>yet. That's good.</div></div><div class="peace-col"><div class="peace-col-label">You paid in</div><div class="peace-col-value">$781</div><div class="peace-col-sub">$71/mo since<br>Jul 14</div></div></div><div class="peace-divider"></div><div class="peace-sub">Daisy's been healthy. That's the goal. Your coverage is ready the moment you need it.</div></div>
+            <div class="renewal-tile"><div class="renewal-row"><div class="renewal-label">Renewal</div><div class="renewal-date">Coming Jul 14</div></div><div class="renewal-rate">$76/mo starting year two</div><div class="renewal-note">$5 increase · age-based pricing. Same coverage.</div><div class="renewal-link">See what changes, what doesn't →</div></div>
+            <div class="milestone-tile"><div class="tile-eyebrow">Daisy's milestones</div><div class="milestone-track"><div class="milestone-line"></div><div class="milestone-dots"><div class="m-dot done"></div><div class="m-dot done"></div><div class="m-dot done"></div><div class="m-dot now"></div><div class="m-dot"></div></div></div><div class="milestone-labels"><div class="m-lbl">Home</div><div class="m-lbl">Enroll</div><div class="m-lbl">6 mo</div><div class="m-lbl now">11 mo</div><div class="m-lbl">1 yr</div></div></div>
+            <div class="vet-tile"><div class="tile-eyebrow">Vet visits</div><div class="vet-row"><div class="vet-name">Well visit</div><div class="vet-date">Jan 8 · Austin Animal Clinic</div></div><div class="vet-note">Healthy · next visit recommended at 12 months</div></div>
+          </div>
+          <div class="watch-section">
+            <div class="watch-header-label">Things to watch · month 11</div>
+            <div class="watch-cards">
+              <div class="watch-card"><div class="watch-card-visual"><div class="watch-card-visual-icon">🐽</div><div class="watch-card-visual-label">illustration / video</div></div><div class="watch-card-body"><div class="watch-card-title">Breathing changes</div><div class="watch-card-note">Louder snoring or slow recovery after play.</div><button class="watch-card-btn">I've seen this</button></div></div>
+              <div class="watch-card"><div class="watch-card-visual"><div class="watch-card-visual-icon">🌿</div><div class="watch-card-visual-label">illustration / video</div></div><div class="watch-card-body"><div class="watch-card-title">Skin fold irritation</div><div class="watch-card-note">Redness or odor around facial folds or tail pocket.</div><button class="watch-card-btn">I've seen this</button></div></div>
+              <div class="watch-card"><div class="watch-card-visual"><div class="watch-card-visual-icon">🐾</div><div class="watch-card-visual-label">illustration / video</div></div><div class="watch-card-body"><div class="watch-card-title">Back sensitivity</div><div class="watch-card-note">Hesitation on stairs or jumping.</div><button class="watch-card-btn">I've seen this</button></div></div>
+            </div>
+          </div>
+          <div class="pulse-section">
+            <div class="pulse-header"><div class="pulse-header-label">Daisy's feed</div><div class="pulse-header-sub">recent + upcoming</div></div>
+            <div class="pulse-feed">
+              <div class="pulse-card active"><div class="pulse-card-meta"><div class="pulse-dot now"></div><div class="pulse-type">Heads up</div><div class="pulse-when">· This month</div></div><div class="pulse-title">Daisy's entering her first-year stretch.</div><div class="pulse-body">French Bulldogs often show first breed-specific signs 10–14 months. Nothing flagged — just worth knowing what to watch.</div><div class="pulse-link">What to mention at her 1-year checkup →</div></div>
+              <div class="pulse-card"><div class="pulse-card-meta"><div class="pulse-dot milestone"></div><div class="pulse-type">Milestone</div><div class="pulse-when">· 30 days out</div></div><div class="pulse-title">Renewal coming Jul 14.</div><div class="pulse-body">$76/mo starting year two — $5 increase, age-based. Same coverage. No action needed yet.</div></div>
+              <div class="pulse-card"><div class="pulse-card-meta"><div class="pulse-dot vet"></div><div class="pulse-type">Vet</div><div class="pulse-when">· Jan 8</div></div><div class="pulse-title">Well visit. All clear.</div><div class="pulse-body">Austin Animal Clinic. Healthy. Next visit recommended at 12 months.</div></div>
+              <div class="pulse-card"><div class="pulse-card-meta"><div class="pulse-dot tip"></div><div class="pulse-type">Tip</div><div class="pulse-when">· Ongoing</div></div><div class="pulse-title">Frenchies and heat don't mix.</div><div class="pulse-body">Austin summers are rough for brachycephalic breeds. Early morning walks only once temps hit 80°F.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-home"><div class="phone-home-bar"></div></div>
+        <div class="sheet-overlay" id="sheet-emily-sbs" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
+          <div class="sheet"><div class="sheet-handle"></div><div class="sheet-header"><div class="sheet-title">Ask anything about Daisy</div><div class="sheet-sub">AI · human available in under 90 sec for urgent questions</div></div><div class="sheet-messages"><div class="msg user"><div class="msg-bubble">Daisy's been scratching her ears a lot this week. Should I be worried?</div></div><div class="msg ai"><div class="msg-label">AI</div><div class="msg-bubble">Could be a few things — ear infections are common in French Bulldogs, especially if she swims or gets water in her ears. If there's odor or discharge, that's a vet visit. If it's just scratching, try keeping ears dry and check again in 48 hours.</div></div><div class="msg user"><div class="msg-bubble">If I take her in, would that be covered?</div></div><div class="msg ai"><div class="msg-label">AI</div><div class="msg-bubble">Yes — ear infections are covered under Daisy's plan. Just bring the itemized invoice after the visit and snap a photo in the app.</div><div class="msg-claim-link">Start a claim after the visit →</div></div></div><div class="sheet-input"><div class="sheet-input-field">Ask about Daisy's coverage…</div><div class="sheet-send"><svg viewBox="0 0 13 13" fill="none"><path d="M1 6.5h11M7 2l5 4.5L7 11" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sbs-col">
+      <div class="sbs-label">Zach · 3 weeks in</div>
+      <div class="phone-frame">
+        <div class="phone-status">
+          <span class="phone-status-time">6:47</span>
+          <div class="phone-status-icons"><div class="phone-status-dot on"></div><div class="phone-status-dot on"></div><div class="phone-status-dot on"></div><div class="phone-status-dot on"></div></div>
+        </div>
+        <div class="app-nav">
+          <div class="app-nav-avatar">Z</div>
+          <div class="app-nav-logo">[Brand]</div>
+          <div class="app-nav-right">
+            <div class="app-nav-chat" onclick="document.getElementById('sheet-zach-sbs').style.display='flex'">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 2C5.58 2 2 5.13 2 9c0 1.9.82 3.63 2.17 4.9L3 17l3.6-1.4C7.63 16.18 8.79 16.4 10 16.4 14.42 16.4 18 13.27 18 9S14.42 2 10 2Z" stroke="#111" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="app-nav-menu"><span></span><span></span><span></span></div>
+          </div>
+        </div>
+        <div class="dash-scroll">
+          <div class="pet-header-z"><div class="pet-photo-z">🐱</div><div class="pet-info"><div class="pet-info-name-lg">Yoshi</div><div class="pet-info-detail">DSH · 16 weeks · Toronto, ON</div></div><div class="pet-status-pill">Active · May 17</div></div>
+          <div class="bento">
+            <div class="bento-hero"><div class="bento-hero-tag"><div class="hero-pulse"></div>Heads up for tomorrow</div><div class="bento-hero-body"><div class="bento-hero-title">Yoshi's 16-week recheck is tomorrow.</div><div class="bento-hero-sub">Follow-up for his Grade 2/6 heart murmur. Common in kittens — here's what to expect at the appointment.</div><div class="outcomes"><div class="outcome"><div class="outcome-chip">If resolved</div><div class="outcome-text">The murmur has closed on its own — normal for kittens. No further cardiology needed.</div></div><div class="outcome"><div class="outcome-chip">If still present</div><div class="outcome-text">Vet will likely refer to a cardiologist for an echo. Common next step, not an emergency.</div></div></div><div class="covered-note"><strong>Covered</strong> — because you enrolled before his first appointment.</div><div class="hero-link">Questions to ask the vet tomorrow →</div></div></div>
+            <div class="claim-cta" onclick="openClaim('claim-zach-sbs')"><div class="claim-cta-left"><div class="claim-cta-label">After tomorrow's visit</div><div class="claim-cta-title">Start a claim for Yoshi →</div></div><div class="claim-cta-arrow">＋</div></div>
+            <div class="tile-row"><div class="stat-tile"><div class="tile-eyebrow">Coverage</div><div class="tile-value">Active</div><div class="tile-sub">$47/mo CAD<br>Kitten Complete</div></div><div class="stat-tile"><div class="tile-eyebrow">Claims</div><div class="tile-value">—</div><div class="tile-empty">No claims yet</div></div></div>
+            <div class="milestone-tile"><div class="tile-eyebrow">Yoshi's milestones</div><div class="milestone-track"><div class="milestone-line"></div><div class="milestone-dots"><div class="m-dot done"></div><div class="m-dot done"></div><div class="m-dot now"></div><div class="m-dot"></div><div class="m-dot"></div></div></div><div class="milestone-labels"><div class="m-lbl">Adopt</div><div class="m-lbl">Enroll</div><div class="m-lbl now">16 wk</div><div class="m-lbl">Neuter</div><div class="m-lbl">1 yr</div></div></div>
+            <div class="vet-tile"><div class="tile-eyebrow">Vet visits</div><div class="vet-row"><div class="vet-name">First exam</div><div class="vet-date">May 22 · Toronto Cat Clinic</div></div><div class="vet-note">Grade 2/6 murmur noted · recheck scheduled</div></div>
+          </div>
+          <div class="pulse-section">
+            <div class="pulse-header"><div class="pulse-header-label">Yoshi's feed</div><div class="pulse-header-sub">recent + upcoming</div></div>
+            <div class="pulse-feed">
+              <div class="pulse-card active"><div class="pulse-card-meta"><div class="pulse-dot now"></div><div class="pulse-type">Heads up</div><div class="pulse-when">· Tonight</div></div><div class="pulse-title">Recheck is tomorrow morning.</div><div class="pulse-body">Toronto Cat Clinic · 9:00 AM.</div><div class="pulse-link">Two questions to ask Dr. Park →</div></div>
+              <div class="pulse-card"><div class="pulse-card-meta"><div class="pulse-dot vet"></div><div class="pulse-type">Vet</div><div class="pulse-when">· 3 weeks ago</div></div><div class="pulse-title">First exam. Grade 2/6 murmur noted.</div><div class="pulse-body">Common in kittens. Recheck scheduled. No claim needed — covered care.</div></div>
+              <div class="pulse-card"><div class="pulse-card-meta"><div class="pulse-dot milestone"></div><div class="pulse-type">Milestone</div><div class="pulse-when">· Last week</div></div><div class="pulse-title">Yoshi hit 16 weeks.</div><div class="pulse-body">Immune system is maturing. First FVRCP booster due soon.</div><div class="pulse-link">What vaccines are coming up →</div></div>
+              <div class="pulse-card"><div class="pulse-card-meta"><div class="pulse-dot tip"></div><div class="pulse-type">Tip</div><div class="pulse-when">· Ongoing</div></div><div class="pulse-title">Indoor cats still need heartworm prevention.</div><div class="pulse-body">We don't cover wellness — but a $15 monthly dose prevents a $4,000 surgery.</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-home"><div class="phone-home-bar"></div></div>
+        <div class="sheet-overlay" id="sheet-zach-sbs" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
+          <div class="sheet"><div class="sheet-handle"></div><div class="sheet-header"><div class="sheet-title">Ask anything about Yoshi</div><div class="sheet-sub">AI · human available in under 90 sec for urgent questions</div></div><div class="sheet-messages"><div class="msg user"><div class="msg-bubble">Is the murmur definitely covered if the vet finds it's still there tomorrow?</div></div><div class="msg ai"><div class="msg-label">AI</div><div class="msg-bubble">Yes — because you enrolled before Yoshi's first appointment, the murmur was discovered during covered care. It's not flagged as pre-existing.</div><div class="msg-claim-link">Start a claim after the visit →</div></div></div><div class="sheet-input"><div class="sheet-input-field">Ask about Yoshi's coverage…</div><div class="sheet-send"><svg viewBox="0 0 13 13" fill="none"><path d="M1 6.5h11M7 2l5 4.5L7 11" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CLAIM SHEETS (appended to body, positioned via JS into correct phone-frame) ══ -->
+
+<script>
+function setView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.view-nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// Claim sheet config per pet
+const claimConfig = {
+  'claim-emily':     { pet: 'Daisy',  vet: 'Austin Animal Clinic' },
+  'claim-zach':      { pet: 'Yoshi',  vet: 'Toronto Cat Clinic' },
+  'claim-emily-sbs': { pet: 'Daisy',  vet: 'Austin Animal Clinic' },
+  'claim-zach-sbs':  { pet: 'Yoshi',  vet: 'Toronto Cat Clinic' },
+};
+
+// Claim sheet IDs map to which phone-frame they live in
+const claimParents = {
+  'claim-emily':     'sheet-emily',
+  'claim-zach':      'sheet-zach',
+  'claim-emily-sbs': 'sheet-emily-sbs',
+  'claim-zach-sbs':  'sheet-zach-sbs',
+};
+
+function openClaim(id) {
+  // Find the phone-frame that contains the corresponding concierge sheet
+  const siblingSheetId = claimParents[id];
+  const frame = document.getElementById(siblingSheetId).closest('.phone-frame');
+  
+  // Remove any existing claim overlay in this frame
+  const existing = frame.querySelector('.claim-overlay');
+  if (existing) existing.remove();
+
+  const cfg = claimConfig[id];
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'sheet-overlay claim-overlay';
+  overlay.id = id;
+  overlay.style.display = 'flex';
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) {
+      overlay.remove();
+      // reset step
+    }
+  });
+
+  overlay.innerHTML = `
+    <div class="sheet" style="max-height:72%;">
+      <div class="sheet-handle"></div>
+
+      <!-- Step 1: snap/upload — shown by default -->
+      <div class="claim-step" id="${id}-step1">
+        <div class="claim-step-header">
+          <div class="claim-step-eyebrow">Start a claim</div>
+          <div class="claim-step-title">Add ${cfg.pet}'s invoice</div>
+        </div>
+        <div class="claim-step-body">
+          <div class="claim-upload-row">
+            <div class="claim-upload-tile" onclick="claimAdvance('${id}')">
+              <div class="claim-upload-icon">📷</div>
+              <div class="claim-upload-label">Snap a photo</div>
+              <div class="claim-upload-sub">Line items only,<br>not the totals page</div>
+            </div>
+            <div class="claim-upload-tile" onclick="claimAdvance('${id}')">
+              <div class="claim-upload-icon">📄</div>
+              <div class="claim-upload-label">Upload PDF<br>or image</div>
+              <div class="claim-upload-sub">From files or<br>camera roll</div>
+            </div>
+          </div>
+          <div class="claim-express-note">
+            <strong>Already done?</strong> If ${cfg.pet}'s vet is on Trupanion Express, they submit the invoice automatically the second they print it. Check your feed — we may already have it.
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: confirmation — hidden until snap/upload tapped -->
+      <div class="claim-step" id="${id}-step2" style="display:none; flex:1; display:none; flex-direction:column;">
+        <div class="claim-step-header">
+          <div class="claim-step-eyebrow">Claim submitted</div>
+          <div class="claim-step-title">We've got it.</div>
+        </div>
+        <div class="claim-confirm">
+          <div class="claim-confirm-icon">✓</div>
+          <div class="claim-confirm-title">Processing ${cfg.pet}'s claim now.</div>
+          <div class="claim-confirm-sub">We'll review the invoice and apply ${cfg.pet}'s coverage. You'll see the breakdown in your receipt.</div>
+          <div class="claim-confirm-eta">Usually under an hour</div>
+        </div>
+        <button class="claim-done-btn" onclick="document.getElementById('${id}').remove()">Done</button>
+      </div>
+    </div>
+  `;
+
+  frame.appendChild(overlay);
+}
+
+function claimAdvance(id) {
+  const step1 = document.getElementById(id + '-step1');
+  const step2 = document.getElementById(id + '-step2');
+  step1.style.display = 'none';
+  step2.style.display = 'flex';
+  step2.style.flexDirection = 'column';
+  step2.style.flex = '1';
+}
+</script>
+</body>
+</html>
