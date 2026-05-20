@@ -126,47 +126,31 @@ body { background: var(--gray-50); color: var(--ink); font-family: var(--sans); 
 .next-btn:hover { opacity: 0.8; }
 
 /* PASSWORD GATE */
-#gate { position: fixed; inset: 0; background: var(--ink); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; z-index: 9999; }
-#gate.hidden { display: none; }
-.gate-label { font-family: var(--mono); font-size: 11px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.12em; }
-.gate-row { display: flex; border: 1.5px solid #333; border-radius: 4px; overflow: hidden; }
-.gate-row input { background: #1a1a1a; border: none; outline: none; font-family: var(--mono); font-size: 13px; color: var(--white); padding: 10px 14px; width: 180px; letter-spacing: 0.06em; }
-.gate-row input::placeholder { color: #555; }
-.gate-row button { background: var(--white); border: none; font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink); padding: 10px 16px; cursor: pointer; }
-.gate-row button:hover { background: #ddd; }
-.gate-error { font-family: var(--mono); font-size: 11px; color: #ff6b6b; letter-spacing: 0.06em; height: 16px; }
+.gate { position: fixed; inset: 0; background: var(--gray-50); display: flex; align-items: center; justify-content: center; z-index: 100; }
+.gate.hidden { display: none; }
+.gate-box { background: var(--white); border: 1.5px solid var(--gray-100); border-radius: 10px; padding: 32px 28px; display: flex; flex-direction: column; gap: 14px; width: 280px; }
+.gate-label { font-family: var(--mono); font-size: 11px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; }
+.gate-title { font-size: 15px; font-weight: 700; color: var(--ink); }
+.gate-input { font-family: var(--mono); font-size: 14px; padding: 10px 12px; border: 1.5px solid var(--gray-200); border-radius: 4px; color: var(--ink); background: var(--white); outline: none; transition: border-color 0.15s; }
+.gate-input:focus { border-color: var(--ink); }
+.gate-input.error { border-color: #c00; }
+.gate-btn { padding: 10px; background: var(--ink); color: var(--white); font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: 0.06em; border: none; border-radius: 4px; cursor: pointer; transition: opacity 0.15s; }
+.gate-btn:hover { opacity: 0.8; }
+.gate-error { font-family: var(--mono); font-size: 11px; color: #c00; display: none; }
+.gate-error.visible { display: block; }
 </style>
 </head>
 <body>
 
-<div id="gate">
-  <div class="gate-label">Trupanion Sub-Brand — Emily's Flow</div>
-  <div class="gate-row">
-    <input type="password" id="pw" placeholder="password" autocomplete="off" spellcheck="false">
-    <button onclick="checkPw()">Enter</button>
+<div class="gate" id="gate">
+  <div class="gate-box">
+    <div class="gate-label">Huge Inc. · Internal</div>
+    <div class="gate-title">Emily's Flow</div>
+    <input class="gate-input" id="gateInput" type="password" placeholder="Password" autocomplete="off">
+    <div class="gate-error" id="gateError">Incorrect password</div>
+    <button class="gate-btn" id="gateBtn">Enter →</button>
   </div>
-  <div class="gate-error" id="pw-err"></div>
 </div>
-
-<script>
-  if (sessionStorage.getItem('emilyflow') === 'ok') { document.addEventListener('DOMContentLoaded', unlock); }
-  function checkPw() {
-    if (document.getElementById('pw').value.trim().toLowerCase() === 'pets123') {
-      sessionStorage.setItem('emilyflow', 'ok');
-      unlock();
-    } else {
-      var e = document.getElementById('pw-err');
-      e.textContent = 'incorrect password';
-      document.getElementById('pw').value = '';
-      document.getElementById('pw').focus();
-      setTimeout(function(){ e.textContent = ''; }, 2500);
-    }
-  }
-  function unlock() { document.getElementById('gate').classList.add('hidden'); startAnimation(); }
-  document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('pw').addEventListener('keydown', function(e){ if (e.key === 'Enter') checkPw(); });
-  });
-</script>
 
 <div class="topbar">
   <div class="topbar-left">
@@ -174,10 +158,11 @@ body { background: var(--gray-50); color: var(--ink); font-family: var(--sans); 
     <div class="topbar-title">How does context travel to reduce onboarding friction?</div>
   </div>
   <div class="screen-nav">
-    <a href="em0.html" class="active">em0</a>
+    <a href="index.html" class="active">em0</a>
     <a href="em1.html">em1</a>
     <a href="em2.html">em2</a>
     <a href="em3.html">em3</a>
+    <a href="em4.html">em4</a>
   </div>
 </div>
 
@@ -319,7 +304,10 @@ trigger = <em>"pre-first-vet-visit"</em></div>
 </div>
 
 <script>
-  function startAnimation() {
+  const PASS = 'pets123';
+  const SESSION_KEY = 'emAuth';
+
+  function runAnimation() {
     const msgs = [
       { id: 'm0', delay: 600 },
       { id: 'm1', delay: 1800 },
@@ -342,12 +330,41 @@ trigger = <em>"pre-first-vet-visit"</em></div>
         }, 80);
       }, delay);
     });
+
+    document.getElementById('ctaBtn').addEventListener('click', () => {
+      const h = document.getElementById('handoff');
+      h.classList.add('active');
+      setTimeout(() => { window.location.href = 'em1.html'; }, 2000);
+    });
   }
 
-  document.getElementById('ctaBtn').addEventListener('click', () => {
-    const h = document.getElementById('handoff');
-    h.classList.add('active');
-    setTimeout(() => { window.location.href = 'em1.html'; }, 2000);
+  // Check session — skip gate if already authenticated
+  if (sessionStorage.getItem(SESSION_KEY) === '1') {
+    document.getElementById('gate').classList.add('hidden');
+    runAnimation();
+  }
+
+  // Gate logic
+  function tryUnlock() {
+    const val = document.getElementById('gateInput').value;
+    const errEl = document.getElementById('gateError');
+    const inputEl = document.getElementById('gateInput');
+    if (val === PASS) {
+      sessionStorage.setItem(SESSION_KEY, '1');
+      document.getElementById('gate').classList.add('hidden');
+      errEl.classList.remove('visible');
+      inputEl.classList.remove('error');
+      runAnimation();
+    } else {
+      inputEl.classList.add('error');
+      errEl.classList.add('visible');
+      inputEl.select();
+    }
+  }
+
+  document.getElementById('gateBtn').addEventListener('click', tryUnlock);
+  document.getElementById('gateInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') tryUnlock();
   });
 </script>
 </body>

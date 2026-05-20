@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>em4 — The Ordinary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #111; --ink2: #333;
+  --gray-600: #555; --gray-500: #6b6b6b; --gray-400: #888; --gray-300: #aaa;
+  --gray-200: #d8d8d8; --gray-100: #ebebeb; --gray-50: #f3f3f1; --gray-25: #f9f9f7;
+  --white: #fff; --mono: 'Courier Prime', monospace; --sans: 'Inter', sans-serif;
+}
+html, body { height: 100%; }
+body { background: var(--gray-50); color: var(--ink); font-family: var(--sans); display: flex; flex-direction: column; min-height: 100vh; }
+
+/* TOP BAR */
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 15px 32px; background: var(--white); border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.topbar-left { display: flex; flex-direction: column; gap: 3px; }
+.topbar-project { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; }
+.topbar-title { font-size: 15px; font-weight: 600; color: var(--ink); }
+.screen-nav { display: flex; gap: 6px; }
+.screen-nav a { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-decoration: none; padding: 6px 14px; border: 1.5px solid var(--gray-200); border-radius: 4px; transition: all 0.15s; background: var(--white); }
+.screen-nav a:hover { color: var(--ink); border-color: var(--gray-400); }
+.screen-nav a.active { color: var(--white); border-color: var(--ink); background: var(--ink); font-weight: 700; }
+.workspace { flex: 1; display: grid; grid-template-columns: 1fr 440px; min-height: 0; overflow: hidden; }
+.phone-stage { display: flex; align-items: center; justify-content: center; padding: 48px 40px; background: var(--gray-50); }
+.phone-frame { width: 340px; min-width: 340px; height: 680px; border-radius: 42px; overflow: hidden; box-shadow: 0 0 0 9px #1a1a1a, 0 0 0 10px #2e2e2e, 0 40px 80px rgba(0,0,0,0.22); display: flex; flex-direction: column; background: #fff; flex-shrink: 0; }
+.phone-status { display: flex; align-items: center; justify-content: space-between; padding: 13px 22px 6px; flex-shrink: 0; background: #fff; }
+.phone-status-time { font-size: 13px; font-weight: 700; color: #111; }
+.phone-status-icons { display: flex; gap: 5px; }
+.phone-status-dot { width: 5px; height: 5px; border-radius: 50%; background: #ccc; }
+.phone-status-dot.on { background: #333; }
+@keyframes pageIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+/* App nav bar */
+.app-nav { display: flex; align-items: center; justify-content: space-between; padding: 9px 18px 11px; border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; background: var(--white); }
+.app-nav-avatar { width: 28px; height: 28px; background: var(--gray-100); border: 1.5px solid var(--gray-200); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--gray-500); cursor: pointer; font-family: var(--mono); }
+.app-nav-logo { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--ink); letter-spacing: 0.02em; }
+.app-nav-menu { width: 28px; height: 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; }
+.app-nav-menu span { display: block; width: 16px; height: 1.5px; background: var(--ink); border-radius: 1px; }
+
+/* Dashboard scroll area */
+.dash-scroll { flex: 1; overflow-y: auto; background: var(--gray-50); animation: pageIn 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+.dash-scroll::-webkit-scrollbar { display: none; }
+
+/* Pet header */
+.pet-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px 13px; background: var(--white); border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.pet-photo { width: 42px; height: 42px; border-radius: 50%; background: var(--gray-100); border: 1.5px solid var(--gray-200); overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.pet-info { flex: 1; }
+.pet-info-name { font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.2; }
+.pet-info-detail { font-family: var(--mono); font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.pet-status-pill { font-family: var(--mono); font-size: 10px; font-weight: 700; color: var(--gray-500); border: 1.5px solid var(--gray-200); padding: 4px 9px; border-radius: 20px; white-space: nowrap; }
+
+/* Bento layout */
+.bento { padding: 12px 14px 20px; display: flex; flex-direction: column; gap: 10px; }
+
+/* Hero proactive card */
+.bento-hero { background: var(--white); border: 1.5px solid var(--ink); border-radius: 12px; overflow: hidden; }
+.bento-hero-tag { background: var(--ink); color: var(--white); font-family: var(--mono); font-size: 10px; font-weight: 700; padding: 6px 14px; letter-spacing: 0.08em; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+.hero-pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--white); animation: pulse 2s ease-in-out infinite; flex-shrink: 0; }
+@keyframes pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+.bento-hero-body { padding: 15px 16px 16px; }
+.bento-hero-title { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 7px; line-height: 1.35; }
+.bento-hero-sub { font-size: 13px; color: var(--gray-600); line-height: 1.7; margin-bottom: 13px; }
+
+/* Watch section */
+.watch-section { padding: 0 14px 20px; display: flex; flex-direction: column; gap: 10px; }
+.watch-header { display: flex; align-items: baseline; justify-content: space-between; padding: 4px 0 2px; }
+.watch-header-label { font-family: var(--mono); font-size: 10px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; }
+.watch-header-sub { font-family: var(--mono); font-size: 10px; color: var(--gray-300); }
+.watch-header { padding: 4px 0 2px; }
+.watch-header-label { font-family: var(--mono); font-size: 10px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; }
+.watch-cards { display: flex; flex-direction: column; gap: 10px; }
+.watch-card { background: var(--white); border: 1.5px solid var(--gray-300); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+.watch-card-visual { height: 80px; background: var(--gray-100); border-bottom: 1.5px solid var(--gray-300); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 5px; }
+.watch-card-visual-icon { font-size: 26px; opacity: 0.35; }
+.watch-card-visual-label { font-family: var(--mono); font-size: 9px; color: var(--gray-300); text-transform: uppercase; letter-spacing: 0.06em; }
+.watch-card-body { padding: 10px 11px 11px; display: flex; flex-direction: column; gap: 8px; }
+.watch-card-title { font-size: 12px; font-weight: 700; color: var(--ink); line-height: 1.3; }
+.watch-card-note { font-family: var(--mono); font-size: 10px; color: var(--gray-400); line-height: 1.55; }
+.watch-card-btn { width: 100%; padding: 7px 0; background: var(--white); border: 1.5px solid var(--gray-200); border-radius: 5px; font-family: var(--mono); font-size: 10px; font-weight: 700; color: var(--gray-500); letter-spacing: 0.04em; cursor: pointer; text-align: center; transition: all 0.15s; }
+.watch-card-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+/* Covered callout */
+.covered-note { background: var(--gray-50); border: 1px solid var(--gray-100); border-radius: 8px; padding: 10px 12px; font-size: 12px; color: var(--gray-500); line-height: 1.6; font-family: var(--mono); margin-bottom: 12px; }
+.covered-note strong { color: var(--ink); font-style: normal; }
+.hero-link { font-size: 13px; color: var(--ink); font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+
+/* 2-col stat tiles */
+.tile-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat-tile { background: var(--white); border: 1.5px solid var(--gray-100); border-radius: 10px; padding: 14px 14px 13px; }
+.tile-eyebrow { font-family: var(--mono); font-size: 10px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; margin-bottom: 8px; }
+.tile-value { font-size: 20px; font-weight: 700; color: var(--ink); line-height: 1.1; margin-bottom: 4px; }
+.tile-sub { font-size: 11px; color: var(--gray-400); font-family: var(--mono); line-height: 1.55; }
+.tile-empty { font-size: 12px; color: var(--gray-300); font-family: var(--mono); font-style: italic; line-height: 1.5; }
+
+/* Zero-claims tile — full width, slightly warmer */
+.peace-tile { background: var(--white); border: 1.5px solid var(--gray-100); border-radius: 10px; padding: 14px 16px 15px; }
+.peace-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.peace-value { font-size: 20px; font-weight: 700; color: var(--ink); }
+.peace-label { font-family: var(--mono); font-size: 10px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+.peace-sub { font-size: 12px; color: var(--gray-500); font-family: var(--mono); line-height: 1.6; }
+
+/* Renewal notice tile */
+.renewal-tile { background: var(--white); border: 1.5px solid var(--gray-200); border-radius: 10px; padding: 14px 16px 15px; }
+.renewal-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.renewal-label { font-family: var(--mono); font-size: 10px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+.renewal-date { font-family: var(--mono); font-size: 11px; color: var(--gray-400); }
+.renewal-rate { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.renewal-note { font-size: 12px; color: var(--gray-500); font-family: var(--mono); line-height: 1.6; }
+.renewal-link { font-size: 12px; color: var(--ink); font-weight: 600; font-family: var(--mono); margin-top: 8px; cursor: pointer; }
+
+/* Milestone tile */
+.milestone-tile { background: var(--white); border: 1.5px solid var(--gray-100); border-radius: 10px; padding: 14px 16px 15px; }
+.milestone-track { display: flex; align-items: center; margin: 10px 0 10px; position: relative; }
+.milestone-line { position: absolute; left: 8px; right: 8px; top: 50%; height: 1.5px; background: var(--gray-100); transform: translateY(-50%); z-index: 0; }
+.milestone-dots { display: flex; justify-content: space-between; width: 100%; position: relative; z-index: 1; }
+.m-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--gray-200); background: var(--white); flex-shrink: 0; }
+.m-dot.done { background: var(--ink); border-color: var(--ink); }
+.m-dot.now { background: var(--white); border-color: var(--ink); border-width: 2.5px; box-shadow: 0 0 0 3px rgba(17,17,17,0.1); }
+.milestone-labels { display: flex; justify-content: space-between; }
+.m-lbl { font-family: var(--mono); font-size: 9px; color: var(--gray-400); text-align: center; width: 14px; line-height: 1.4; overflow: visible; }
+.m-lbl.now { color: var(--ink); font-weight: 700; }
+
+/* Vet log tile */
+.vet-tile { background: var(--white); border: 1.5px solid var(--gray-100); border-radius: 10px; padding: 14px 16px; }
+.vet-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 5px; }
+.vet-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+.vet-date { font-family: var(--mono); font-size: 11px; color: var(--gray-400); white-space: nowrap; }
+.vet-note { font-family: var(--mono); font-size: 11px; color: var(--gray-400); }
+
+.phone-home { padding: 10px 0 12px; display: flex; justify-content: center; flex-shrink: 0; background: #fff; }
+.phone-home-bar { width: 110px; height: 4px; background: #e0e0e0; border-radius: 2px; }
+
+/* SIDEBAR */
+.sidebar { border-left: 1.5px solid var(--gray-100); display: flex; flex-direction: column; overflow: hidden; background: var(--white); }
+.sidebar-header { padding: 26px 26px 22px; border-bottom: 1.5px solid var(--gray-100); flex-shrink: 0; }
+.sidebar-eyebrow { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-bottom: 8px; }
+.sidebar-title { font-size: 18px; font-weight: 700; color: var(--ink); line-height: 1.35; }
+.sidebar-scroll { flex: 1; overflow-y: auto; padding: 26px; display: flex; flex-direction: column; gap: 24px; }
+.sidebar-scroll::-webkit-scrollbar { width: 4px; }
+.sidebar-scroll::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 2px; }
+.sb-block { display: flex; flex-direction: column; gap: 8px; }
+.sb-label { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+.sb-title { font-size: 16px; font-weight: 700; color: var(--ink); line-height: 1.4; }
+.sb-body { font-size: 15px; color: var(--gray-600); line-height: 1.7; }
+.sb-divider { border: none; border-top: 1.5px solid var(--gray-100); }
+.sb-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
+.sb-tag { font-family: var(--mono); font-size: 12px; color: var(--gray-500); border: 1.5px solid var(--gray-200); padding: 4px 10px; border-radius: 4px; background: var(--gray-25); }
+.sb-tag.open { border-style: dashed; color: var(--gray-400); }
+.sb-code { font-family: var(--mono); font-size: 13px; color: var(--gray-500); line-height: 2.1; background: var(--gray-25); padding: 14px 16px; border-radius: 5px; border: 1.5px solid var(--gray-100); white-space: pre; }
+.sb-code em { color: var(--ink2); font-style: normal; font-weight: 700; }
+.footer { padding: 14px 32px; border-top: 1.5px solid var(--gray-100); background: var(--white); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.footer-back { font-family: var(--mono); font-size: 12px; color: var(--gray-400); text-decoration: none; transition: color 0.15s; font-weight: 700; }
+.footer-back:hover { color: var(--ink); }
+.footer-end { font-family: var(--mono); font-size: 12px; color: var(--gray-300); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-project">Trupanion Sub-Brand — Emily's Flow</div>
+    <div class="topbar-title">What does the quiet middle look like when the product is paying attention?</div>
+  </div>
+  <div class="screen-nav">
+    <a href="index.html">em0</a>
+    <a href="em1.html">em1</a>
+    <a href="em2.html">em2</a>
+    <a href="em3.html">em3</a>
+    <a href="em4.html" class="active">em4</a>
+  </div>
+</div>
+
+<div class="workspace">
+  <div class="phone-stage">
+    <div class="phone-frame">
+
+      <!-- Status bar -->
+      <div class="phone-status">
+        <span class="phone-status-time">7:22</span>
+        <div class="phone-status-icons">
+          <div class="phone-status-dot on"></div><div class="phone-status-dot on"></div>
+          <div class="phone-status-dot on"></div><div class="phone-status-dot on"></div>
+        </div>
+      </div>
+
+      <!-- App nav -->
+      <div class="app-nav">
+        <div class="app-nav-avatar">E</div>
+        <div class="app-nav-logo">[Brand]</div>
+        <div class="app-nav-menu"><span></span><span></span><span></span></div>
+      </div>
+
+      <!-- Scrollable dashboard -->
+      <div class="dash-scroll">
+
+        <!-- Pet header -->
+        <div class="pet-header">
+          <div class="pet-photo"><img src="data:image/jpeg;base64,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" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
+          <div class="pet-info">
+            <div class="pet-info-name">Daisy</div>
+            <div class="pet-info-detail">French Bulldog · 11 months · Austin, TX</div>
+          </div>
+          <div class="pet-status-pill">Active · Jul 14</div>
+        </div>
+
+        <!-- Bento tiles -->
+        <div class="bento">
+
+          <!-- Hero: proactive breed + age card -->
+          <div class="bento-hero">
+            <div class="bento-hero-tag">
+              <div class="hero-pulse"></div>
+              Heads up for this month
+            </div>
+            <div class="bento-hero-body">
+              <div class="bento-hero-title">Daisy's heading into her first-year stretch.</div>
+              <div class="bento-hero-sub">French Bulldogs often show their first breed-specific signs between 10–14 months. Nothing's wrong — but there are a few things worth keeping an eye on.</div>
+              <div class="hero-link">What to mention at her 1-year checkup →</div>
+            </div>
+          </div>
+
+          <!-- 2-col: Coverage + Peace of mind -->
+          <div class="tile-row">
+            <div class="stat-tile">
+              <div class="tile-eyebrow">Coverage</div>
+              <div class="tile-value">Active</div>
+              <div class="tile-sub">$71/mo · Frenchie<br>Complete</div>
+            </div>
+            <div class="stat-tile">
+              <div class="tile-eyebrow">Claims filed</div>
+              <div class="tile-value">0</div>
+              <div class="tile-sub">$781 paid in<br>since Jul 14</div>
+            </div>
+          </div>
+
+          <!-- Zero-claims tile -->
+          <div class="peace-tile">
+            <div class="peace-label">11 months protected</div>
+            <div class="peace-row">
+              <div class="peace-value">$0 claimed</div>
+            </div>
+            <div class="peace-sub">Daisy's been healthy. That's the goal. If something comes up, you're covered.</div>
+          </div>
+
+          <!-- Renewal notice tile -->
+          <div class="renewal-tile">
+            <div class="renewal-row">
+              <div class="renewal-label">Renewal</div>
+              <div class="renewal-date">Coming Jul 14</div>
+            </div>
+            <div class="renewal-rate">$76/mo starting year two</div>
+            <div class="renewal-note">$5 increase · age-based pricing. Same coverage.</div>
+            <div class="renewal-link">See what changes, what doesn't →</div>
+          </div>
+
+          <!-- Milestone timeline -->
+          <div class="milestone-tile">
+            <div class="tile-eyebrow">Daisy's milestones</div>
+            <div class="milestone-track">
+              <div class="milestone-line"></div>
+              <div class="milestone-dots">
+                <div class="m-dot done"></div>
+                <div class="m-dot done"></div>
+                <div class="m-dot done"></div>
+                <div class="m-dot now"></div>
+                <div class="m-dot"></div>
+              </div>
+            </div>
+            <div class="milestone-labels">
+              <div class="m-lbl">Home</div>
+              <div class="m-lbl">Enroll</div>
+              <div class="m-lbl">6 mo</div>
+              <div class="m-lbl now">11 mo</div>
+              <div class="m-lbl">1 yr</div>
+            </div>
+          </div>
+
+          <!-- Vet log -->
+          <div class="vet-tile">
+            <div class="tile-eyebrow">Vet visits</div>
+            <div class="vet-row">
+              <div class="vet-name">Well visit</div>
+              <div class="vet-date">Jan 8 · Austin Animal Clinic</div>
+            </div>
+            <div class="vet-note">Healthy · next visit recommended at 12 months</div>
+          </div>
+
+        </div>
+
+        <!-- Watch section -->
+        <div class="watch-section">
+          <div class="watch-header">
+            <div class="watch-header-label">Things to watch · month 11</div>
+          </div>
+          <div class="watch-cards">
+
+            <div class="watch-card">
+              <div class="watch-card-visual">
+                <div class="watch-card-visual-icon">🐽</div>
+                <div class="watch-card-visual-label">illustration / video</div>
+              </div>
+              <div class="watch-card-body">
+                <div class="watch-card-title">Breathing changes</div>
+                <div class="watch-card-note">Louder snoring or slow recovery after play.</div>
+                <button class="watch-card-btn">I've seen this</button>
+              </div>
+            </div>
+
+            <div class="watch-card">
+              <div class="watch-card-visual">
+                <div class="watch-card-visual-icon">🌿</div>
+                <div class="watch-card-visual-label">illustration / video</div>
+              </div>
+              <div class="watch-card-body">
+                <div class="watch-card-title">Skin fold irritation</div>
+                <div class="watch-card-note">Redness or odor around facial folds or tail pocket.</div>
+                <button class="watch-card-btn">I've seen this</button>
+              </div>
+            </div>
+
+            <div class="watch-card">
+              <div class="watch-card-visual">
+                <div class="watch-card-visual-icon">🐾</div>
+                <div class="watch-card-visual-label">illustration / video</div>
+              </div>
+              <div class="watch-card-body">
+                <div class="watch-card-title">Back sensitivity</div>
+                <div class="watch-card-note">Hesitation on stairs or jumping.</div>
+                <button class="watch-card-btn">I've seen this</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div><!-- end dash-scroll -->
+
+      <div class="phone-home"><div class="phone-home-bar"></div></div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-eyebrow">em4 — The Ordinary</div>
+      <div class="sidebar-title">No event. No claim. Just the product knowing what it knows.</div>
+    </div>
+    <div class="sidebar-scroll">
+      <div class="sb-block">
+        <div class="sb-label">The harder argument</div>
+        <div class="sb-title">Zach's ordinary was triggered by a medical event. Emily's wasn't.</div>
+        <div class="sb-body">Yoshi had a murmur. That gave the product something concrete to surface. Daisy is fine — and that's exactly the point. This card appeared with no flagged condition, no logged appointment, no prompt from Emily. Breed + age + enrollment date is enough data to be useful. That's the scalable version of the Wonder Weeks argument.</div>
+        <div class="sb-tags">
+          <span class="sb-tag">breed-triggered</span>
+          <span class="sb-tag">age-triggered</span>
+          <span class="sb-tag">no clinical event</span>
+          <span class="sb-tag">no prompt from Emily</span>
+        </div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">The zero-claims reframe</div>
+        <div class="sb-title">$781 in. $0 claimed. That's the product working.</div>
+        <div class="sb-body">Emily knows she's paid nearly $800 and hasn't used it. The industry's failure here is treating that as neutral — sending a renewal invoice and hoping she doesn't do the math. This tile does the math for her, warmly: Daisy's been healthy, that's the goal, and the coverage is still there. Pre-renewal work without being a retention email.</div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">The renewal tile</div>
+        <div class="sb-title">The rate increase lands with context, not as a surprise.</div>
+        <div class="sb-body">The $5 increase is disclosed here — in the quiet middle, weeks before the renewal email — alongside the breed health card that explains why the coverage matters. Emily sees the new rate in a moment when the product has just shown its value. When the renewal email arrives, it's a confirmation, not a shock.</div>
+        <div class="sb-tags">
+          <span class="sb-tag">pre-empts surprise</span>
+          <span class="sb-tag">contextual disclosure</span>
+        </div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">Zone 3 → Zone 4</div>
+        <div class="sb-title">This screen is doing both at once.</div>
+        <div class="sb-body">The health card is Zone 3 — proactive, anticipatory, breed-aware. The renewal tile and the zero-claims reframe are Zone 4 — building the case for renewal before the conversation happens. Emily doesn't experience this as two things. It reads as a product that's paying attention to her dog and her account at the same time.</div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">The watch section</div>
+        <div class="sb-title">Education as a feature, not a disclaimer.</div>
+        <div class="sb-body">Three horizontally scrollable cards, each with a placeholder for an illustration or short video showing what normal vs. notable looks like for that symptom. The "I've seen this" button implies a triage flow — not shown here, but the mechanic is clear: logging leads somewhere useful. This is the companion app layer sitting below the insurance product layer, not competing with it.</div>
+        <div class="sb-tags">
+          <span class="sb-tag">breed + age triggered</span>
+          <span class="sb-tag">triage implied</span>
+          <span class="sb-tag open">illustration / video → design system</span>
+        </div>
+      </div>
+      <hr class="sb-divider">
+      <div class="sb-block">
+        <div class="sb-label">Data the product already held</div>
+        <div class="sb-code">enrollment_date  = <em>"Jul 14"</em>
+breed            = <em>"French Bulldog"</em>
+age              = <em>"11 months"</em>
+claims_filed     = <em>0</em>
+premium_paid_in  = <em>"$781"</em>
+renewal_window   = <em>"30 days out"</em>
+→ card triggered by <em>breed + age_range + renewal_proximity</em></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <a href="em3.html" class="footer-back">← em3 — Daisy's coverage</a>
+  <div class="footer-end">Emily's Flow · end</div>
+</div>
+</body>
+</html>
