@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trupanion New Product — Huge</title>
+  <link href="https://api.fontshare.com/v2/css?f[]=monument-grotesk@400,500,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #0A0A0A;
+      --white: #FFFFFF;
+      --accent: #FF0090;
+      --mid: #888;
+      --border: rgba(255,255,255,0.1);
+      --card-bg: rgba(255,255,255,0.04);
+      --deprecated: rgba(255,255,255,0.3);
+    }
+
+    html, body {
+      min-height: 100vh;
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Monument Grotesk', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── GATE ── */
+    #gate {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .gate-inner {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .gate-logo {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 3rem;
+    }
+
+    .gate-logo span {
+      color: var(--accent);
+    }
+
+    .gate-inner h1 {
+      font-size: clamp(1.6rem, 5vw, 2.2rem);
+      font-weight: 500;
+      line-height: 1.15;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .gate-inner p {
+      color: var(--mid);
+      font-size: 0.875rem;
+      margin-bottom: 2.5rem;
+      line-height: 1.5;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 0;
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: border-color 0.2s;
+    }
+
+    .input-row:focus-within {
+      border-color: var(--accent);
+    }
+
+    .input-row input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--white);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.875rem;
+      padding: 0.85rem 1rem;
+      letter-spacing: 0.05em;
+    }
+
+    .input-row input::placeholder {
+      color: rgba(255,255,255,0.25);
+      letter-spacing: 0.08em;
+    }
+
+    .input-row button {
+      background: var(--accent);
+      border: none;
+      color: var(--white);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.85rem 1.25rem;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      white-space: nowrap;
+    }
+
+    .input-row button:hover { opacity: 0.85; }
+
+    .gate-error {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      margin-top: 0.75rem;
+      letter-spacing: 0.04em;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .gate-error.visible { opacity: 1; }
+
+    /* ── MAIN ── */
+    #app { display: none; }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .top-bar-left {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mid);
+    }
+
+    .top-bar-left span { color: var(--accent); }
+
+    .top-bar-right {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.25);
+    }
+
+    .main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 4rem 2.5rem 6rem;
+    }
+
+    .page-header {
+      margin-bottom: 4rem;
+      padding-bottom: 3rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .page-header h1 {
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      font-weight: 500;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin-bottom: 1rem;
+    }
+
+    .page-header h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .page-header p {
+      font-size: 1rem;
+      color: var(--mid);
+      line-height: 1.6;
+      max-width: 520px;
+    }
+
+    /* ── SECTION ── */
+    .section {
+      margin-bottom: 3.5rem;
+    }
+
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── CARDS ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .card {
+      background: var(--black);
+      padding: 1.75rem;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: background 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      background: var(--card-bg);
+    }
+
+    .card:hover .card-arrow {
+      transform: translate(2px, -2px);
+    }
+
+    .card.deprecated {
+      opacity: 0.4;
+    }
+
+    .card.deprecated .card-tag {
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.4);
+    }
+
+    .card-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-tag {
+      display: inline-block;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.2em 0.5em;
+      background: rgba(255, 0, 144, 0.15);
+      color: var(--accent);
+      border-radius: 2px;
+    }
+
+    .card-tag.edge {
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.35);
+    }
+
+    .card h3 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.4rem;
+      line-height: 1.2;
+    }
+
+    .card p {
+      font-size: 0.8rem;
+      color: var(--mid);
+      line-height: 1.5;
+      margin-top: 0.4rem;
+    }
+
+    .card-arrow {
+      position: absolute;
+      top: 1.75rem;
+      right: 1.75rem;
+      color: rgba(255,255,255,0.2);
+      font-size: 1rem;
+      transition: transform 0.15s, color 0.15s;
+    }
+
+    .card:hover .card-arrow { color: var(--accent); }
+
+    /* ── FOOTER ── */
+    .footer {
+      margin-top: 5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: gap;
+    }
+
+    .footer-left {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.2);
+    }
+
+    .footer-right {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.15);
+    }
+  </style>
+</head>
+<body>
+
+<!-- GATE -->
+<div id="gate">
+  <div class="gate-inner">
+    <div class="gate-logo"><span>Huge</span> × Trupanion</div>
+    <h1>Work in<br>progress.</h1>
+    <p>Internal artifacts. Enter the access code to continue.</p>
+    <div class="input-row">
+      <input type="password" id="pw-input" placeholder="password" autocomplete="off" />
+      <button onclick="checkPassword()">Enter →</button>
+    </div>
+    <div class="gate-error" id="gate-error">Incorrect password.</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+  <div class="top-bar">
+    <div class="top-bar-left"><span>Huge</span> × Trupanion — New Product</div>
+    <div class="top-bar-right">Internal use only</div>
+  </div>
+
+  <div class="main">
+
+    <div class="page-header">
+      <h1>D2C Pet Insurance<br><em>New Product.</em></h1>
+      <p>Working artifacts from Phase 2. Research, journey work, flows, and tools — all in one place.</p>
+    </div>
+
+    <!-- STRATEGY & RESEARCH -->
+    <div class="section">
+      <div class="section-label">Strategy & Research</div>
+      <div class="cards">
+        <a href="journey/index.html" class="card">
+          <div class="card-eyebrow">Journey</div>
+          <h3>Journey Narratives</h3>
+          <p>The four-zone experience spine — from before the pet comes home to renewal as advocacy.</p>
+          <div class="card-arrow">↗</div>
+        </a>
+        <a href="beacons/index.html" class="card">
+          <div class="card-eyebrow">Research</div>
+          <h3>UX Beacons</h3>
+          <p>Best-in-class references across pet, insurance, fintech, and wellness. Annotated.</p>
+          <div class="card-arrow">↗</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- MARKETING & ACQUISITION -->
+    <div class="section">
+      <div class="section-label">Marketing & Acquisition</div>
+      <div class="cards">
+        <a href="marketing-site/index.html" class="card">
+          <div class="card-eyebrow">Web</div>
+          <h3>Marketing Homepage</h3>
+          <p>D2C brand homepage concept targeting Gen Z new pet parents.</p>
+          <div class="card-arrow">↗</div>
+        </a>
+        <a href="quick-quote/index.html" class="card">
+          <div class="card-eyebrow">Tool</div>
+          <h3>Quick Quote</h3>
+          <p>Lightweight quote entry — enrollment starting point for the acquisition funnel.</p>
+          <div class="card-arrow">↗</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- PERSONA FLOWS -->
+    <div class="section">
+      <div class="section-label">Persona Flows</div>
+      <div class="cards">
+        <a href="emily/index.html" class="card">
+          <div class="card-eyebrow">Persona — Acquisition <span class="card-tag">Primary</span></div>
+          <h3>Emily's Flow</h3>
+          <p>First-time pet parent. The core enrollment and onboarding experience.</p>
+          <div class="card-arrow">↗</div>
+        </a>
+        <a href="zach/index.html" class="card">
+          <div class="card-eyebrow">Persona — Retention <span class="card-tag">Primary</span></div>
+          <h3>Zach's Flow</h3>
+          <p>New adopter via shelter email. Engagement, the quiet middle, and renewal touchpoints.</p>
+          <div class="card-arrow">↗</div>
+        </a>
+        <a href="josh/index.html" class="card deprecated">
+          <div class="card-eyebrow">Persona — Edge Case <span class="card-tag edge">Deprecated</span></div>
+          <h3>Josh's Flow</h3>
+          <p>Multi-pet, complex coverage needs. Reference only — superseded by Emily + Zach.</p>
+          <div class="card-arrow">↗</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="footer-left">Huge Inc. — Confidential</div>
+      <div class="footer-right">Phase 2 / 2026</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const CORRECT = 'pets123';
+
+  // Check sessionStorage on load
+  if (sessionStorage.getItem('auth') === '1') unlock();
+
+  document.getElementById('pw-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') checkPassword();
+  });
+
+  function checkPassword() {
+    const val = document.getElementById('pw-input').value;
+    if (val === CORRECT) {
+      sessionStorage.setItem('auth', '1');
+      unlock();
+    } else {
+      document.getElementById('gate-error').classList.add('visible');
+      document.getElementById('pw-input').value = '';
+      document.getElementById('pw-input').focus();
+    }
+  }
+
+  function unlock() {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
