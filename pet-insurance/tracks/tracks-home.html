@@ -337,11 +337,12 @@
   .translation-item-full:nth-child(3) .translation-spot-illus { background: rgba(249,209,41,0.25); }
   .translation-item-full:nth-child(4) { background: var(--pink); color: var(--white); }
   .translation-spot-illus {
-    border-radius: 16px;
+    border-radius: 50%;
     background: rgba(255,255,255,0.35);
     aspect-ratio: 1/1;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     gap: 10px; padding: 16px; flex-shrink: 0;
+    background-size: 65% !important;
   }
   .translation-item-full:nth-child(4) .translation-spot-illus { background: rgba(0,0,0,0.12); }
   .translation-spot-icon { font-size: 32px; }
@@ -695,17 +696,36 @@
     .live-badge { font-size: 9px; }
     .ticker-item { font-size: 11px; }
     .translation-section { padding: 64px 20px; }
-    .translation-item-full { grid-template-columns: 1fr; gap: 20px; padding: 24px 20px; }
-    .translation-spot-illus { aspect-ratio: 3/1; max-width: 100%; }
+    .translation-item-full { grid-template-columns: 120px 1fr; gap: 20px; padding: 24px 20px; }
+    .translation-spot-illus { width: 120px; max-width: 120px; align-self: flex-start; }
     .translation-plain { font-size: 16px; }
     .bento-section { padding: 64px 20px; }
     .bento-header { flex-direction: column; align-items: flex-start; gap: 8px; }
     .bento-grid { grid-template-columns: 1fr; gap: 10px; }
     .bento-cell-1, .bento-cell-2, .bento-cell-vis-landscape, .bento-cell-4, .bento-cell-5, .bento-cell-vis-square { grid-column: span 1; min-height: 200px; }
-    .bento-cell-vis-landscape { min-height: 220px; }
+    .bento-cell-vis-landscape, .bento-cell-vis-square { min-height: unset; }
+    .bento-cell-vis-landscape .bento-vis-inner { min-height: unset; aspect-ratio: 3/1; padding: 16px; }
+    .bento-cell-vis-square .bento-vis-inner { min-height: unset; aspect-ratio: 3/1; padding: 16px; }
+    .bento-boxcat-bg { background-size: 44%; }
     .bento-cell { padding: 28px 24px; }
     .bento-cell-num { font-size: 72px; top: 12px; right: 16px; }
-    .bento-cell-title { font-size: 22px; }
+    /* ── Normalize all section headline sizes to match translation-section-headline ── */
+    .bento-headline { font-size: 36px; }
+    .bento-cell-title { font-size: 30px; }
+    .proof-headline { font-size: 36px; }
+    .trust-headline { font-size: 36px; }
+    .app-headline { font-size: 36px; }
+    .translation-section-headline { font-size: 36px; }
+
+    /* ── All supporting body copy → dark ink, not washed-out gray ── */
+    .bento-cell-body { color: var(--ink-soft); }
+    .translation-section-sub { color: var(--ink-soft); }
+    .translation-note { color: var(--ink-soft); }
+    .proof-note { color: var(--ink-soft); }
+    .trust-note { color: var(--ink-soft); }
+    .app-screen-desc { color: var(--ink-soft); }
+    .hero-subhead { color: var(--ink-soft); }
+    .hero-mobile-copy .hero-subhead { color: var(--black); }
     .proof-section { padding: 64px 20px; }
     .proof-receipts { grid-template-columns: 1fr 1fr; gap: 12px; }
     .proof-testimonial { display: flex; flex-direction: column; padding-bottom: 0 !important; }
@@ -1095,8 +1115,7 @@
   <div class="footer-inner">
     <div>
       <div class="footer-logo">
-        <span class="nav-logo-dot"></span>
-        Tracks
+        <img src="tracks_white.png" alt="Tracks" style="height:24px;display:block;">
       </div>
       <p class="footer-brand-note">A Trupanion company.<br>Underwritten by Accelerant<br>Insurance Company of Canada.</p>
     </div>
