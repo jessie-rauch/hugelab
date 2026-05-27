@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tracks — Payment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --pink:      #ed47a2;
+  --pink-dim:  rgba(237,71,162,0.10);
+  --yellow:    #f9d129;
+  --black:     #0d0d0d;
+  --white:     #ffffff;
+  --cream:     #f5ecd8;
+  --muted:     rgba(13,13,13,0.52);
+  --border:    rgba(13,13,13,0.10);
+  --font-d:    'Eloura Sans', 'DM Sans', system-ui, sans-serif;
+  --font-b:    'ABC Ginto', 'DM Sans', system-ui, sans-serif;
+}
+html, body { height: 100%; overflow: hidden; background: #fff; font-family: var(--font-b); color: var(--black); display: flex; align-items: center; justify-content: center; }
+
+.phone { width: 390px; border-radius: 52px; background: var(--cream); border: 10px solid var(--black); overflow: hidden; }
+.notch { width: 126px; height: 30px; background: var(--black); border-radius: 0 0 22px 22px; margin: 0 auto; }
+.status { display: flex; justify-content: space-between; align-items: center; padding: 7px 24px 4px; font-family: var(--font-d); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--black); }
+.nav { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px 12px; border-bottom: 1.5px solid var(--border); background: var(--cream); }
+.nav-back { font-family: var(--font-b); font-size: 13px; font-weight: 600; color: var(--muted); text-decoration: none; }
+.nav-back:hover { color: var(--pink); }
+
+.body { height: 730px; overflow-y: auto; overflow-x: hidden; padding: 18px 18px 40px; display: flex; flex-direction: column; gap: 14px; scrollbar-width: none; }
+.body::-webkit-scrollbar { display: none; }
+
+/* plan recap */
+.plan-recap { background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; }
+.recap-name { font-family: var(--font-d); font-size: 15px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--black); }
+.recap-name em { font-style: normal; color: var(--pink); }
+.recap-detail { font-family: var(--font-b); font-size: 12px; color: var(--muted); margin-top: 3px; }
+.recap-price { text-align: right; }
+.recap-price-num { font-family: var(--font-d); font-size: 22px; text-transform: uppercase; letter-spacing: -0.01em; color: var(--black); }
+.recap-price-mo { font-family: var(--font-b); font-size: 12px; color: var(--muted); }
+
+/* heading */
+.pay-h { font-family: var(--font-d); font-size: 30px; text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.05; color: var(--black); }
+.pay-sub { font-family: var(--font-b); font-size: 13px; color: var(--muted); line-height: 1.55; margin-top: 5px; }
+
+/* form card */
+.pay-card { background: var(--white); border: 2px solid var(--border); border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field-label { font-family: var(--font-b); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.10em; color: var(--muted); }
+.field-input { font-family: var(--font-b); font-size: 15px; color: var(--black); background: var(--cream); border: 2px solid var(--border); border-radius: 10px; padding: 12px 14px; outline: none; width: 100%; transition: border-color 0.15s; }
+.field-input::placeholder { color: rgba(13,13,13,0.30); font-size: 14px; }
+.field-input:focus { border-color: var(--pink); background: var(--white); }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.card-wrap { position: relative; }
+.card-wrap .field-input { padding-right: 80px; letter-spacing: 0.06em; }
+.card-icons { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); display: flex; gap: 5px; align-items: center; }
+.card-icon-visa { background: #1a1f71; color: white; font-family: var(--font-d); font-size: 8px; letter-spacing: 0.05em; padding: 3px 6px; border-radius: 3px; }
+.card-icon-mc { display: flex; }
+
+/* trust row */
+.trust-row { display: flex; align-items: center; justify-content: center; gap: 18px; }
+.trust-item { display: flex; align-items: center; gap: 5px; font-family: var(--font-b); font-size: 12px; color: var(--muted); }
+
+/* billing */
+.billing { background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; overflow: hidden; }
+.bill-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.bill-row:last-child { border-bottom: none; }
+.bill-label { font-family: var(--font-b); font-size: 13px; color: var(--muted); }
+.bill-val { font-family: var(--font-d); font-size: 13px; text-transform: uppercase; letter-spacing: 0.02em; color: var(--black); }
+
+/* CTA */
+.pay-btn { display: block; width: 100%; padding: 17px; background: var(--pink); color: var(--white); border: none; border-radius: 999px; font-family: var(--font-d); font-size: 17px; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: opacity 0.15s; text-align: center; }
+.pay-btn:hover { opacity: 0.90; }
+.pay-note { font-family: var(--font-b); font-size: 11px; color: var(--muted); text-align: center; line-height: 1.5; }
+
+.home-bar { height: 24px; display: flex; align-items: center; justify-content: center; }
+.home-bar::after { content: ''; display: block; width: 110px; height: 4px; background: var(--black); border-radius: 2px; opacity: 0.12; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="notch"></div>
+  <div class="status"><span>9:41</span><span>● ● ●</span></div>
+  <div class="nav">
+    <a href="tracks-enroll.html" class="nav-back">← Back</a>
+    <img src="tracks_black.png" alt="Tracks" style="height:26px;display:block;">
+    <div style="width:52px;"></div>
+  </div>
+
+  <div class="body">
+    <div class="plan-recap">
+      <div>
+        <div class="recap-name"><em>Frenchie</em> Complete</div>
+        <div class="recap-detail">Daisy · French Bulldog · Austin, TX</div>
+      </div>
+      <div class="recap-price">
+        <div class="recap-price-num">$72</div>
+        <div class="recap-price-mo">/ mo</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="pay-h">One last step.</div>
+      <div class="pay-sub">Add your card to activate Daisy's coverage.</div>
+    </div>
+
+    <div class="pay-card">
+      <div class="field">
+        <div class="field-label">Card number</div>
+        <div class="card-wrap">
+          <input class="field-input" type="text" placeholder="1234 5678 9012 3456" maxlength="19">
+          <div class="card-icons">
+            <div class="card-icon-visa">VISA</div>
+            <div class="card-icon-mc">
+              <svg width="24" height="16" viewBox="0 0 24 16"><circle cx="9" cy="8" r="7" fill="#eb001b"/><circle cx="15" cy="8" r="7" fill="#f79e1b" opacity="0.9"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <div class="field-label">Expiry</div>
+          <input class="field-input" type="text" placeholder="MM / YY" maxlength="7">
+        </div>
+        <div class="field">
+          <div class="field-label">CVV</div>
+          <input class="field-input" type="text" placeholder="•••" maxlength="4">
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">Name on card</div>
+        <input class="field-input" type="text" placeholder="Your name">
+      </div>
+    </div>
+
+    <div class="trust-row">
+      <div class="trust-item">🔒 SSL encrypted</div>
+      <div class="trust-item">✓ Cancel anytime</div>
+      <div class="trust-item">✓ No hidden fees</div>
+    </div>
+
+    <div class="billing">
+      <div class="bill-row">
+        <span class="bill-label">Frenchie Complete</span>
+        <span class="bill-val">$72 / mo</span>
+      </div>
+      <div class="bill-row">
+        <span class="bill-label">First payment today</span>
+        <span class="bill-val">$72.00</span>
+      </div>
+      <div class="bill-row">
+        <span class="bill-label">Coverage starts</span>
+        <span class="bill-val">Jun 9, 2026</span>
+      </div>
+    </div>
+
+    <button class="pay-btn">Activate Daisy's plan</button>
+    <p class="pay-note">Billed monthly. Cancel anytime.</p>
+
+    <div class="home-bar"></div>
+  </div>
+</div>
+</body>
+</html>

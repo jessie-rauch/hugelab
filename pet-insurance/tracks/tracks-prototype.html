@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tracks — Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --pink:      #ed47a2;
+  --pink-dim:  rgba(237,71,162,0.10);
+  --yellow:    #f9d129;
+  --yellow-dim:rgba(249,209,41,0.18);
+  --black:     #0d0d0d;
+  --white:     #ffffff;
+  --cream:     #f5ecd8;
+  --muted:     rgba(13,13,13,0.52);
+  --secondary: rgba(13,13,13,0.62);
+  --border:    rgba(13,13,13,0.09);
+  --font-d:    'Eloura Sans', 'DM Sans', system-ui, sans-serif;
+  --font-b:    'ABC Ginto', 'DM Sans', system-ui, sans-serif;
+}
+
+html, body {
+  height: 100%; overflow: auto;
+  background: #f0ece4;
+  font-family: var(--font-b);
+  color: var(--black);
+  display: flex; align-items: center; justify-content: center;
+}
+.proto-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* ── PHONE SHELL ── */
+.phone {
+  width: 390px;
+  height: 780px;
+  border-radius: 52px;
+  background: var(--cream);
+  border: 10px solid var(--black);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.notch { width: 126px; height: 30px; background: var(--black); border-radius: 0 0 22px 22px; margin: 0 auto; flex-shrink: 0; }
+.status {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 7px 24px 4px; flex-shrink: 0;
+  font-family: var(--font-d); font-size: 12px;
+  text-transform: uppercase; letter-spacing: 0.05em; color: var(--black);
+}
+
+/* ── SCREEN STACK ── */
+.screens {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  position: relative;
+  min-height: 0;
+}
+.screen {
+  width: 100%;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+}
+/* Positions: -1 = left (off), 0 = active, 1 = right (off) */
+.screen[data-pos="-1"] { transform: translateX(-100%); }
+.screen[data-pos="0"]  { transform: translateX(0); }
+.screen[data-pos="1"]  { transform: translateX(100%); }
+
+/* ── NAV BAR (top) ── */
+.nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 22px 12px; flex-shrink: 0;
+  border-bottom: 1.5px solid var(--border);
+  background: var(--cream);
+}
+.brand { font-family: var(--font-d); font-size: 22px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--black); display: flex; align-items: center; gap: 5px; }
+.signin { font-family: var(--font-b); font-size: 12px; color: var(--muted); text-decoration: none; }
+.nav-back { font-family: var(--font-b); font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; background: none; border: none; padding: 0; }
+.nav-back:hover { color: var(--pink); }
+
+/* ── SCROLLABLE BODY ── */
+.body {
+  flex: 1;
+  overflow-y: auto; overflow-x: hidden;
+  padding-bottom: 16px;
+  scrollbar-width: none;
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
+}
+.body::-webkit-scrollbar { display: none; }
+
+/* ── BOTTOM NAV ── */
+.proto-nav {
+  background: var(--black);
+  padding: 10px 24px 12px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-width: 280px;
+}
+.proto-dot-row {
+  display: flex; gap: 6px; align-items: center;
+}
+.proto-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.proto-dot.active {
+  background: var(--yellow);
+  width: 22px;
+  border-radius: 3px;
+}
+.proto-btn {
+  display: flex; align-items: center; gap: 5px;
+  font-family: var(--font-d); font-size: 11px; text-transform: uppercase;
+  letter-spacing: 0.08em; color: rgba(255,255,255,0.5);
+  background: none; border: none; cursor: pointer; padding: 4px 0;
+  transition: color 0.15s;
+}
+.proto-btn:hover { color: rgba(255,255,255,0.9); }
+.proto-btn.proto-next { color: var(--white); }
+.proto-btn svg { opacity: 0.6; }
+.proto-btn.proto-next svg { opacity: 1; }
+.proto-label {
+  font-family: var(--font-b); font-size: 10px;
+  color: rgba(255,255,255,0.35);
+  text-align: center;
+  letter-spacing: 0.04em;
+  min-width: 80px;
+}
+
+/* ═══════════════════════════════
+   SCREEN 1 — LANDING
+═══════════════════════════════ */
+.hero { background: var(--pink); padding: 22px 22px 0; position: relative; overflow: hidden; }
+.hero-eye { font-family: var(--font-b); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(255,255,255,0.60); margin-bottom: 10px; }
+.hero-h { font-family: var(--font-d); font-size: 38px; text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.0; color: var(--white); margin-bottom: 10px; }
+.hero-h em { font-style: normal; color: var(--yellow); }
+.hero-sub { font-family: var(--font-b); font-size: 14px; line-height: 1.55; color: rgba(255,255,255,0.80); margin-bottom: 0; }
+.hero-illo { display: block; width: 110%; margin-left: -5%; height: 130px; background: url('dog-cat-motion.png') center bottom / contain no-repeat; }
+.hero-paw { position: absolute; right: -8px; bottom: -12px; font-size: 100px; opacity: 0.12; transform: rotate(14deg); line-height: 1; pointer-events: none; }
+
+.breed-row { padding: 14px 20px 0; display: flex; align-items: center; gap: 10px; }
+.breed-chip { display: inline-flex; align-items: center; gap: 8px; background: var(--white); border: 2.5px solid var(--black); border-radius: 999px; padding: 8px 16px; font-family: var(--font-d); font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--black); }
+.breed-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--pink); flex-shrink: 0; }
+.breed-change { background: none; border: none; font-family: var(--font-b); font-size: 13px; color: var(--black); text-decoration: underline; text-decoration-color: var(--pink); text-decoration-thickness: 2px; text-underline-offset: 2px; cursor: pointer; padding: 0; }
+
+.autocomplete { margin: 8px 20px 0; display: none; }
+.autocomplete.open { display: block; }
+.ac-input { width: 100%; background: var(--white); border: 2px solid var(--black); border-radius: 12px; font-family: var(--font-d); font-size: 14px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--black); padding: 11px 14px; outline: none; }
+.ac-input::placeholder { text-transform: none; font-family: var(--font-b); letter-spacing: 0; color: rgba(13,13,13,0.30); font-size: 12px; }
+.ac-list { background: var(--white); border: 1.5px solid var(--border); border-radius: 12px; margin-top: 5px; overflow: hidden; max-height: 180px; overflow-y: auto; }
+.ac-item { padding: 10px 14px; font-family: var(--font-b); font-size: 13px; font-weight: 500; color: var(--black); cursor: pointer; border-bottom: 1px solid var(--border); }
+.ac-item:last-child { border-bottom: none; }
+.ac-item:hover { background: var(--pink-dim); color: var(--pink); }
+.ac-item.pinned { font-weight: 600; }
+
+.hook { margin: 14px 20px 0; background: var(--yellow); border-radius: 20px; padding: 18px 18px 14px; }
+.hook-label { font-family: var(--font-b); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(13,13,13,0.38); margin-bottom: 7px; }
+.hook-h { font-family: var(--font-d); font-size: 20px; text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.1; color: var(--black); margin-bottom: 14px; }
+.condition { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.52); border-radius: 10px; padding: 10px 12px; margin-bottom: 7px; }
+.condition:last-child { margin-bottom: 0; }
+.cond-name { font-family: var(--font-b); font-size: 12px; font-weight: 700; color: var(--black); margin-bottom: 2px; }
+.cond-note { font-family: var(--font-b); font-size: 11px; color: rgba(13,13,13,0.52); line-height: 1.35; }
+.cond-cost { font-family: var(--font-d); font-size: 13px; text-transform: uppercase; letter-spacing: 0.02em; color: var(--black); text-align: right; flex-shrink: 0; }
+.cond-cost small { display: block; font-family: var(--font-b); font-size: 10px; text-transform: none; letter-spacing: 0; color: rgba(13,13,13,0.42); }
+
+.budget-card { margin: 14px 20px 0; background: var(--white); border: 2px solid rgba(13,13,13,0.08); border-radius: 20px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+.budget-top { padding: 18px 18px 14px; background: var(--white); }
+.budget-q { font-family: var(--font-d); font-size: 20px; text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.1; color: var(--black); margin-bottom: 5px; }
+.budget-sub { font-family: var(--font-b); font-size: 13px; color: var(--secondary); line-height: 1.5; margin-bottom: 18px; }
+.sl-track { position: relative; height: 5px; background: rgba(13,13,13,0.11); border-radius: 3px; cursor: pointer; margin-bottom: 8px; }
+.sl-fill { position: absolute; left: 0; top: 0; height: 100%; background: var(--black); border-radius: 3px; }
+.sl-thumb { position: absolute; top: 50%; width: 26px; height: 26px; background: var(--white); border: 3px solid var(--black); border-radius: 50%; transform: translate(-50%,-50%); cursor: grab; box-shadow: 0 2px 8px rgba(0,0,0,0.16); }
+.sl-thumb:active { cursor: grabbing; }
+.sl-labels { display: flex; justify-content: space-between; font-family: var(--font-b); font-size: 11px; color: var(--secondary); }
+.quote-result { border-top: 1.5px solid rgba(13,13,13,0.08); padding: 16px 18px 18px; background: var(--white); }
+.qr-eye { font-family: var(--font-b); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--secondary); margin-bottom: 5px; }
+.qr-price-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+.qr-price { font-family: var(--font-d); font-size: 58px; text-transform: uppercase; letter-spacing: -0.01em; line-height: 1; color: var(--pink); transition: color 0.2s; }
+.qr-mo { font-family: var(--font-b); font-size: 18px; color: var(--secondary); }
+.tier-pips { display: flex; gap: 5px; margin-bottom: 12px; }
+.pip { flex: 1; height: 4px; border-radius: 2px; background: rgba(13,13,13,0.09); transition: background 0.2s; }
+.pip.y { background: var(--yellow); }
+.pip.p { background: var(--pink); }
+.pip.k { background: var(--black); }
+.qr-ctx { font-family: var(--font-b); font-size: 13px; line-height: 1.6; color: var(--secondary); margin-bottom: 14px; }
+.qr-ctx strong { color: var(--black); font-weight: 700; }
+.cov-rows { border-top: 1.5px solid rgba(13,13,13,0.08); }
+.cov-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid rgba(13,13,13,0.06); font-size: 13px; }
+.cov-row:last-child { border-bottom: none; }
+.cov-label { font-family: var(--font-b); font-size: 13px; color: var(--secondary); }
+.cov-val { font-family: var(--font-d); font-size: 13px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--black); }
+.cov-val.accent { color: var(--pink); }
+.cov-val.dim { font-family: var(--font-b); text-transform: none; letter-spacing: 0; color: var(--secondary); font-size: 13px; }
+
+.scenario { margin: 14px 20px 0; border-radius: 20px; overflow: visible; border: 2px solid rgba(13,13,13,0.08); box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+.scenario-hdr { background: var(--black); padding: 20px 22px; border-radius: 18px 18px 0 0; }
+.scenario-eye { font-family: var(--font-b); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(255,255,255,0.55); margin-bottom: 8px; }
+.scenario-h { font-family: var(--font-d); font-size: 32px; text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.0; color: var(--white); }
+.scenario-h em { font-style: normal; color: var(--yellow); }
+.scenario-body { background: var(--white); padding: 20px 20px 18px; border-radius: 0 0 18px 18px; }
+.outcome-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.outcome { border-radius: 16px; padding: 16px 14px; }
+.outcome.with { background: var(--pink-dim); border: 1.5px solid rgba(237,71,162,0.18); }
+.outcome.without { background: rgba(13,13,13,0.08); border: 1.5px solid rgba(13,13,13,0.14); }
+.outcome-label { font-family: var(--font-d); font-size: 10px; text-transform: uppercase; letter-spacing: 0.10em; margin-bottom: 6px; }
+.outcome.with .outcome-label { color: var(--pink); }
+.outcome.without .outcome-label { color: var(--secondary); }
+.outcome-clinic-num { font-family: var(--font-d); font-size: 36px; text-transform: uppercase; letter-spacing: -0.01em; line-height: 1; margin-bottom: 4px; color: var(--black); }
+.outcome-clinic-label { font-family: var(--font-b); font-size: 11px; font-weight: 700; color: var(--black); margin-bottom: 6px; line-height: 1.3; }
+.outcome-footnote { font-family: var(--font-b); font-size: 11px; color: var(--secondary); line-height: 1.45; }
+.prepared { background: var(--yellow); border-radius: 14px; padding: 15px 16px 18px; overflow: visible; }
+.prepared-text { font-family: var(--font-d); font-size: 17px; text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.2; color: var(--black); text-wrap: balance; }
+.prepared-sub { font-family: var(--font-b); font-size: 13px; color: rgba(13,13,13,0.62); line-height: 1.45; margin-top: 8px; }
+.prepared-text em { font-style: normal; color: var(--black); text-decoration: none; }
+.underline-wrap { position: relative; display: inline; }
+.underline-wrap svg { position: absolute; left: -3px; bottom: -7px; width: calc(100% + 6px); height: 14px; overflow: visible; pointer-events: none; }
+
+.cta-wrap { margin: 16px 20px 0; }
+.cta-btn { display: block; width: 100%; padding: 18px; background: var(--pink); color: var(--white); border: none; border-radius: 999px; font-family: var(--font-d); font-size: 18px; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: opacity 0.15s, transform 0.1s; text-align: center; }
+.cta-btn:hover { opacity: 0.90; }
+.cta-btn:active { transform: scale(0.98); }
+.cta-note { font-family: var(--font-b); font-size: 11px; color: var(--secondary); text-align: center; margin-top: 8px; margin-bottom: 24px; line-height: 1.5; }
+
+/* ═══════════════════════════════
+   SCREEN 2 — ENROLL
+═══════════════════════════════ */
+.ctx-row { display: flex; gap: 8px; flex-wrap: wrap; padding: 18px 18px 0; }
+.ctx-pill { display: inline-flex; align-items: center; gap: 6px; background: var(--white); border: 1.5px solid var(--border); border-radius: 999px; padding: 6px 14px; font-family: var(--font-d); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--black); }
+.ctx-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--pink); flex-shrink: 0; }
+
+.plan-card-e { background: var(--white); border-radius: 20px; border: 3px solid var(--pink); margin: 14px 18px 0; }
+.plan-top-e { padding: 18px 18px 14px; }
+.plan-eye-e { font-family: var(--font-b); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 6px; }
+.plan-name-e { font-family: var(--font-d); font-size: 30px; text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.0; color: var(--black); margin-bottom: 6px; }
+.plan-name-e em { font-style: normal; color: var(--pink); }
+.plan-desc-e { font-family: var(--font-b); font-size: 13px; line-height: 1.6; color: var(--secondary); }
+.plan-price-band { display: flex; align-items: flex-end; padding: 14px 18px; border-top: 1px solid var(--border); gap: 10px; flex-wrap: wrap; }
+.plan-price-e { font-family: var(--font-d); font-size: 52px; text-transform: uppercase; letter-spacing: -0.01em; line-height: 1; color: var(--pink); }
+.plan-mo-e { font-family: var(--font-b); font-size: 16px; color: var(--secondary); margin-bottom: 6px; }
+.plan-within { font-family: var(--font-b); font-size: 12px; font-weight: 700; color: var(--black); margin-bottom: 6px; }
+.plan-rows-e { padding: 4px 18px 14px; display: flex; flex-direction: column; gap: 9px; border-top: 1px solid var(--border); }
+.plan-row-e { display: flex; justify-content: space-between; align-items: center; padding-top: 9px; }
+.pr-label { font-family: var(--font-b); font-size: 13px; color: var(--secondary); }
+.pr-val { font-family: var(--font-d); font-size: 13px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--black); }
+.pr-val.dim { font-family: var(--font-b); text-transform: none; letter-spacing: 0; color: var(--secondary); font-size: 13px; }
+.plan-margin { margin: 0 18px 18px; padding: 11px 14px; background: var(--pink-dim); border: 1px solid rgba(237,71,162,0.14); border-radius: 10px; font-family: var(--font-b); font-size: 12px; color: var(--secondary); line-height: 1.55; }
+.plan-margin strong { color: var(--black); font-weight: 700; }
+
+.tiers-label { font-family: var(--font-b); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); padding: 0 2px; margin: 0 18px; }
+.tier-group { background: var(--white); border: 1.5px solid var(--border); border-radius: 16px; overflow: hidden; margin: 6px 18px 0; }
+.tier-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; cursor: pointer; transition: background 0.12s; }
+.tier-item:hover { background: var(--yellow-dim); }
+.tier-left { display: flex; flex-direction: column; gap: 3px; }
+.tier-name { font-family: var(--font-d); font-size: 14px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--black); }
+.tier-detail { font-family: var(--font-b); font-size: 12px; color: var(--secondary); line-height: 1.35; }
+.tier-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.tier-price { font-family: var(--font-d); font-size: 14px; text-transform: uppercase; letter-spacing: 0.01em; color: var(--black); }
+
+.enroll-block { background: var(--white); border: 2px solid var(--border); border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 14px; margin: 14px 18px 0; }
+.enroll-h { font-family: var(--font-d); font-size: 22px; text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.1; color: var(--black); }
+.enroll-sub { font-family: var(--font-b); font-size: 13px; color: var(--secondary); line-height: 1.5; margin-top: -4px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field-label { font-family: var(--font-b); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.10em; color: var(--muted); }
+.field-input { font-family: var(--font-d); font-size: 15px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--black); background: var(--cream); border: 2px solid var(--border); border-radius: 10px; padding: 12px 12px; outline: none; width: 100%; transition: border-color 0.15s; }
+.field-input::placeholder { font-family: var(--font-b); text-transform: none; letter-spacing: 0; font-size: 13px; color: rgba(13,13,13,0.30); }
+.field-input:focus { border-color: var(--pink); background: var(--white); }
+.field-input.email { text-transform: none; letter-spacing: 0; font-family: var(--font-b); font-size: 14px; }
+.enroll-btn { display: block; width: 100%; padding: 17px; background: var(--pink); color: var(--white); border: none; border-radius: 999px; font-family: var(--font-d); font-size: 17px; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: opacity 0.15s, transform 0.1s; text-align: center; margin-top: 4px; }
+.enroll-btn:hover { opacity: 0.90; }
+.enroll-btn:active { transform: scale(0.98); }
+.enroll-note { font-family: var(--font-b); font-size: 11px; color: var(--secondary); text-align: center; line-height: 1.5; margin-bottom: 24px; }
+
+/* ═══════════════════════════════
+   SCREEN 3 — PAYMENT
+═══════════════════════════════ */
+.plan-recap { background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; margin: 18px 18px 0; }
+.recap-name { font-family: var(--font-d); font-size: 15px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--black); }
+.recap-name em { font-style: normal; color: var(--pink); }
+.recap-detail { font-family: var(--font-b); font-size: 12px; color: var(--secondary); margin-top: 3px; }
+.recap-price { text-align: right; }
+.recap-price-num { font-family: var(--font-d); font-size: 22px; text-transform: uppercase; letter-spacing: -0.01em; color: var(--black); }
+.recap-price-mo { font-family: var(--font-b); font-size: 12px; color: var(--secondary); }
+.pay-h { font-family: var(--font-d); font-size: 30px; text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.05; color: var(--black); margin: 18px 18px 0; }
+.pay-sub { font-family: var(--font-b); font-size: 13px; color: var(--secondary); line-height: 1.55; margin: 5px 18px 0; }
+.pay-card { background: var(--white); border: 2px solid var(--border); border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 14px; margin: 14px 18px 0; }
+.card-wrap { position: relative; }
+.card-wrap .field-input { padding-right: 80px; letter-spacing: 0.06em; }
+.card-icons { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); display: flex; gap: 5px; align-items: center; }
+.card-icon-visa { background: #1a1f71; color: white; font-family: var(--font-d); font-size: 8px; letter-spacing: 0.05em; padding: 3px 6px; border-radius: 3px; }
+.trust-row { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 14px 18px 0; }
+.trust-item { display: flex; align-items: center; gap: 5px; font-family: var(--font-b); font-size: 12px; color: var(--secondary); }
+.billing { background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; overflow: hidden; margin: 14px 18px 0; }
+.bill-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.bill-row:last-child { border-bottom: none; }
+.bill-label { font-family: var(--font-b); font-size: 13px; color: var(--secondary); }
+.bill-val { font-family: var(--font-d); font-size: 13px; text-transform: uppercase; letter-spacing: 0.02em; color: var(--black); }
+.pay-btn { display: block; width: calc(100% - 36px); margin: 14px 18px 0; padding: 17px; background: var(--pink); color: var(--white); border: none; border-radius: 999px; font-family: var(--font-d); font-size: 17px; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: opacity 0.15s, transform 0.1s; text-align: center; }
+.pay-btn:hover { opacity: 0.90; }
+.pay-btn:active { transform: scale(0.98); }
+.pay-note { font-family: var(--font-b); font-size: 11px; color: var(--secondary); text-align: center; line-height: 1.5; margin: 8px 18px 24px; }
+
+/* ═══════════════════════════════
+   SCREEN 4 — CONFIRM
+═══════════════════════════════ */
+.confirm-hero { background: var(--pink); text-align: center; position: relative; }
+.confirm-hero-text { padding: 28px 24px 28px; }
+.confirm-h { font-family: var(--font-d); font-size: 36px; text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.0; color: var(--white); margin-bottom: 8px; }
+.confirm-h em { font-style: normal; color: var(--yellow); }
+.confirm-sub { font-family: var(--font-b); font-size: 14px; color: rgba(255,255,255,0.85); line-height: 1.55; }
+
+.content-pad { padding: 18px 18px 0; display: flex; flex-direction: column; gap: 14px; }
+.plan-card-c { background: var(--white); border: 2px solid var(--border); border-radius: 16px; overflow: hidden; }
+.plan-top-c { background: var(--black); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; }
+.plan-name-c { font-family: var(--font-d); font-size: 16px; text-transform: uppercase; letter-spacing: 0.02em; color: var(--white); }
+.plan-name-c em { font-style: normal; color: var(--yellow); }
+.plan-price-c { font-family: var(--font-d); font-size: 16px; text-transform: uppercase; color: var(--pink); }
+.plan-rows-c { padding: 2px 0; }
+.plan-row-c { display: flex; justify-content: space-between; align-items: center; padding: 11px 18px; border-bottom: 1px solid var(--border); }
+.plan-row-c:last-child { border-bottom: none; }
+.row-label { font-family: var(--font-b); font-size: 13px; color: var(--secondary); }
+.row-val { font-family: var(--font-d); font-size: 13px; text-transform: uppercase; letter-spacing: 0.02em; color: var(--black); }
+.row-val.normal { font-family: var(--font-b); text-transform: none; letter-spacing: 0; font-size: 13px; }
+
+.section-label { font-family: var(--font-b); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); padding: 0 2px; }
+.next-list { background: var(--white); border: 1.5px solid var(--border); border-radius: 16px; overflow: hidden; }
+.next-item { display: flex; align-items: flex-start; gap: 14px; padding: 16px 16px; border-bottom: 1px solid var(--border); }
+.next-item:last-child { border-bottom: none; }
+.next-num { width: 26px; height: 26px; border-radius: 50%; background: var(--pink); display: flex; align-items: center; justify-content: center; font-family: var(--font-d); font-size: 13px; color: var(--white); flex-shrink: 0; margin-top: 1px; }
+.next-title { font-family: var(--font-b); font-size: 14px; font-weight: 700; color: var(--black); margin-bottom: 3px; }
+.next-detail { font-family: var(--font-b); font-size: 12px; color: var(--secondary); line-height: 1.5; }
+.heads-up { background: var(--yellow); border-radius: 16px; padding: 18px 18px; }
+.heads-up-label { font-family: var(--font-b); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(13,13,13,0.45); margin-bottom: 6px; }
+.heads-up-h { font-family: var(--font-d); font-size: 18px; text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.15; color: var(--black); margin-bottom: 6px; }
+.heads-up-sub { font-family: var(--font-b); font-size: 13px; color: var(--secondary); line-height: 1.55; }
+.app-btn { display: block; width: 100%; padding: 17px; background: var(--pink); color: var(--white); border: none; border-radius: 999px; font-family: var(--font-d); font-size: 17px; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: opacity 0.15s, transform 0.1s; text-align: center; }
+.app-btn:hover { opacity: 0.90; }
+.app-btn:active { transform: scale(0.98); }
+.app-note { font-family: var(--font-b); font-size: 11px; color: var(--secondary); text-align: center; line-height: 1.5; margin-bottom: 24px; }
+
+/* ── SHARED ── */
+.home-bar { height: 16px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6px; }
+.home-bar::after { content: ''; display: block; width: 110px; height: 4px; background: var(--black); border-radius: 2px; opacity: 0.12; }
+</style>
+</head>
+<body>
+
+<div class="proto-wrap">
+<div class="phone">
+  <div class="notch"></div>
+  <div class="status"><span>9:41</span><span>● ● ●</span></div>
+
+  <div class="screens">
+
+    <!-- ═══ SCREEN 1: LANDING ═══ -->
+    <div class="screen" id="screen-0" data-pos="0">
+      <div class="nav">
+        <img src="tracks_black.png" alt="Tracks" style="height:28px;display:block;" onerror="this.outerHTML='<span style=\'font-family:var(--font-d);font-size:20px;text-transform:uppercase;letter-spacing:.04em\'>TRACKS 🐾</span>'">
+        <a href="#" class="signin">Sign in</a>
+      </div>
+      <div class="body">
+        <div class="hero">
+          <div class="hero-eye">Pet insurance · by Trupanion</div>
+          <div class="hero-h">Built for<br><em>French Bulldogs.</em></div>
+          <div class="hero-sub">See exactly what you'd pay.<br>No surprises, no fine print.</div>
+          <div class="hero-illo" aria-hidden="true"></div>
+        </div>
+        <div class="breed-row">
+          <div class="breed-chip"><span class="breed-dot"></span><span id="breed-label">French Bulldog</span></div>
+          <button class="breed-change" onclick="toggleAC()">Not your breed?</button>
+        </div>
+        <div class="autocomplete" id="ac">
+          <input class="ac-input" id="ac-input" type="text" placeholder="Type your breed..." oninput="filterAC(this.value)">
+          <div class="ac-list" id="ac-list"></div>
+        </div>
+        <div class="hook">
+          <div class="hook-label">French Bulldog · health reality</div>
+          <div class="hook-h">Frenchies are a lot of dog.<br>Here's what that actually costs.</div>
+          <div class="condition">
+            <div><div class="cond-name">BOAS — breathing</div><div class="cond-note">Most Frenchies need this by age 2.</div></div>
+            <div class="cond-cost">$3,500–$6,500<small>surgery avg.</small></div>
+          </div>
+          <div class="condition">
+            <div><div class="cond-name">Skin + allergies</div><div class="cond-note">Chronic. Recurring vet visits.</div></div>
+            <div class="cond-cost">$500–$1,200<small>per year</small></div>
+          </div>
+          <div class="condition">
+            <div><div class="cond-name">Spinal / IVDD</div><div class="cond-note">Corkscrew tail increases disc risk.</div></div>
+            <div class="cond-cost">$4,000–$9,000<small>surgery avg.</small></div>
+          </div>
+        </div>
+        <div class="budget-card">
+          <div class="budget-top">
+            <div class="budget-q">What can you spend each month?</div>
+            <div class="budget-sub">Drag to your number. We'll show you what that gets your Frenchie.</div>
+            <div class="sl-track" id="sl-track">
+              <div class="sl-fill" id="sl-fill" style="width:40%"></div>
+              <div class="sl-thumb" id="sl-thumb" style="left:40%"></div>
+            </div>
+            <div class="sl-labels"><span>$40</span><span>$120</span></div>
+          </div>
+          <div class="quote-result">
+            <div class="qr-eye">Your estimated monthly cost</div>
+            <div class="qr-price-row">
+              <div class="qr-price" id="qr-price">$72</div>
+              <div class="qr-mo">/ mo</div>
+            </div>
+            <div class="tier-pips">
+              <div class="pip" id="pip1"></div>
+              <div class="pip" id="pip2"></div>
+              <div class="pip" id="pip3"></div>
+            </div>
+            <div class="qr-ctx" id="qr-ctx">Strong coverage for the big stuff. <strong>Tracks pays your vet directly.</strong> Your share at the vet is lower than the entry plan.</div>
+            <div class="cov-rows">
+              <div class="cov-row"><span class="cov-label">What Tracks covers</span><span class="cov-val accent" id="cov-pct">80% of eligible costs</span></div>
+              <div class="cov-row"><span class="cov-label">Your share at the vet</span><span class="cov-val" id="cov-share">20% after first $200</span></div>
+              <div class="cov-row"><span class="cov-label">Routine and wellness</span><span class="cov-val dim">Not included</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="scenario">
+          <div class="scenario-hdr">
+            <div class="scenario-eye">Real scenario · BOAS surgery</div>
+            <div class="scenario-h">One surgery.<br><em>Two outcomes.</em></div>
+          </div>
+          <div class="scenario-body">
+            <div class="outcome-row">
+              <div class="outcome with">
+                <div class="outcome-label">With Tracks</div>
+                <div class="outcome-clinic-num" id="clinic-with">$500</div>
+                <div class="outcome-clinic-label">At the clinic door.</div>
+                <div class="outcome-footnote" id="footnote-with">You already covered the rest. Tracks paid the vet directly.</div>
+              </div>
+              <div class="outcome without">
+                <div class="outcome-label">Without</div>
+                <div class="outcome-clinic-num">$4,800</div>
+                <div class="outcome-clinic-label">At the clinic door.</div>
+                <div class="outcome-footnote">Full bill. Due before your dog leaves the clinic.</div>
+              </div>
+            </div>
+            <div class="prepared">
+              <div class="prepared-text">Prepared pet parents pay <em><span class="underline-wrap"><span id="clinic-diff">$4,300</span><svg viewBox="0 0 100 10" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,7 C10,9 25,4 45,7 C62,10 78,5 101,6" fill="none" stroke="#ed47a2" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></em> less at the clinic door.</div>
+              <div class="prepared-sub">(Total cost of this surgery with Tracks: <span id="net-savings-num">$1,204</span>. Without: $4,800.)</div>
+            </div>
+          </div>
+        </div>
+        <div class="cta-wrap">
+          <button class="cta-btn" onclick="goTo(1)">Get started</button>
+          <p class="cta-note">Takes about 2 minutes.</p>
+        </div>
+        <div class="home-bar"></div>
+      </div>
+    </div>
+
+    <!-- ═══ SCREEN 2: ENROLL ═══ -->
+    <div class="screen" id="screen-1" data-pos="1">
+      <div class="nav">
+        <button class="nav-back" onclick="goTo(0)">← Back</button>
+        <img src="tracks_black.png" alt="Tracks" style="height:26px;display:block;" onerror="this.outerHTML='<span style=\'font-family:var(--font-d);font-size:18px;text-transform:uppercase\'>TRACKS</span>'">
+        <div style="width:52px;"></div>
+      </div>
+      <div class="body">
+        <div class="ctx-row">
+          <div class="ctx-pill"><span class="ctx-dot"></span>French Bulldog</div>
+          <div class="ctx-pill"><span class="ctx-dot"></span>$72 / mo budget</div>
+        </div>
+        <div class="plan-card-e">
+          <div class="plan-top-e">
+            <div class="plan-eye-e">Recommended for your Frenchie</div>
+            <div class="plan-name-e"><em>Frenchie</em> Complete</div>
+            <div class="plan-desc-e">Covers the conditions French Bulldogs actually face. Tracks pays your vet directly. You don't front the bill.</div>
+          </div>
+          <div class="plan-price-band">
+            <div class="plan-price-e">$72</div>
+            <div class="plan-mo-e">/ mo</div>
+            <div class="plan-within">✓ Right where you said</div>
+          </div>
+          <div class="plan-rows-e">
+            <div class="plan-row-e"><span class="pr-label">What Tracks covers</span><span class="pr-val">80% of eligible costs</span></div>
+            <div class="plan-row-e"><span class="pr-label">Your share at the vet</span><span class="pr-val">20% after first $200</span></div>
+            <div class="plan-row-e"><span class="pr-label">Accidents and illness</span><span class="pr-val">Covered</span></div>
+            <div class="plan-row-e"><span class="pr-label">BOAS and breed conditions</span><span class="pr-val">Covered</span></div>
+            <div class="plan-row-e"><span class="pr-label">Routine and wellness</span><span class="pr-val dim">Not included</span></div>
+          </div>
+          <div class="plan-margin"><strong>28¢ of every $1</strong> goes to your pet's care. The rest covers claims handling, vet payments, and keeping the lights on.</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:14px;">
+          <div class="tiers-label">Want more coverage?</div>
+          <div class="tier-group">
+            <div class="tier-item">
+              <div class="tier-left">
+                <div class="tier-name">Frenchie Max</div>
+                <div class="tier-detail">90% covered · $100 first each year · Maximum protection</div>
+              </div>
+              <div class="tier-right">
+                <div class="tier-price">$98 / mo</div>
+                <div><svg width="10" height="20" viewBox="0 0 10 20" fill="none"><polyline points="2,2 8,10 2,18" stroke="#ed47a2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="enroll-block">
+          <div class="enroll-h">Two things and you're in.</div>
+          <div class="enroll-sub">That's all we need to get started.</div>
+          <div class="field-row">
+            <div class="field">
+              <div class="field-label">Your Frenchie's name</div>
+              <input class="field-input" type="text" placeholder="Biscuit" maxlength="20">
+            </div>
+            <div class="field">
+              <div class="field-label">Your zip code</div>
+              <input class="field-input" type="text" placeholder="78701" maxlength="7">
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-label">Your email</div>
+            <input class="field-input email" type="email" placeholder="you@email.com">
+          </div>
+          <button class="enroll-btn" onclick="goTo(2)">Start my plan</button>
+          <p class="enroll-note">Coverage starts after a short waiting period.<br>No payment info today.</p>
+        </div>
+        <div class="home-bar"></div>
+      </div>
+    </div>
+
+    <!-- ═══ SCREEN 3: PAYMENT ═══ -->
+    <div class="screen" id="screen-2" data-pos="1">
+      <div class="nav">
+        <button class="nav-back" onclick="goTo(1)">← Back</button>
+        <img src="tracks_black.png" alt="Tracks" style="height:26px;display:block;" onerror="this.outerHTML='<span style=\'font-family:var(--font-d);font-size:18px;text-transform:uppercase\'>TRACKS</span>'">
+        <div style="width:52px;"></div>
+      </div>
+      <div class="body">
+        <div class="plan-recap">
+          <div>
+            <div class="recap-name"><em>Frenchie</em> Complete</div>
+            <div class="recap-detail">Daisy · French Bulldog · Austin, TX</div>
+          </div>
+          <div class="recap-price">
+            <div class="recap-price-num">$72</div>
+            <div class="recap-price-mo">/ mo</div>
+          </div>
+        </div>
+        <div class="pay-h">One last step.</div>
+        <div class="pay-sub">Add your card to activate Daisy's coverage.</div>
+        <div class="pay-card">
+          <div class="field">
+            <div class="field-label">Card number</div>
+            <div class="card-wrap">
+              <input class="field-input" type="text" placeholder="1234 5678 9012 3456" maxlength="19">
+              <div class="card-icons">
+                <div class="card-icon-visa">VISA</div>
+                <svg width="24" height="16" viewBox="0 0 24 16"><circle cx="9" cy="8" r="7" fill="#eb001b"/><circle cx="15" cy="8" r="7" fill="#f79e1b" opacity="0.9"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <div class="field-label">Expiry</div>
+              <input class="field-input" type="text" placeholder="MM / YY" maxlength="7">
+            </div>
+            <div class="field">
+              <div class="field-label">CVV</div>
+              <input class="field-input" type="text" placeholder="•••" maxlength="4">
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-label">Name on card</div>
+            <input class="field-input" type="text" placeholder="Your name">
+          </div>
+        </div>
+        <div class="trust-row">
+          <div class="trust-item">🔒 SSL encrypted</div>
+          <div class="trust-item">✓ Cancel anytime</div>
+          <div class="trust-item">✓ No hidden fees</div>
+        </div>
+        <div class="billing">
+          <div class="bill-row"><span class="bill-label">Frenchie Complete</span><span class="bill-val">$72 / mo</span></div>
+          <div class="bill-row"><span class="bill-label">First payment today</span><span class="bill-val">$72.00</span></div>
+          <div class="bill-row"><span class="bill-label">Coverage starts</span><span class="bill-val">Jun 9, 2026</span></div>
+        </div>
+        <button class="pay-btn" onclick="goTo(3)">Activate Daisy's plan</button>
+        <p class="pay-note">Billed monthly. Cancel anytime.</p>
+        <div class="home-bar"></div>
+      </div>
+    </div>
+
+    <!-- ═══ SCREEN 4: CONFIRM ═══ -->
+    <div class="screen" id="screen-3" data-pos="1">
+      <div class="nav" style="justify-content:center;">
+        <img src="tracks_black.png" alt="Tracks" style="height:26px;display:block;" onerror="this.outerHTML='<span style=\'font-family:var(--font-d);font-size:18px;text-transform:uppercase\'>TRACKS</span>'">
+      </div>
+      <div class="body">
+        <div class="confirm-hero">
+          <div class="confirm-hero-text">
+            <div class="confirm-h"><em>Daisy's</em> covered.</div>
+            <div class="confirm-sub">You're a prepared pet parent now.<br>Here's what happens next.</div>
+          </div>
+        </div>
+        <div class="content-pad">
+          <div class="plan-card-c">
+            <div class="plan-top-c">
+              <div class="plan-name-c"><em>Frenchie</em> Complete</div>
+              <div class="plan-price-c">$72 / mo</div>
+            </div>
+            <div class="plan-rows-c">
+              <div class="plan-row-c"><span class="row-label">Coverage starts</span><span class="row-val">Jun 9, 2026</span></div>
+              <div class="plan-row-c"><span class="row-label">Waiting period</span><span class="row-val">14 days</span></div>
+              <div class="plan-row-c"><span class="row-label">Confirmation sent to</span><span class="row-val normal">emily@gmail.com</span></div>
+            </div>
+          </div>
+          <div class="section-label">What happens next</div>
+          <div class="next-list">
+            <div class="next-item">
+              <div class="next-num">1</div>
+              <div><div class="next-title">Check your email</div><div class="next-detail">Your plan details and coverage start date are on their way.</div></div>
+            </div>
+            <div class="next-item">
+              <div class="next-num">2</div>
+              <div><div class="next-title">Book Daisy's first vet visit after Jun 9</div><div class="next-detail">Anything identified before coverage starts won't be covered.</div></div>
+            </div>
+            <div class="next-item">
+              <div class="next-num">3</div>
+              <div><div class="next-title">We pay the vet directly</div><div class="next-detail">File a claim in the app. Tracks handles the rest.</div></div>
+            </div>
+          </div>
+          <div class="heads-up">
+            <div class="heads-up-label">Heads up</div>
+            <div class="heads-up-h">Frenchies need a vet check before their first birthday.</div>
+            <div class="heads-up-sub">We'll remind you before it's time. That's what Tracks is for.</div>
+          </div>
+          <button class="app-btn" onclick="goTo(0)">Open the Tracks app</button>
+          <p class="app-note">Daisy's plan is ready and waiting.</p>
+          <div class="home-bar"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /screens -->
+
+</div><!-- /phone -->
+
+<!-- ── BOTTOM PROTO NAV ── -->
+  <div class="proto-nav">
+    <button class="proto-btn" id="btn-prev" onclick="goTo(currentScreen - 1)">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polyline points="9,2 4,7 9,12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Prev
+    </button>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+      <div class="proto-dot-row">
+        <div class="proto-dot active" onclick="goTo(0)" id="dot-0"></div>
+        <div class="proto-dot" onclick="goTo(1)" id="dot-1"></div>
+        <div class="proto-dot" onclick="goTo(2)" id="dot-2"></div>
+        <div class="proto-dot" onclick="goTo(3)" id="dot-3"></div>
+      </div>
+      <div class="proto-label" id="proto-label">Landing</div>
+    </div>
+    <button class="proto-btn proto-next" id="btn-next" onclick="goTo(currentScreen + 1)">
+      Next
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polyline points="5,2 10,7 5,12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</div><!-- /proto-wrap -->
+
+<script>
+// ── NAVIGATION ──
+let currentScreen = 0;
+const SCREEN_LABELS = ['Landing', 'Your Plan', 'Payment', 'Confirmed ✓'];
+const TOTAL = 4;
+
+function goTo(idx) {
+  if (idx < 0 || idx >= TOTAL) return;
+  const prev = currentScreen;
+  currentScreen = idx;
+
+  for (let i = 0; i < TOTAL; i++) {
+    const s = document.getElementById('screen-' + i);
+    const pos = i < idx ? -1 : i > idx ? 1 : 0;
+    s.setAttribute('data-pos', pos);
+    // Scroll new screen to top
+    if (i === idx) s.querySelector('.body').scrollTop = 0;
+  }
+
+  // Update dots
+  for (let i = 0; i < TOTAL; i++) {
+    document.getElementById('dot-' + i).classList.toggle('active', i === idx);
+  }
+  document.getElementById('proto-label').textContent = SCREEN_LABELS[idx];
+
+  // Prev/next buttons
+  document.getElementById('btn-prev').style.opacity = idx === 0 ? '0.25' : '1';
+  document.getElementById('btn-prev').style.pointerEvents = idx === 0 ? 'none' : 'auto';
+  document.getElementById('btn-next').style.opacity = idx === TOTAL - 1 ? '0.25' : '1';
+  document.getElementById('btn-next').style.pointerEvents = idx === TOTAL - 1 ? 'none' : 'auto';
+}
+
+// Init
+goTo(0);
+
+// ── LANDING SLIDER ──
+const MIN = 40, MAX = 120;
+let pct = 0.40;
+const PINNED = ['Mixed breed dog', 'Mixed breed cat'];
+const ALL_BREEDS = ['Afghan Hound','Akita','Alaskan Malamute','Australian Shepherd','Basenji','Basset Hound','Beagle','Bernese Mountain Dog','Bichon Frise','Border Collie','Boston Terrier','Boxer','Bulldog','Cavalier King Charles Spaniel','Chihuahua','Chow Chow','Cocker Spaniel','Dachshund','Dalmatian','Dobermann','French Bulldog','German Shepherd','Golden Retriever','Great Dane','Greyhound','Havanese','Irish Setter','Jack Russell Terrier','Labrador Retriever','Maltese','Miniature Schnauzer','Newfoundland','Pomeranian','Poodle','Pug','Rottweiler','Samoyed','Shih Tzu','Siberian Husky','Weimaraner','Welsh Corgi','Yorkshire Terrier','Abyssinian','Bengal','British Shorthair','Burmese','Devon Rex','Domestic Longhair','Domestic Shorthair','Maine Coon','Norwegian Forest Cat','Persian','Ragdoll','Russian Blue','Scottish Fold','Siamese','Sphynx','Turkish Angora'].sort();
+
+function toggleAC() {
+  const el = document.getElementById('ac');
+  el.classList.toggle('open');
+  if (el.classList.contains('open')) { document.getElementById('ac-input').focus(); filterAC(''); }
+}
+function filterAC(v) {
+  const list = document.getElementById('ac-list');
+  const shown = v ? [...PINNED, ...ALL_BREEDS].filter(b => b.toLowerCase().includes(v.toLowerCase())).slice(0,8) : [...PINNED, ...ALL_BREEDS.slice(0,4)];
+  list.innerHTML = shown.map((b,i) => `<div class="ac-item${!v && i < 2 ? ' pinned' : ''}" onclick="pickBreed('${b}')">${b}</div>`).join('');
+}
+function pickBreed(name) {
+  document.getElementById('breed-label').textContent = name.toUpperCase();
+  document.getElementById('ac').classList.remove('open');
+  document.getElementById('ac-input').value = '';
+}
+
+function budget() { return Math.round((MIN + pct * (MAX - MIN)) / 4) * 4; }
+function getCov(b) {
+  const t = (b - MIN) / (MAX - MIN);
+  return { ded: Math.round(500 - t * 400), cov: Math.round(70 + t * 20), share: Math.round(30 - t * 20) };
+}
+function tierOf(b) { return b <= 60 ? 'y' : b <= 90 ? 'p' : 'k'; }
+const CTXS = {
+  y: 'Covers accidents, illnesses, and emergency vet visits. <strong>Tracks pays your vet directly</strong> — you don\'t front the bill.',
+  p: 'Strong coverage for the big stuff. <strong>Tracks pays your vet directly.</strong> Your share at the vet is lower than the entry plan.',
+  k: 'Our most comprehensive coverage. <strong>Tracks covers 90% of eligible costs</strong> and pays your vet before you leave the clinic.'
+};
+
+function update() {
+  const b = budget();
+  const { ded, cov, share } = getCov(b);
+  const t = tierOf(b);
+  const pos = (b - MIN) / (MAX - MIN) * 100;
+  document.getElementById('sl-fill').style.width = pos + '%';
+  document.getElementById('sl-thumb').style.left = pos + '%';
+  document.getElementById('qr-price').textContent = '$' + b;
+  ['pip1','pip2','pip3'].forEach((id,i) => {
+    const el = document.getElementById(id); el.className = 'pip';
+    if (t==='y' && i===0) el.classList.add('y');
+    if (t==='p' && i<=1) el.classList.add('p');
+    if (t==='k') el.classList.add('k');
+  });
+  document.getElementById('qr-ctx').innerHTML = CTXS[t];
+  document.getElementById('cov-pct').textContent = cov + '% of eligible costs';
+  document.getElementById('cov-share').textContent = share + '% after first $' + ded;
+  document.getElementById('clinic-with').textContent = '$' + ded.toLocaleString();
+  document.getElementById('footnote-with').textContent = 'You already covered the rest through 24 months of $' + b + '/mo. Tracks paid the vet directly.';
+  document.getElementById('clinic-diff').textContent = '$' + (4800 - ded).toLocaleString();
+
+  // Total cost with Tracks = deductible + 12 months premiums
+  const totalWithTracks = ded + (b * 12);
+  document.getElementById('net-savings-num').textContent = '$' + totalWithTracks.toLocaleString();
+}
+
+const track = document.getElementById('sl-track');
+let drag = false;
+function getP(e) { const r = track.getBoundingClientRect(); const x = e.touches ? e.touches[0].clientX : e.clientX; return Math.max(0, Math.min(1, (x - r.left) / r.width)); }
+track.addEventListener('mousedown', e => { drag=true; pct=getP(e); update(); });
+track.addEventListener('touchstart', e => { drag=true; pct=getP(e); update(); }, {passive:true});
+document.addEventListener('mousemove', e => { if(drag){pct=getP(e);update();} });
+document.addEventListener('touchmove', e => { if(drag){pct=getP(e);update();} }, {passive:true});
+document.addEventListener('mouseup', ()=>drag=false);
+document.addEventListener('touchend', ()=>drag=false);
+update(); filterAC('');
+</script>
+</body>
+</html>

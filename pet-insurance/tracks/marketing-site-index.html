@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tracks · Your pet’s got backup.</title>
+<link href="https://api.fontshare.com/v2/css?f[]=monument-grotesk@400,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0D0D0D;
+    --ink-soft: #3B4145;
+    --ink-muted: #7A7F89;
+    --paper: #FFFFFF;
+    --paper-warm: #F8F6F2;
+    --paper-deep: #EDEAE4;
+    --rule: #D8D4CC;
+    --rule-soft: #E9E6E0;
+    --accent: #FF0090;
+    --accent-deep: #CC006F;
+    --mono: 'DM Mono', 'Courier New', monospace;
+    --sans: 'Monument Grotesk', 'Helvetica Neue', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── NAV ── */
+  .nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
+    padding: 0 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 56px;
+  }
+  .nav-logo {
+    font-family: var(--mono); font-size: 11px;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink); text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-logo-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
+  .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+  .nav-links a {
+    font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-muted); text-decoration: none; transition: color 0.15s;
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-cta {
+    font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    background: var(--ink); color: var(--paper);
+    padding: 10px 20px; text-decoration: none; transition: background 0.15s;
+  }
+  .nav-cta:hover { background: var(--accent); }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--paper-warm);
+    padding: 80px 40px;
+    min-height: calc(100vh - 56px);
+    display: flex; align-items: center;
+  }
+  .hero-inner {
+    max-width: 1280px; margin: 0 auto; width: 100%;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 80px; align-items: center;
+  }
+  .hero-eyebrow-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--paper-deep);
+    border: 1px solid var(--rule);
+    padding: 5px 12px; margin-bottom: 28px;
+    font-family: var(--mono); font-size: 9px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .hero-eyebrow-pill .dot { width: 5px; height: 5px; background: var(--accent); border-radius: 50%; }
+  .hero-headline {
+    font-family: var(--sans); font-weight: 400;
+    font-size: clamp(48px, 6vw, 80px);
+    line-height: 0.97; letter-spacing: -0.035em;
+    margin-bottom: 28px;
+  }
+  .hero-headline em { font-style: normal; color: var(--accent); }
+  .hero-subhead {
+    font-size: 18px; line-height: 1.65;
+    color: var(--ink-soft); margin-bottom: 40px; max-width: 440px;
+  }
+  .hero-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 40px; }
+  .btn-primary {
+    font-family: var(--mono); font-size: 11px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    background: var(--ink); color: var(--paper);
+    padding: 16px 28px; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 10px; transition: background 0.15s;
+  }
+  .btn-primary:hover { background: var(--accent); }
+  .btn-ghost {
+    font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-muted); text-decoration: none;
+    border-bottom: 1px solid var(--rule); padding-bottom: 2px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .btn-ghost:hover { color: var(--ink); border-color: var(--ink); }
+  .hero-trust {
+    display: flex; align-items: center; gap: 12px;
+    padding-top: 28px; border-top: 1px solid var(--rule);
+  }
+  .hero-trust-avatars { display: flex; }
+  .hero-trust-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--paper-deep); border: 2px solid var(--paper-warm);
+    margin-left: -6px; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .hero-trust-avatar:first-child { margin-left: 0; }
+  .hero-trust-text {
+    font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.08em; color: var(--ink-muted); line-height: 1.6;
+  }
+  .hero-trust-text strong { color: var(--ink); }
+
+  /* Hero illustration placeholder */
+  .hero-illus {
+    aspect-ratio: 1/1;
+    background: var(--paper-deep);
+    border: 1.5px dashed var(--rule);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 12px; padding: 40px;
+  }
+  .hero-illus-icon { font-size: 56px; opacity: 0.35; }
+  .hero-illus-label {
+    font-family: var(--mono); font-size: 9px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--ink-muted); text-align: center; line-height: 1.9;
+  }
+
+  /* ── LIVE TICKER ── */
+  .live-ticker {
+    background: var(--ink); color: var(--paper);
+    padding: 18px 40px;
+    display: flex; align-items: center; gap: 20px; overflow: hidden;
+  }
+  .live-badge {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase; display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+  }
+  .live-dot { width: 7px; height: 7px; background: var(--accent); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .ticker-divider { width: 1px; height: 24px; background: rgba(255,255,255,0.15); flex-shrink: 0; }
+  .ticker-wrap { overflow: hidden; flex: 1; }
+  .ticker-track {
+    display: flex; gap: 56px; align-items: center;
+    animation: ticker 32s linear infinite; white-space: nowrap;
+  }
+  @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+  .ticker-item {
+    font-family: var(--mono); font-size: 12px;
+    letter-spacing: 0.06em; color: rgba(255,255,255,0.6); flex-shrink: 0;
+  }
+  .ticker-item strong { color: var(--paper); }
+  .ticker-item .ticker-paid { color: var(--accent); }
+  .ticker-sep { color: rgba(255,255,255,0.2); font-size: 16px; }
+
+  /* ── SHARED ── */
+  .section-eyebrow {
+    font-family: var(--mono); font-size: 9px;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--ink-muted); margin-bottom: 40px; display: block;
+  }
+
+  /* ── INSURANCE WORDS, TRANSLATED (full section) ── */
+  .translation-section {
+    padding: 120px 40px;
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
+  }
+  .translation-section-inner { max-width: 1280px; margin: 0 auto; }
+  .translation-section-header {
+    max-width: 640px; margin-bottom: 64px;
+  }
+  .translation-section-headline {
+    font-family: var(--sans); font-weight: 400;
+    font-size: clamp(36px, 4.5vw, 60px);
+    letter-spacing: -0.035em; line-height: 1.0;
+    margin: 14px 0 18px;
+  }
+  .translation-section-headline em { font-style: normal; color: var(--accent); }
+  .translation-section-sub {
+    font-size: 16px; color: var(--ink-soft); line-height: 1.65; max-width: 480px;
+  }
+  .translation-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+  .translation-item-full {
+    background: var(--paper-warm);
+    border: 1px solid var(--rule);
+    padding: 40px;
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+  .translation-spot-illus {
+    background: var(--paper-deep);
+    border: 1.5px dashed var(--rule);
+    aspect-ratio: 1/1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 10px; padding: 20px;
+    flex-shrink: 0;
+  }
+  .translation-spot-icon { font-size: 32px; opacity: 0.45; }
+  .translation-spot-label {
+    font-family: var(--mono); font-size: 8px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-muted); text-align: center; line-height: 1.9;
+  }
+  .translation-item-body { padding-top: 4px; }
+  .translation-jargon {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 10px; display: block;
+    text-decoration: line-through; text-decoration-color: var(--accent);
+    text-decoration-thickness: 1.5px;
+  }
+  .translation-plain {
+    font-family: var(--sans); font-weight: 500;
+    font-size: clamp(20px, 2vw, 26px);
+    letter-spacing: -0.025em; line-height: 1.15; margin-bottom: 12px;
+    color: var(--ink);
+  }
+  .translation-note {
+    font-size: 14px; color: var(--ink-muted); line-height: 1.7;
+  }
+
+  /* ── APP STORE BUTTONS ── */
+  .app-store-btns {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    margin-top: 24px;
+  }
+  .app-store-btn {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--ink); color: var(--paper);
+    padding: 12px 20px; text-decoration: none;
+    border: 1.5px solid var(--ink);
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .app-store-btn:hover { background: var(--accent); border-color: var(--accent); }
+  .app-store-text { display: flex; flex-direction: column; gap: 1px; }
+  .app-store-sub {
+    font-family: var(--mono); font-size: 9px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    opacity: 0.6;
+  }
+  .app-store-name {
+    font-family: var(--sans); font-size: 15px;
+    font-weight: 500; letter-spacing: -0.01em;
+  }
+
+  /* ── BENTO — FOUR THINGS ── */
+  .bento-section {
+    padding: 120px 40px;
+    background: var(--paper-warm);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .bento-section-inner { max-width: 1280px; margin: 0 auto; }
+  .bento-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 32px;
+  }
+  .bento-headline {
+    font-family: var(--sans); font-weight: 400;
+    font-size: clamp(32px, 4vw, 52px);
+    letter-spacing: -0.03em; line-height: 1.0;
+  }
+  .bento-headline em { font-style: normal; color: var(--accent); }
+
+  .bento-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: auto;
+    gap: 8px;
+  }
+
+  /* Cell base */
+  .bento-cell {
+    border: 1px solid var(--rule);
+    padding: 36px;
+    position: relative; overflow: hidden;
+    opacity: 0; transform: translateY(16px) rotate(0deg);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .bento-cell.visible { opacity: 1; transform: translateY(0) rotate(0deg); }
+
+  /* No jiggle on bento — smooth reveal only */
+
+  /* ── Row 1: Quote (7col) + Pre-Auth (5col) ── */
+  .bento-cell-1 { grid-column: span 7; background: var(--paper); min-height: 280px; }
+  .bento-cell-2 { grid-column: span 5; background: var(--ink); color: var(--paper); min-height: 280px; }
+
+  /* ── Row 2: Landscape visual (8col) + The Pulse (4col) ── */
+  .bento-cell-vis-landscape { grid-column: span 8; background: var(--paper-deep); min-height: 320px; padding: 0; }
+  .bento-cell-4 { grid-column: span 4; background: var(--accent); color: var(--paper); min-height: 320px; }
+
+  /* ── Row 3: The Receipt (7col) + Square visual (5col) ── */
+  .bento-cell-5 { grid-column: span 7; background: var(--paper); min-height: 260px; }
+  .bento-cell-vis-square { grid-column: span 5; background: var(--paper-deep); min-height: 260px; padding: 0; }
+
+  /* Big display number — type as image */
+  .bento-cell-num {
+    font-family: var(--sans); font-weight: 400;
+    font-size: 96px; line-height: 0.85;
+    letter-spacing: -0.05em;
+    display: block; margin-bottom: 20px;
+    color: var(--paper-deep);
+    /* sits as texture behind content */
+    position: absolute; top: 20px; right: 24px;
+    pointer-events: none; user-select: none;
+  }
+  .bento-cell-1 .bento-cell-num { color: var(--paper-deep); }
+  .bento-cell-2 .bento-cell-num { color: rgba(255,255,255,0.08); }
+  .bento-cell-4 .bento-cell-num { color: rgba(255,255,255,0.12); }
+  .bento-cell-5 .bento-cell-num { color: var(--paper-deep); }
+
+  /* Content sits above number */
+  .bento-cell-content { position: relative; z-index: 1; }
+
+  .bento-cell-label {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.22em;
+    text-transform: uppercase; margin-bottom: 14px; display: block;
+    color: var(--accent);
+  }
+  .bento-cell-2 .bento-cell-label { color: rgba(255,255,255,0.45); }
+  .bento-cell-4 .bento-cell-label { color: rgba(255,255,255,0.5); }
+
+  .bento-cell-title {
+    font-family: var(--sans); font-weight: 500; font-size: 28px;
+    letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 12px;
+  }
+  .bento-cell-body {
+    font-size: 14px; line-height: 1.75; color: var(--ink-muted);
+    max-width: 380px;
+  }
+  .bento-cell-2 .bento-cell-body,
+  .bento-cell-4 .bento-cell-body { color: rgba(255,255,255,0.55); }
+  .bento-cell-2 .bento-cell-title,
+  .bento-cell-4 .bento-cell-title { color: var(--paper); }
+
+  /* visual placeholder inside bento */
+  .bento-vis-inner {
+    width: 100%; height: 100%; min-height: 240px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 10px;
+    padding: 32px;
+  }
+  .bento-vis-icon { font-size: 36px; opacity: 0.25; }
+  .bento-vis-label {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--ink-muted); text-align: center; line-height: 1.9;
+  }
+
+  /* ── PROOF + TESTIMONIAL ── */
+  .proof-section {
+    padding: 120px 40px;
+    max-width: 1280px; margin: 0 auto;
+  }
+  .proof-header { margin-bottom: 40px; }
+  .proof-eyebrow {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--ink-muted); margin-bottom: 14px; display: block;
+  }
+  .proof-headline {
+    font-family: var(--sans); font-weight: 400;
+    font-size: clamp(28px, 3.5vw, 44px);
+    letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 10px;
+  }
+  .proof-headline em { font-style: normal; color: var(--accent); }
+  .proof-note {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+    color: var(--ink-muted); line-height: 1.7;
+  }
+
+  /* 2-col layout: receipts 2x2 + testimonial */
+  .proof-layout {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+    align-items: stretch;
+  }
+  .proof-receipts {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+  }
+  .proof-card {
+    border: 1px solid var(--rule); background: var(--paper-warm); padding: 24px;
+    opacity: 0; transform: translateY(14px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .proof-card.visible { opacity: 1; transform: translateY(0); }
+  .proof-card-pet {
+    font-family: var(--sans); font-weight: 500; font-size: 20px;
+    letter-spacing: -0.02em; margin-bottom: 3px;
+  }
+  .proof-card-detail {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-muted); margin-bottom: 14px;
+    padding-bottom: 12px; border-bottom: 1px solid var(--rule-soft);
+  }
+  .proof-card-what { font-size: 13px; color: var(--ink-soft); margin-bottom: 12px; line-height: 1.5; }
+  .proof-card-amount { margin-bottom: 6px; }
+  .proof-card-amount-label {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-muted);
+  }
+  .proof-card-amount-val {
+    font-family: var(--sans); font-weight: 500; font-size: 22px; letter-spacing: -0.02em;
+  }
+  .proof-card-amount-val.accent { color: var(--accent); }
+  .proof-card-time {
+    font-family: var(--mono); font-size: 9px; color: var(--ink-muted);
+    padding-top: 10px; border-top: 1px solid var(--rule-soft); margin-top: 10px;
+  }
+
+  /* Testimonial cell */
+  .proof-testimonial {
+    border: 1px solid var(--rule); background: var(--ink); color: var(--paper);
+    padding: 48px 40px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    opacity: 0; transform: translateY(14px);
+    transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s;
+  }
+  .proof-testimonial.visible { opacity: 1; transform: translateY(0); }
+  .proof-testimonial-content { flex: 1; }
+  .proof-quote-mark {
+    font-family: var(--sans); font-size: 72px; line-height: 0.8;
+    color: var(--accent); margin-bottom: 16px; display: block;
+    font-weight: 400;
+  }
+  .proof-quote {
+    font-family: var(--sans); font-weight: 400;
+    font-size: clamp(20px, 2.2vw, 28px);
+    letter-spacing: -0.02em; line-height: 1.3;
+    margin-bottom: 28px;
+  }
+  .proof-attribution {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: rgba(255,255,255,0.45);
+    margin-bottom: 32px;
+  }
+  /* Photo placeholder inside testimonial */
+  .proof-testimonial-photo {
+    width: 100%; aspect-ratio: 4/3;
+    background: rgba(255,255,255,0.06);
+    border: 1.5px dashed rgba(255,255,255,0.2);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 8px;
+  }
+  .proof-testimonial-photo-icon { font-size: 32px; opacity: 0.3; }
+  .proof-testimonial-photo-label {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: rgba(255,255,255,0.3); text-align: center; line-height: 1.8;
+  }
+
+  /* ── TRUST STATS — staggered cards ── */
+  .trust-section {
+    padding: 120px 40px;
+    background: var(--paper-warm);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .trust-inner { max-width: 1280px; margin: 0 auto; }
+  .trust-cards {
+    display: flex; gap: 16px; align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .trust-card {
+    flex: 1; min-width: 200px;
+    padding: 28px 28px 32px;
+    border: 1px solid var(--rule);
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+  }
+  .trust-card.visible { opacity: 1; transform: translateY(0); }
+  /* Stagger + slight tilt per card */
+  .trust-card:nth-child(1) { background: var(--paper); transition-delay: 0s; transform-origin: bottom left; }
+  .trust-card:nth-child(2) { background: var(--ink); color: var(--paper); margin-top: 24px; transition-delay: 0.08s; }
+  .trust-card:nth-child(3) { background: var(--accent); color: var(--paper); margin-top: 8px; transition-delay: 0.16s; }
+  .trust-card:nth-child(4) { background: var(--paper); margin-top: 16px; transition-delay: 0.24s; }
+
+  @keyframes card-bounce {
+    0%   { transform: translateY(0); }
+    35%  { transform: translateY(-6px); }
+    65%  { transform: translateY(-2px); }
+    85%  { transform: translateY(-4px); }
+    100% { transform: translateY(0); }
+  }
+  .trust-card.bounce { animation: card-bounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+  .trust-val {
+    font-family: var(--sans); font-weight: 400; font-size: 44px;
+    letter-spacing: -0.04em; line-height: 1; margin-bottom: 10px;
+  }
+  .trust-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+    text-transform: uppercase; line-height: 1.6; margin-bottom: 8px;
+  }
+  .trust-card:nth-child(1) .trust-label,
+  .trust-card:nth-child(4) .trust-label { color: var(--ink-muted); }
+  .trust-card:nth-child(2) .trust-label,
+  .trust-card:nth-child(3) .trust-label { color: rgba(255,255,255,0.6); }
+  .trust-note { font-size: 13px; line-height: 1.6; }
+  .trust-card:nth-child(1) .trust-note,
+  .trust-card:nth-child(4) .trust-note { color: var(--ink-muted); }
+  .trust-card:nth-child(2) .trust-note { color: rgba(255,255,255,0.5); }
+  .trust-card:nth-child(3) .trust-note { color: rgba(255,255,255,0.75); }
+
+  /* ── APP SCREENS ── */
+  .app-section {
+    padding: 120px 40px;
+    max-width: 1280px; margin: 0 auto;
+  }
+  .app-header { margin-bottom: 40px; }
+  .app-headline {
+    font-family: var(--sans); font-weight: 400;
+    font-size: clamp(28px, 3.5vw, 44px);
+    letter-spacing: -0.03em; line-height: 1.1;
+  }
+  .app-headline em { font-style: normal; color: var(--accent); }
+  .app-screens {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+  }
+  .app-screen {
+    border: 1px solid var(--rule); background: var(--paper-warm);
+    padding: 32px 24px;
+    display: flex; flex-direction: column; gap: 20px;
+    scroll-snap-align: start;
+  }
+
+  .app-screen-label {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--ink-muted);
+  }
+  .app-screen-frame {
+    width: 100%; aspect-ratio: 9/16;
+    background: var(--paper-deep);
+    border: 1.5px dashed var(--rule);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 10px;
+  }
+  .app-screen-icon { font-size: 36px; opacity: 0.3; }
+  .app-screen-frame-label {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-muted); text-align: center; line-height: 1.9;
+  }
+  .app-screen-desc { font-size: 13px; color: var(--ink-muted); line-height: 1.65; }
+
+  /* ── APP SCREENS — carousel at tablet, tighter cards on mobile ── */
+  @media (max-width: 600px) {
+    .app-screen { flex: 0 0 80vw; min-width: 260px; }
+    .app-carousel-nav { display: flex; }
+  }
+  @media (min-width: 901px) {
+    .app-carousel-nav { display: flex; }
+    .app-screens {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      gap: 12px;
+      padding-bottom: 16px;
+      scrollbar-width: none;
+    }
+    .app-screens::-webkit-scrollbar { display: none; }
+    .app-screen {
+      flex: 0 0 calc(33.333% - 8px);
+      scroll-snap-align: start;
+      min-width: 260px;
+    }
+  }
+  /* Arrow nav buttons */
+  .app-screens-wrap { position: relative; }
+  .app-carousel-nav {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 20px;
+  }
+  .app-carousel-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 1.5px solid var(--rule);
+    background: var(--paper); color: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s;
+    flex-shrink: 0;
+  }
+  .app-carousel-btn:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .app-carousel-btn:disabled { opacity: 0.3; cursor: default; }
+  .app-carousel-btn:disabled:hover { background: var(--paper); color: var(--ink); border-color: var(--rule); }
+  .app-carousel-btn svg { width: 16px; height: 16px; }
+  .app-carousel-progress {
+    flex: 1; height: 1px; background: var(--rule); position: relative; overflow: hidden;
+  }
+  .app-carousel-progress-fill {
+    position: absolute; left: 0; top: 0; height: 100%;
+    background: var(--ink); transition: width 0.25s ease;
+    width: 33.333%;
+  }
+  .cta-strip {
+    background: var(--accent); color: var(--paper);
+    padding: 72px 40px;
+  }
+  .cta-strip-inner {
+    max-width: 1280px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between; gap: 40px;
+  }
+  .cta-strip-left { display: flex; flex-direction: column; gap: 20px; }
+  .cta-spot-illus {
+    width: 64px; height: 64px;
+    background: rgba(255,255,255,0.15);
+    border: 1.5px dashed rgba(255,255,255,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+  }
+  .cta-headline {
+    font-family: var(--sans); font-weight: 400;
+    font-size: clamp(26px, 3vw, 40px);
+    letter-spacing: -0.03em; line-height: 1.1; max-width: 520px;
+  }
+  .cta-sub {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+    text-transform: uppercase; opacity: 0.7;
+  }
+  .btn-white {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; background: var(--paper); color: var(--ink);
+    padding: 18px 32px; text-decoration: none; flex-shrink: 0;
+    display: inline-flex; align-items: center; gap: 10px; transition: opacity 0.15s;
+  }
+  .btn-white:hover { opacity: 0.88; }
+
+  /* ── FOOTER ── */
+  .footer {
+    border-top: 1px solid var(--rule);
+    padding: 48px 40px 32px;
+  }
+  .footer-inner {
+    max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: 220px 1fr 1fr 1fr; gap: 40px;
+  }
+  .footer-logo {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em;
+    text-transform: uppercase; display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+  }
+  .footer-brand-note {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.06em;
+    color: var(--ink-muted); line-height: 1.8;
+  }
+  .footer-col-label {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--ink-muted); margin-bottom: 14px; display: block;
+  }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .footer-links a {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--ink-soft); text-decoration: none; transition: color 0.15s;
+  }
+  .footer-links a:hover { color: var(--ink); }
+  .footer-legal {
+    grid-column: 1/-1; border-top: 1px solid var(--rule);
+    padding-top: 24px; font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.06em; color: var(--ink-muted); line-height: 1.9;
+  }
+
+  /* ── REVEAL ── */
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.55s ease, transform 0.55s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ══════════════════════════════════════
+     RESPONSIVE — TABLET (≤ 900px)
+  ══════════════════════════════════════ */
+  @media (max-width: 900px) {
+
+    /* Nav */
+    .nav { padding: 0 24px; }
+    .nav-links { display: none; }
+
+    /* Hero */
+    .hero { padding: 56px 24px 64px; min-height: auto; }
+    .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+    .hero-illus { aspect-ratio: 4/3; max-width: 480px; }
+    .hero-subhead { max-width: 100%; font-size: 17px; }
+
+    /* Ticker */
+    .live-ticker { padding: 14px 24px; }
+
+    /* Explainer / Translation */
+    .translation-section { padding: 80px 24px; }
+    .translation-grid { grid-template-columns: 1fr; }
+    .translation-item-full { grid-template-columns: 120px 1fr; gap: 24px; padding: 28px; }
+
+    /* Bento */
+    .bento-section { padding: 80px 24px; }
+    .bento-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .bento-cell-1,
+    .bento-cell-2,
+    .bento-cell-vis-landscape,
+    .bento-cell-4,
+    .bento-cell-5,
+    .bento-cell-vis-square { grid-column: span 1; min-height: 240px; }
+    .bento-cell-vis-landscape { grid-column: span 2; min-height: 260px; }
+    .bento-cell-num { font-size: 64px; }
+
+    /* Proof */
+    .proof-section { padding: 80px 24px; }
+    .proof-layout { grid-template-columns: 1fr; }
+    .proof-testimonial { padding: 36px 28px; margin-top: 2px; }
+    .proof-quote { font-size: 20px; }
+
+    /* Trust */
+    .trust-section { padding: 80px 24px; }
+    .trust-cards { gap: 12px; }
+    .trust-card:nth-child(2),
+    .trust-card:nth-child(3),
+    .trust-card:nth-child(4) { margin-top: 0; }
+    .trust-val { font-size: 36px; }
+
+    /* App screens — carousel starts at tablet */
+    .app-section { padding: 80px 24px; }
+    .app-screens-wrap { position: relative; }
+    .app-screens {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      gap: 12px;
+      padding-bottom: 16px;
+      grid-template-columns: unset;
+    }
+    .app-screens::-webkit-scrollbar { display: none; }
+    .app-screen {
+      flex: 0 0 72vw;
+      scroll-snap-align: start;
+      min-width: 260px;
+    }
+    .app-screen:nth-child(3) { grid-column: unset; flex-direction: column; }
+    .app-screen:nth-child(3) .app-screen-frame { aspect-ratio: 9/16; flex: unset; width: 100%; }
+    .app-carousel-nav { display: flex; }
+
+    /* CTA */
+    .cta-strip { padding: 56px 24px; }
+    .cta-strip-inner { flex-direction: column; align-items: flex-start; gap: 28px; }
+
+    /* Footer */
+    .footer { padding: 40px 24px 28px; }
+    .footer-inner { grid-template-columns: 1fr 1fr; gap: 32px; }
+    .footer-inner > div:first-child { grid-column: span 2; }
+    .footer-legal { grid-column: span 2; }
+  }
+
+  /* ══════════════════════════════════════
+     RESPONSIVE — MOBILE (≤ 600px)
+  ══════════════════════════════════════ */
+  @media (max-width: 600px) {
+
+    /* Nav — logo + CTA only */
+    .nav { padding: 0 20px; height: 52px; }
+    .nav-cta { padding: 8px 16px; font-size: 9px; }
+
+    /* Hero */
+    .hero { padding: 44px 20px 56px; }
+    .hero-inner { gap: 32px; }
+    .hero-eyebrow-pill { font-size: 8px; }
+    .hero-headline { font-size: clamp(40px, 11vw, 56px); margin-bottom: 20px; }
+    .hero-subhead { font-size: 16px; margin-bottom: 28px; }
+    .hero-actions { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 28px; }
+    .btn-primary { width: 100%; justify-content: center; padding: 16px 20px; }
+    .hero-illus { aspect-ratio: 1/1; max-width: 100%; }
+    .hero-trust { flex-direction: column; align-items: flex-start; gap: 10px; padding-top: 20px; }
+
+    /* Ticker */
+    .live-ticker { padding: 12px 20px; gap: 12px; }
+    .live-badge { font-size: 9px; }
+    .ticker-item { font-size: 11px; }
+
+    /* Explainer */
+    .explainer { padding: 64px 20px; }
+    .section-eyebrow { margin-bottom: 28px; }
+    .explainer-card { padding: 28px 24px; }
+    .explainer-headline { font-size: 18px; }
+    .explainer-illus { aspect-ratio: 3/2; }
+
+    /* Translation */
+    .translation-section { padding: 64px 20px; }
+    .translation-item-full { grid-template-columns: 1fr; gap: 20px; padding: 24px 20px; }
+    .translation-spot-illus { aspect-ratio: 3/1; max-width: 100%; }
+    .translation-plain { font-size: 16px; }
+
+    /* Bento */
+    .bento-section { padding: 64px 20px; }
+    .bento-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .bento-grid { grid-template-columns: 1fr; gap: 6px; }
+    .bento-cell-1,
+    .bento-cell-2,
+    .bento-cell-vis-landscape,
+    .bento-cell-4,
+    .bento-cell-5,
+    .bento-cell-vis-square { grid-column: span 1; min-height: 200px; }
+    .bento-cell-vis-landscape { min-height: 220px; }
+    .bento-cell { padding: 28px 24px; }
+    .bento-cell-num { font-size: 72px; top: 12px; right: 16px; }
+    .bento-cell-title { font-size: 22px; }
+
+    /* Proof */
+    .proof-section { padding: 64px 20px; }
+    .proof-receipts { grid-template-columns: 1fr; }
+    .proof-testimonial { padding: 28px 24px; }
+    .proof-quote { font-size: 18px; }
+    .proof-quote-mark { font-size: 56px; }
+
+    /* Trust */
+    .trust-section { padding: 64px 20px; }
+    .trust-cards { flex-direction: column; gap: 6px; }
+    .trust-card { min-width: unset; width: 100%; }
+    .trust-val { font-size: 40px; }
+
+    /* App screens — handled by carousel CSS above */
+
+    /* CTA */
+    .cta-strip { padding: 48px 20px; }
+    .cta-headline { font-size: clamp(22px, 6vw, 32px); }
+    .btn-white { width: 100%; justify-content: center; padding: 16px 20px; }
+
+    /* Footer */
+    .footer { padding: 40px 20px 28px; }
+    .footer-inner { grid-template-columns: 1fr; gap: 28px; }
+    .footer-inner > div:first-child { grid-column: span 1; }
+    .footer-legal { grid-column: span 1; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a class="nav-logo" href="#">
+    <span class="nav-logo-dot"></span>
+    Tracks
+  </a>
+  <ul class="nav-links">
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#receipts">Real claims</a></li>
+    <li><a href="#faq">Questions</a></li>
+    <li><a href="#">Sign in</a></li>
+  </ul>
+  <a href="#quote" class="nav-cta">Get my quote →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="reveal">
+      <div class="hero-eyebrow-pill">
+        <span class="dot"></span>
+        Backed by 25 years of Trupanion data
+      </div>
+      <h1 class="hero-headline">Your pet’s<br>got <em>backup.</em></h1>
+      <p class="hero-subhead">When something goes wrong, we pay your vet directly. You walk out paying only your share. No forms. No waiting around.</p>
+      <div class="hero-actions">
+        <a href="#quote" class="btn-primary">See your plan before you commit →</a>
+        <a href="#receipts" class="btn-ghost">See a real claim</a>
+      </div>
+      <div class="hero-trust">
+        <div class="hero-trust-avatars">
+          <div class="hero-trust-avatar">🐶</div>
+          <div class="hero-trust-avatar">🐱</div>
+          <div class="hero-trust-avatar">🐕</div>
+          <div class="hero-trust-avatar">🐈</div>
+        </div>
+        <p class="hero-trust-text"><strong>+250,000 pets covered</strong><br>across North America · No annual limit · Cancel anytime</p>
+      </div>
+    </div>
+
+    <div class="hero-illus reveal">
+      <div class="hero-illus-icon">🐾</div>
+      <div class="hero-illus-label">
+        Hero illustration or photo<br>
+        Square format · Warm, joyful<br>
+        Brand direction A / B / C<br>
+        Suggested: new pet parent moment,<br>not a vet visit
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE TICKER -->
+<div class="live-ticker">
+  <div class="live-badge">
+    <div class="live-dot"></div>
+    Real claims
+  </div>
+  <div class="ticker-divider"></div>
+  <div class="ticker-wrap">
+    <div class="ticker-track">
+      <span class="ticker-item"><strong>Bear</strong> swallowed a hair tie · we paid <span class="ticker-paid">$1,847</span> · 38 seconds</span>
+      <span class="ticker-sep">—</span>
+      <span class="ticker-item"><strong>Mochi</strong> had a UTI · we paid <span class="ticker-paid">$420</span> · 12 seconds</span>
+      <span class="ticker-sep">—</span>
+      <span class="ticker-item"><strong>Pepper</strong> hyperthyroid workup · we paid <span class="ticker-paid">$1,290</span> · 9 seconds</span>
+      <span class="ticker-sep">—</span>
+      <span class="ticker-item"><strong>Olive</strong> tore her ACL · we paid <span class="ticker-paid">$5,840</span> · 45 seconds</span>
+      <span class="ticker-sep">—</span>
+      <span class="ticker-item"><strong>Bear</strong> swallowed a hair tie · we paid <span class="ticker-paid">$1,847</span> · 38 seconds</span>
+      <span class="ticker-sep">—</span>
+      <span class="ticker-item"><strong>Mochi</strong> had a UTI · we paid <span class="ticker-paid">$420</span> · 12 seconds</span>
+      <span class="ticker-sep">—</span>
+      <span class="ticker-item"><strong>Pepper</strong> hyperthyroid workup · we paid <span class="ticker-paid">$1,290</span> · 9 seconds</span>
+      <span class="ticker-sep">—</span>
+      <span class="ticker-item"><strong>Olive</strong> tore her ACL · we paid <span class="ticker-paid">$5,840</span> · 45 seconds</span>
+    </div>
+  </div>
+</div>
+
+<!-- INSURANCE WORDS, TRANSLATED -->
+<section class="translation-section" id="how">
+  <div class="translation-section-inner">
+    <div class="translation-section-header reveal">
+      <span class="section-eyebrow">Insurance words, translated</span>
+      <h2 class="translation-section-headline">We cut the jargon.<br><em>Not the coverage.</em></h2>
+      <p class="translation-section-sub">Every insurer uses the same confusing terms. Here's what they actually mean, in plain English.</p>
+    </div>
+    <div class="translation-grid">
+      <div class="translation-item-full reveal">
+        <div class="translation-spot-illus">
+          <div class="translation-spot-icon">💰</div>
+          <div class="translation-spot-label">Spot illustration<br>Money / threshold moment</div>
+        </div>
+        <div class="translation-item-body">
+          <div class="translation-jargon">Deductible</div>
+          <div class="translation-plain">The first bit you pay</div>
+          <div class="translation-note">Before we kick in, you cover a set amount each year. You pick how much. A lower deductible means a higher monthly cost, but less to pay when something happens.</div>
+        </div>
+      </div>
+      <div class="translation-item-full reveal">
+        <div class="translation-spot-illus">
+          <div class="translation-spot-icon">🤝</div>
+          <div class="translation-spot-label">Spot illustration<br>Split / partnership moment</div>
+        </div>
+        <div class="translation-item-body">
+          <div class="translation-jargon">Co-insurance</div>
+          <div class="translation-plain">Your split after that</div>
+          <div class="translation-note">Once you've hit your deductible, we cover 90% of the remaining bill. You cover 10%. On a $2,000 visit, that's your deductible plus $200.</div>
+        </div>
+      </div>
+      <div class="translation-item-full reveal">
+        <div class="translation-spot-illus">
+          <div class="translation-spot-icon">📋</div>
+          <div class="translation-spot-label">Spot illustration<br>Timeline / before &amp; after</div>
+        </div>
+        <div class="translation-item-body">
+          <div class="translation-jargon">Pre-existing condition</div>
+          <div class="translation-plain">Something already going on</div>
+          <div class="translation-note">If your pet was diagnosed with something before you enrolled, that condition won't be covered. Everything that happens after you join is covered. We'll show you exactly what applies.</div>
+        </div>
+      </div>
+      <div class="translation-item-full reveal">
+        <div class="translation-spot-illus">
+          <div class="translation-spot-icon">♾️</div>
+          <div class="translation-spot-label">Spot illustration<br>No cap / no ceiling</div>
+        </div>
+        <div class="translation-item-body">
+          <div class="translation-jargon">Annual limit</div>
+          <div class="translation-plain">The most they'll pay in a year</div>
+          <div class="translation-note">Most pet insurance caps what they'll pay out. We don't. A $40,000 surgery gets covered the same as a $400 one. You never hit a ceiling when it matters most.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BENTO — FOUR THINGS -->
+<section class="bento-section" id="product">
+  <div class="bento-section-inner">
+    <div class="bento-header reveal">
+      <h2 class="bento-headline">Four things.<br><em>One promise.</em></h2>
+      <span class="section-eyebrow" style="margin:0;">The product</span>
+    </div>
+
+    <div class="bento-grid">
+
+      <!-- ROW 1: The Quote (left, large) + Pre-Auth (right, dark) -->
+      <div class="bento-cell bento-cell-1">
+        <span class="bento-cell-num">01</span>
+        <div class="bento-cell-content">
+          <span class="bento-cell-label">The Quote</span>
+          <div class="bento-cell-title">See what’s ahead for your specific pet.</div>
+          <p class="bento-cell-body">Different breeds need different things. We’ve seen 25 years of claims. We can show you what your pet is likely to need, and what it might cost, before you commit to anything.</p>
+        </div>
+      </div>
+
+      <div class="bento-cell bento-cell-2">
+        <span class="bento-cell-num">03</span>
+        <div class="bento-cell-content">
+          <span class="bento-cell-label">Vet pay</span>
+          <div class="bento-cell-title">We pay your vet. Not you, later.</div>
+          <p class="bento-cell-body">At the vet, we approve and pay in seconds. You walk out paying only your share. No forms. No hold music.</p>
+        </div>
+      </div>
+
+      <!-- ROW 2: Landscape visual (left, wide) + The Pulse (right, accent) -->
+      <div class="bento-cell bento-cell-vis-landscape">
+        <div class="bento-vis-inner">
+          <div class="bento-vis-icon">📸</div>
+          <div class="bento-vis-label">Photo / illustration · Landscape format<br>Wide visual moment · Warm, lifestyle</div>
+        </div>
+      </div>
+
+      <div class="bento-cell bento-cell-4">
+        <span class="bento-cell-num">02</span>
+        <div class="bento-cell-content">
+          <span class="bento-cell-label">The Pulse</span>
+          <div class="bento-cell-title">A heads-up every month, before you need it.</div>
+          <p class="bento-cell-body">What to watch for this month, based on your pet’s age and breed. Useful every month, not just when something’s wrong.</p>
+        </div>
+      </div>
+
+      <!-- ROW 3: The Receipt (left) + Square visual (right) -->
+      <div class="bento-cell bento-cell-5">
+        <span class="bento-cell-num">04</span>
+        <div class="bento-cell-content">
+          <span class="bento-cell-label">The Receipt</span>
+          <div class="bento-cell-title">Every month, you see what you paid, what we paid, and exactly what we made.</div>
+          <p class="bento-cell-body">Our margin, right there. Because why would we hide it?</p>
+        </div>
+      </div>
+
+      <div class="bento-cell bento-cell-vis-square">
+        <div class="bento-vis-inner">
+          <div class="bento-vis-icon">✨</div>
+          <div class="bento-vis-label">Photo / illustration · Square format</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- REAL RECEIPTS + TESTIMONIAL -->
+<section class="proof-section" id="receipts">
+  <div class="proof-header reveal">
+    <span class="proof-eyebrow">Real claims · Real receipts</span>
+    <h2 class="proof-headline">Real pets. Real bills.<br><em>Real payouts.</em></h2>
+    <p class="proof-note">Pet names changed. Breed, dollar amount, and seconds to pay are all real. Updated monthly.</p>
+  </div>
+
+  <div class="proof-layout">
+    <!-- 2x2 receipt grid -->
+    <div class="proof-receipts">
+      <div class="proof-card">
+        <div class="proof-card-pet">Bear</div>
+        <div class="proof-card-detail">Maine Coon · 3yr</div>
+        <div class="proof-card-what">Swallowed a hair tie. Emergency surgery.</div>
+        <div class="proof-card-amount">
+          <div class="proof-card-amount-label">Total bill</div>
+          <div class="proof-card-amount-val">$2,300</div>
+        </div>
+        <div class="proof-card-amount">
+          <div class="proof-card-amount-label">We paid</div>
+          <div class="proof-card-amount-val accent">$1,847</div>
+        </div>
+        <div class="proof-card-time">Paid to vet · 38 seconds</div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-card-pet">Mochi</div>
+        <div class="proof-card-detail">Shiba Inu · 5yr</div>
+        <div class="proof-card-what">UTI. Antibiotics and exam.</div>
+        <div class="proof-card-amount">
+          <div class="proof-card-amount-label">Total bill</div>
+          <div class="proof-card-amount-val">$530</div>
+        </div>
+        <div class="proof-card-amount">
+          <div class="proof-card-amount-label">We paid</div>
+          <div class="proof-card-amount-val accent">$420</div>
+        </div>
+        <div class="proof-card-time">Paid to vet · 12 seconds</div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-card-pet">Pepper</div>
+        <div class="proof-card-detail">Domestic Shorthair · 6yr</div>
+        <div class="proof-card-what">Hyperthyroid diagnosis. Medication and monitoring.</div>
+        <div class="proof-card-amount">
+          <div class="proof-card-amount-label">Total bill</div>
+          <div class="proof-card-amount-val">$1,640</div>
+        </div>
+        <div class="proof-card-amount">
+          <div class="proof-card-amount-label">We paid</div>
+          <div class="proof-card-amount-val accent">$1,290</div>
+        </div>
+        <div class="proof-card-time">Paid to vet · 9 seconds</div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-card-pet">Olive</div>
+        <div class="proof-card-detail">Labrador · 4yr</div>
+        <div class="proof-card-what">ACL tear. Surgery and recovery.</div>
+        <div class="proof-card-amount">
+          <div class="proof-card-amount-label">Total bill</div>
+          <div class="proof-card-amount-val">$7,200</div>
+        </div>
+        <div class="proof-card-amount">
+          <div class="proof-card-amount-label">We paid</div>
+          <div class="proof-card-amount-val accent">$5,840</div>
+        </div>
+        <div class="proof-card-time">Paid to vet · 45 seconds</div>
+      </div>
+    </div>
+
+    <!-- Big testimonial -->
+    <div class="proof-testimonial">
+      <div class="proof-testimonial-content">
+        <span class="proof-quote-mark">“</span>
+        <p class="proof-quote">I didn’t even have to think about the bill. The vet said it was approved before I finished putting my card away.</p>
+        <p class="proof-attribution">— Priya K. · French Bulldog owner · Toronto, ON</p>
+      </div>
+      <div class="proof-testimonial-photo">
+        <div class="proof-testimonial-photo-icon">📷</div>
+        <div class="proof-testimonial-photo-label">Photo / illustration<br>Pet or lifestyle moment<br>Emotional, warm</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST STATS — staggered jiggle cards -->
+<section class="trust-section">
+  <div class="trust-inner">
+    <span class="section-eyebrow reveal" style="margin-bottom:32px;">By the numbers</span>
+    <div class="trust-cards">
+      <div class="trust-card">
+        <div class="trust-val">$14.2K</div>
+        <div class="trust-label">Average paid out<br>per pet over their life</div>
+        <div class="trust-note">That’s real money back into members’ pockets. Not a projection.</div>
+      </div>
+      <div class="trust-card">
+        <div class="trust-val">70¢</div>
+        <div class="trust-label">Of every dollar goes<br>back to members</div>
+        <div class="trust-note">For every $100 you pay us, $70 goes back to cover claims.</div>
+      </div>
+      <div class="trust-card">
+        <div class="trust-val">Under 60 seconds</div>
+        <div class="trust-label">From approved<br>to vet paid</div>
+        <div class="trust-note">While you’re still standing at the front desk.</div>
+      </div>
+      <div class="trust-card">
+        <div class="trust-val">Zero</div>
+        <div class="trust-label">Surprise denials after<br>you’ve already paid</div>
+        <div class="trust-note">You know what’s covered before anything happens. That’s the whole point.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- APP SCREENS -->
+<section class="app-section" id="app">
+  <div class="app-header reveal">
+    <span class="section-eyebrow">The product · App moments</span>
+    <h2 class="app-headline">What Tracks actually<br><em>looks like.</em></h2>
+    <div class="app-store-btns">
+      <a href="#" class="app-store-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        <div class="app-store-text">
+          <span class="app-store-sub">Download on the</span>
+          <span class="app-store-name">App Store</span>
+        </div>
+      </a>
+      <a href="#" class="app-store-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.76c.3.17.64.22.99.14l.11-.06 10.72-10.73-2.2-2.2L3.18 23.76zm14.54-14.54l-2.3-1.3-2.3 1.3.01-.01-2.5-2.5 2.49-1.4c.3-.17.67-.17.97 0L19.5 9.1l-1.78 1.12zm-11.3 3.82l-2.2-2.2L3.18.24C2.88.09 2.55.13 2.27.29l10.33 10.32-6.08 2.43zM20.82 10.56l-1.93-1.09-2.28 1.29 2.28 1.28 1.96-1.1c.55-.31.55-1.07-.03-1.38z"/></svg>
+        <div class="app-store-text">
+          <span class="app-store-sub">Get it on</span>
+          <span class="app-store-name">Google Play</span>
+        </div>
+      </a>
+    </div>
+  </div>
+  <div class="app-screens-wrap">
+    <div class="app-screens" id="appScreens">
+      <div class="app-screen">
+        <div class="app-screen-label">01 · The Quote result</div>
+        <div class="app-screen-frame">
+          <div class="app-screen-icon">📊</div>
+          <div class="app-screen-frame-label">App screen<br>Quote result view<br>Breed-specific forecast</div>
+        </div>
+        <p class="app-screen-desc">Your pet's likely needs over their lifetime, specific to their breed and age.</p>
+      </div>
+      <div class="app-screen">
+        <div class="app-screen-label">02 · Pre-auth at the vet</div>
+        <div class="app-screen-frame">
+          <div class="app-screen-icon">⚡</div>
+          <div class="app-screen-frame-label">App screen<br>One-tap pre-auth<br>Claim approval moment</div>
+        </div>
+        <p class="app-screen-desc">One tap at the clinic. We approve and pay directly. You see your share before anything happens.</p>
+      </div>
+      <div class="app-screen">
+        <div class="app-screen-label">03 · The Pulse card</div>
+        <div class="app-screen-frame">
+          <div class="app-screen-icon">📱</div>
+          <div class="app-screen-frame-label">App screen<br>Monthly Pulse card<br>Proactive health heads-up</div>
+        </div>
+        <p class="app-screen-desc">This month's heads-up for your pet. No searching required.</p>
+      </div>
+    </div>
+  </div>
+  <div class="app-carousel-nav">
+    <button class="app-carousel-btn" id="appPrev" aria-label="Previous screen">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 3L5 8l5 5"/>
+      </svg>
+    </button>
+    <div class="app-carousel-progress">
+      <div class="app-carousel-progress-fill" id="appProgress"></div>
+    </div>
+    <button class="app-carousel-btn" id="appNext" aria-label="Next screen">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 3l5 5-5 5"/>
+      </svg>
+    </button>
+  </div>
+</section></section>
+<div class="cta-strip reveal" id="quote">
+  <div class="cta-strip-inner">
+    <div class="cta-strip-left">
+      <div class="cta-spot-illus">🐾</div>
+      <h2 class="cta-headline">See what we’d cover for your pet, before you give us a card.</h2>
+      <p class="cta-sub">2 minutes · No card needed · Cancel anytime</p>
+    </div>
+    <a href="#" class="btn-white">Get my quote →</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">
+        <span class="nav-logo-dot"></span>
+        Tracks
+      </div>
+      <p class="footer-brand-note">A Trupanion company.<br>Underwritten by Accelerant<br>Insurance Company of Canada.</p>
+    </div>
+    <div>
+      <span class="footer-col-label">Product</span>
+      <ul class="footer-links">
+        <li><a href="#">Get a quote</a></li>
+        <li><a href="#">How it works</a></li>
+        <li><a href="#">What we cover</a></li>
+        <li><a href="#">Real receipts</a></li>
+        <li><a href="#">The Pulse</a></li>
+      </ul>
+    </div>
+    <div>
+      <span class="footer-col-label">Company</span>
+      <ul class="footer-links">
+        <li><a href="#">About</a></li>
+        <li><a href="#">Powered by Trupanion</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press</a></li>
+      </ul>
+    </div>
+    <div>
+      <span class="footer-col-label">Support</span>
+      <ul class="footer-links">
+        <li><a href="#">Contact us</a></li>
+        <li><a href="#">Help centre</a></li>
+        <li><a href="#">Member login</a></li>
+        <li><a href="#">1-800-[NUMBER]</a></li>
+      </ul>
+    </div>
+    <div class="footer-legal">
+      Tracks is underwritten by Accelerant Insurance Company of Canada. Policy terms and conditions apply. Coverage and pricing vary by province. This is not a policy — see your policy document for full terms and conditions. © 2026 Tracks Inc. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script>
+  // General reveal — smooth fade-up
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.06 });
+  revealEls.forEach(el => revealObs.observe(el));
+
+  // Bento cells — staggered smooth reveal, no jiggle
+  const bentoCells = document.querySelectorAll('.bento-cell');
+  const bentoObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const delay = Array.from(bentoCells).indexOf(entry.target) * 60;
+        setTimeout(() => entry.target.classList.add('visible'), delay);
+        bentoObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  bentoCells.forEach(el => bentoObs.observe(el));
+
+  // Proof cards — staggered smooth reveal
+  const proofCards = document.querySelectorAll('.proof-card, .proof-testimonial');
+  const proofObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const delay = Array.from(proofCards).indexOf(entry.target) * 80;
+        setTimeout(() => entry.target.classList.add('visible'), delay);
+        proofObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.06 });
+  proofCards.forEach(el => proofObs.observe(el));
+
+  // Trust cards — staggered reveal + one small bounce per card
+  const trustCards = document.querySelectorAll('.trust-card');
+  const trustObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const delay = Array.from(trustCards).indexOf(entry.target) * 90;
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+          setTimeout(() => entry.target.classList.add('bounce'), 80);
+        }, delay);
+        trustObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  trustCards.forEach(el => trustObs.observe(el));
+
+  // App screens carousel — arrows, progress bar, scroll sync
+  const appScreensEl = document.getElementById('appScreens');
+  const appPrev = document.getElementById('appPrev');
+  const appNext = document.getElementById('appNext');
+  const appProgress = document.getElementById('appProgress');
+
+  function getCardWidth() {
+    const card = appScreensEl?.querySelector('.app-screen');
+    if (!card) return 0;
+    return card.offsetWidth + 12; // card + gap
+  }
+
+  function updateCarouselState() {
+    if (!appScreensEl) return;
+    const total = appScreensEl.querySelectorAll('.app-screen').length;
+    const scrollLeft = appScreensEl.scrollLeft;
+    const cardW = getCardWidth();
+    const maxScroll = appScreensEl.scrollWidth - appScreensEl.clientWidth;
+    const progress = maxScroll > 0 ? (scrollLeft / maxScroll) : 0;
+    const fillPct = (1 / total) + progress * ((total - 1) / total);
+    if (appProgress) appProgress.style.width = (fillPct * 100) + '%';
+    if (appPrev) appPrev.disabled = scrollLeft <= 4;
+    if (appNext) appNext.disabled = scrollLeft >= maxScroll - 4;
+  }
+
+  if (appScreensEl) {
+    appScreensEl.addEventListener('scroll', updateCarouselState, { passive: true });
+    updateCarouselState();
+
+    appNext?.addEventListener('click', () => {
+      appScreensEl.scrollBy({ left: getCardWidth(), behavior: 'smooth' });
+    });
+    appPrev?.addEventListener('click', () => {
+      appScreensEl.scrollBy({ left: -getCardWidth(), behavior: 'smooth' });
+    });
+  }
+
+
+  const appScreens = document.querySelectorAll('.app-screen');
+  const appObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const delay = Array.from(appScreens).indexOf(entry.target) * 100;
+        setTimeout(() => entry.target.classList.add('visible'), delay);
+        appObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  appScreens.forEach(el => appObs.observe(el));
+</script>
+</body>
+</html>

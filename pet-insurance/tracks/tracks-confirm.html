@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tracks — Daisy's Covered</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --pink:      #ed47a2;
+  --pink-dim:  rgba(237,71,162,0.10);
+  --yellow:    #f9d129;
+  --black:     #0d0d0d;
+  --white:     #ffffff;
+  --cream:     #f5ecd8;
+  --muted:     rgba(13,13,13,0.52);
+  --border:    rgba(13,13,13,0.10);
+  --font-d:    'Eloura Sans', 'DM Sans', system-ui, sans-serif;
+  --font-b:    'ABC Ginto', 'DM Sans', system-ui, sans-serif;
+}
+html, body { height: 100%; overflow: hidden; background: #fff; font-family: var(--font-b); color: var(--black); display: flex; align-items: center; justify-content: center; }
+
+.phone { width: 390px; border-radius: 52px; background: var(--cream); border: 10px solid var(--black); overflow: hidden; }
+.notch { width: 126px; height: 30px; background: var(--black); border-radius: 0 0 22px 22px; margin: 0 auto; }
+.status { display: flex; justify-content: space-between; align-items: center; padding: 7px 24px 4px; font-family: var(--font-d); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--black); }
+.nav { display: flex; align-items: center; justify-content: center; padding: 10px 20px 12px; border-bottom: 1.5px solid var(--border); background: var(--cream); }
+
+.body { height: 730px; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; scrollbar-width: none; }
+.body::-webkit-scrollbar { display: none; }
+
+/* hero */
+.hero { background: var(--pink); text-align: center; position: relative; }
+.hero-illo { display: block; width: 100%; height: 200px; object-fit: contain; object-position: center bottom; padding: 16px 40px 0; }
+.hero-text { padding: 12px 24px 20px; }
+.check-circle { display: none; }
+.hero-h { font-family: var(--font-d); font-size: 36px; text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.0; color: var(--white); margin-bottom: 8px; }
+.hero-h em { font-style: normal; color: var(--yellow); }
+.hero-sub { font-family: var(--font-b); font-size: 14px; color: rgba(255,255,255,0.85); line-height: 1.55; }
+.hero-paw { position: absolute; right: -10px; bottom: -16px; font-size: 110px; opacity: 0.10; transform: rotate(14deg); line-height: 1; pointer-events: none; }
+
+/* content scroll */
+.content { padding: 18px 18px 40px; display: flex; flex-direction: column; gap: 14px; }
+
+/* plan card */
+.plan-card { background: var(--white); border: 2px solid var(--border); border-radius: 16px; overflow: hidden; }
+.plan-top { background: var(--black); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; }
+.plan-name { font-family: var(--font-d); font-size: 16px; text-transform: uppercase; letter-spacing: 0.02em; color: var(--white); }
+.plan-name em { font-style: normal; color: var(--yellow); }
+.plan-price { font-family: var(--font-d); font-size: 16px; text-transform: uppercase; color: var(--pink); }
+.plan-rows { padding: 2px 0; }
+.plan-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 18px; border-bottom: 1px solid var(--border); }
+.plan-row:last-child { border-bottom: none; }
+.row-label { font-family: var(--font-b); font-size: 13px; color: var(--muted); }
+.row-val { font-family: var(--font-d); font-size: 13px; text-transform: uppercase; letter-spacing: 0.02em; color: var(--black); }
+.row-val.normal { font-family: var(--font-b); text-transform: none; letter-spacing: 0; font-size: 13px; }
+
+/* next steps */
+.section-label { font-family: var(--font-b); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); padding: 0 2px; }
+.next-list { background: var(--white); border: 1.5px solid var(--border); border-radius: 16px; overflow: hidden; }
+.next-item { display: flex; align-items: flex-start; gap: 14px; padding: 16px 16px; border-bottom: 1px solid var(--border); }
+.next-item:last-child { border-bottom: none; }
+.next-num { width: 26px; height: 26px; border-radius: 50%; background: var(--pink); display: flex; align-items: center; justify-content: center; font-family: var(--font-d); font-size: 13px; color: var(--white); flex-shrink: 0; margin-top: 1px; }
+.next-title { font-family: var(--font-b); font-size: 14px; font-weight: 700; color: var(--black); margin-bottom: 3px; }
+.next-detail { font-family: var(--font-b); font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+/* heads up card */
+.heads-up { background: var(--yellow); border-radius: 16px; padding: 18px 18px; }
+.heads-up-label { font-family: var(--font-b); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(13,13,13,0.45); margin-bottom: 6px; }
+.heads-up-h { font-family: var(--font-d); font-size: 18px; text-transform: uppercase; letter-spacing: 0.01em; line-height: 1.15; color: var(--black); margin-bottom: 6px; }
+.heads-up-sub { font-family: var(--font-b); font-size: 13px; color: rgba(13,13,13,0.62); line-height: 1.55; }
+
+/* CTA */
+.app-btn { display: block; width: 100%; padding: 17px; background: var(--pink); color: var(--white); border: none; border-radius: 999px; font-family: var(--font-d); font-size: 17px; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: opacity 0.15s; text-align: center; }
+.app-btn:hover { opacity: 0.90; }
+.app-note { font-family: var(--font-b); font-size: 11px; color: var(--muted); text-align: center; line-height: 1.5; }
+
+.home-bar { height: 24px; display: flex; align-items: center; justify-content: center; margin-top: 8px; }
+.home-bar::after { content: ''; display: block; width: 110px; height: 4px; background: var(--black); border-radius: 2px; opacity: 0.12; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="notch"></div>
+  <div class="status"><span>9:41</span><span>● ● ●</span></div>
+  <div class="nav">
+    <img src="tracks_black.png" alt="Tracks" style="height:26px;display:block;">
+  </div>
+
+  <div class="body">
+    <div class="hero">
+      <img src="dog-cat-love.png" alt="" class="hero-illo" aria-hidden="true" onerror="this.style.display='none'">
+      <div class="hero-text">
+        <div class="hero-h"><em>Daisy's</em> covered.</div>
+        <div class="hero-sub">You're a prepared pet parent now.<br>Here's what happens next.</div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="plan-card">
+        <div class="plan-top">
+          <div class="plan-name"><em>Frenchie</em> Complete</div>
+          <div class="plan-price">$72 / mo</div>
+        </div>
+        <div class="plan-rows">
+          <div class="plan-row">
+            <span class="row-label">Coverage starts</span>
+            <span class="row-val">Jun 9, 2026</span>
+          </div>
+          <div class="plan-row">
+            <span class="row-label">Waiting period</span>
+            <span class="row-val">14 days</span>
+          </div>
+          <div class="plan-row">
+            <span class="row-label">Confirmation sent to</span>
+            <span class="row-val normal">emily@gmail.com</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-label">What happens next</div>
+      <div class="next-list">
+        <div class="next-item">
+          <div class="next-num">1</div>
+          <div>
+            <div class="next-title">Check your email</div>
+            <div class="next-detail">Your plan details and coverage start date are on their way.</div>
+          </div>
+        </div>
+        <div class="next-item">
+          <div class="next-num">2</div>
+          <div>
+            <div class="next-title">Book Daisy's first vet visit after Jun 9</div>
+            <div class="next-detail">Anything identified before coverage starts won't be covered.</div>
+          </div>
+        </div>
+        <div class="next-item">
+          <div class="next-num">3</div>
+          <div>
+            <div class="next-title">We pay the vet directly</div>
+            <div class="next-detail">File a claim in the app. Tracks handles the rest.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="heads-up">
+        <div class="heads-up-label">Heads up</div>
+        <div class="heads-up-h">Frenchies need a vet check before their first birthday.</div>
+        <div class="heads-up-sub">We'll remind you before it's time. That's what Tracks is for.</div>
+      </div>
+
+      <button class="app-btn">Open the Tracks app</button>
+      <p class="app-note">Daisy's plan is ready and waiting.</p>
+
+      <div class="home-bar"></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
