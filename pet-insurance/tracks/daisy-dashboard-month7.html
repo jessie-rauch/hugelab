@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tracks — Daisy · Month 7</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --pink:   #ed47a2;
+  --yellow: #f9d129;
+  --black:  #0d0d0d;
+  --white:  #ffffff;
+  --cream:  #f5ecd8;
+  --ink:    #111111;
+  --dim:    rgba(13,13,13,0.55);   /* was 0.45 — minimum readable gray */
+  --border: rgba(13,13,13,0.1);
+  --font-d: 'Eloura Sans', 'DM Sans', system-ui, sans-serif;
+  --font-b: 'ABC Ginto', 'DM Sans', system-ui, sans-serif;
+}
+
+html, body {
+  min-height: 100%;
+  background: #e8e4dd;
+  font-family: var(--font-b);
+  color: var(--black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+/* ── PHONE SHELL ── */
+.phone {
+  width: 340px;
+  height: 720px;
+  background: var(--cream);
+  border-radius: 48px;
+  border: 9px solid var(--black);
+  box-shadow: 0 28px 60px rgba(0,0,0,0.3);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+.scroll::-webkit-scrollbar { display: none; }
+
+/* ── HERO — yellow, compact, horizontal ── */
+.hero {
+  background: var(--yellow);
+  padding: 18px 18px 16px;
+  position: relative;
+}
+
+.hero-wordmark {
+  height: 16px;
+  display: block;
+  margin-bottom: 14px;
+  /* black logo on yellow — no invert needed */
+}
+
+.hero-body {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.dog-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--black);
+  flex-shrink: 0;
+}
+.dog-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.hero-text { flex: 1; min-width: 0; }
+
+.hero-location {
+  font-family: var(--font-b);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(13,13,13,0.55);
+  margin-bottom: 4px;
+}
+
+.hero-h {
+  font-family: var(--font-d);
+  font-size: 22px;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 0.95;
+  color: var(--black);
+}
+.hero-h .pink { color: var(--pink); }
+
+.hero-sub {
+  font-family: var(--font-b);
+  font-size: 11px;
+  color: rgba(13,13,13,0.6);
+  margin-top: 5px;
+  line-height: 1.3;
+}
+
+/* ── VITALS ── */
+.vitals {
+  background: var(--black);
+  margin: 10px 12px 0;
+  border-radius: 18px;
+  padding: 13px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.vital-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: center;
+  flex: 1;
+}
+.vital-item + .vital-item { border-left: 1px solid rgba(255,255,255,0.1); }
+.vital-label {
+  font-family: var(--font-b);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.45);
+}
+.vital-value {
+  font-family: var(--font-d);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--white);
+  text-align: center;
+}
+.vital-value.pink   { color: var(--pink); }
+.vital-value.yellow { color: var(--yellow); }
+
+/* ── MOSAIC ── */
+.mosaic {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 8px;
+  padding: 10px 12px 0;
+}
+
+/* ── TILE: BREED / HEALTH LEAD — pink ── */
+.tile-breed-lead {
+  grid-column: 1 / -1;
+  background: var(--pink);
+  border-radius: 18px;
+  padding: 16px 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.breed-pulse-wrap {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+.breed-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--white);
+  position: relative;
+}
+.breed-pulse::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.7);
+  animation: pulseRing 2s ease-out infinite;
+  opacity: 0;
+}
+@keyframes pulseRing {
+  0%   { transform: scale(0.6); opacity: 0.8; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+.breed-lead-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.breed-lead-tag-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--white);
+  flex-shrink: 0;
+}
+.breed-lead-tag-label {
+  font-family: var(--font-d);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.85);
+}
+
+.breed-lead-title {
+  font-family: var(--font-d);
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  line-height: 1.05;
+  margin-bottom: 8px;
+}
+.breed-lead-title .yellow { color: var(--yellow); }
+
+.breed-lead-copy {
+  font-family: var(--font-b);
+  font-size: 12px;
+  color: rgba(255,255,255,0.88);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.watch-chips-label {
+  font-family: var(--font-d);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--white);
+  margin-bottom: 7px;
+}
+.watch-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.watch-chip {
+  flex: 0 0 calc(50% - 3px);
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 999px;
+  padding: 5px 11px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.watch-chip-icon { font-size: 13px; color: var(--white); }
+.watch-chip-label {
+  font-family: var(--font-b);
+  font-size: 11px;
+  color: var(--white);
+  white-space: nowrap;
+}
+
+.breed-lead-link {
+  font-family: var(--font-d);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--white);
+  margin-top: 14px;
+  display: block;
+  text-align: center;
+  border: 1.5px solid rgba(255,255,255,0.6);
+  border-radius: 999px;
+  padding: 10px 16px;
+  text-decoration: none;
+}
+
+/* ── TILE: COVERAGE ── */
+.tile-coverage {
+  background: var(--ink);
+  border-radius: 18px;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 130px;
+}
+.cov-status-row { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+.cov-status-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; flex-shrink: 0; }
+.cov-status-label {
+  font-family: var(--font-d);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.6);
+}
+.cov-amount {
+  font-family: var(--font-d);
+  font-size: 40px;
+  line-height: 0.9;
+  color: var(--yellow);
+  letter-spacing: -0.01em;
+  margin: 6px 0 2px;
+}
+.cov-amount-label {
+  font-family: var(--font-b);
+  font-size: 10.5px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.3;
+}
+.cov-detail {
+  font-family: var(--font-d);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.4;
+  margin-top: 8px;
+}
+
+/* ── TILE: VET ── */
+.tile-vet {
+  background: var(--white);
+  border-radius: 18px;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 130px;
+  border: 1.5px solid var(--border);
+}
+.vet-eyebrow {
+  font-family: var(--font-d);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(13,13,13,0.5);
+  margin-bottom: 8px;
+}
+/* Date — all same weight, same register */
+.vet-date {
+  font-family: var(--font-d);
+  font-size: 28px;
+  line-height: 0.9;
+  color: var(--black);
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.vet-clinic {
+  font-family: var(--font-b);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--black);
+  line-height: 1.35;
+}
+.vet-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 9px;
+}
+.vet-status-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; flex-shrink: 0; }
+.vet-status-label {
+  font-family: var(--font-d);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--black);
+}
+.vet-next {
+  font-family: var(--font-b);
+  font-size: 10px;
+  color: var(--dim);
+  margin-top: 3px;
+}
+
+/* ── TILE: MILESTONE ── */
+.tile-milestone {
+  grid-column: 1 / -1;
+  background: var(--cream);
+  border-radius: 18px;
+  padding: 16px 18px 16px;
+  border: 1.5px solid rgba(13,13,13,0.1);
+}
+.milestone-eyebrow {
+  font-family: var(--font-d);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--black);
+  margin-bottom: 16px;
+}
+
+/* Track: single flex row so dots are vertically centered on the rail */
+/* Milestone track: 5-column grid, each col = dot + label, rail draws behind */
+.milestone-track-wrap {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  position: relative;
+  row-gap: 6px;
+}
+
+/* Rail spans full width behind row 1 */
+.milestone-track-wrap::before {
+  content: '';
+  position: absolute;
+  left: calc(10% );   /* center of first col */
+  right: calc(10% );  /* center of last col */
+  top: 6px;           /* vertically center on dots */
+  height: 5px;
+  background: rgba(13,13,13,0.12);
+  border-radius: 3px;
+  z-index: 0;
+}
+
+/* Pink fill: 60% of the rail = covers first 3 dots */
+.milestone-track-wrap::after {
+  content: '';
+  position: absolute;
+  left: calc(10% );
+  width: calc(60% * 0.8);   /* 60% of 80% rail width */
+  top: 6px;
+  height: 5px;
+  background: var(--pink);
+  border-radius: 3px;
+  z-index: 0;
+}
+
+.milestone-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+}
+
+.m-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(13,13,13,0.15);
+  border: 2.5px solid var(--cream);
+  flex-shrink: 0;
+}
+.m-dot.done { background: var(--pink); }
+.m-dot.now  { background: var(--black); border-color: var(--cream); width: 14px; height: 14px; }
+
+.m-lbl {
+  font-family: var(--font-b);
+  font-size: 9.5px;
+  color: rgba(13,13,13,0.45);
+  text-align: center;
+  line-height: 1;
+}
+.m-lbl.now {
+  color: var(--black);
+  font-weight: 700;
+  font-size: 10px;
+}
+
+/* Stat row — three data points, the tile's payoff */
+.milestone-stat-row {
+  display: flex;
+  margin-top: 14px;
+  padding-top: 13px;
+  border-top: 1px solid rgba(13,13,13,0.1);
+}
+.m-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.m-stat + .m-stat {
+  border-left: 1px solid rgba(13,13,13,0.1);
+  padding-left: 12px;
+  margin-left: 12px;
+}
+.m-stat-value {
+  font-family: var(--font-d);
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: var(--black);
+  line-height: 1;
+}
+.m-stat-value .pink { color: var(--pink); }
+.m-stat-label {
+  font-family: var(--font-b);
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(13,13,13,0.6);
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.35;
+}
+
+/* ── FOR DAISY SECTION ── */
+.for-daisy {
+  padding: 16px 12px 0;
+}
+
+.for-daisy-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 0 2px;
+}
+.for-daisy-label {
+  font-family: var(--font-d);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--black);
+}
+.for-daisy-sub {
+  font-family: var(--font-b);
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(13,13,13,0.5);
+}
+
+/* feed cards */
+.feed-card {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  border: 1.5px solid var(--border);
+}
+.feed-card:last-child { margin-bottom: 0; }
+
+.feed-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 7px;
+}
+.feed-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.feed-dot.trending { background: var(--pink); }
+.feed-dot.local    { background: #3b82f6; }
+.feed-dot.seasonal { background: #f97316; }
+.feed-dot.tip      { background: #8b5cf6; }
+
+.feed-type {
+  font-family: var(--font-d);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--black);
+  font-weight: 700;
+}
+.feed-when {
+  font-family: var(--font-b);
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(13,13,13,0.5);
+}
+
+.feed-title {
+  font-family: var(--font-d);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--black);
+  line-height: 1.15;
+  margin-bottom: 7px;
+}
+
+.feed-body {
+  font-family: var(--font-b);
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(13,13,13,0.7);
+  line-height: 1.5;
+}
+
+.feed-source {
+  font-family: var(--font-b);
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(13,13,13,0.45);
+  margin-top: 9px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.feed-source-check {
+  width: 13px;
+  height: 13px;
+  border-radius: 3px;
+  background: rgba(74,222,128,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.feed-source-check i { font-size: 8px; color: #16a34a; }
+
+/* ── TILE: RENEWAL ── */
+.tile-renewal {
+  background: var(--cream);
+  border: 1.5px solid rgba(13,13,13,0.1);
+  border-radius: 18px;
+  padding: 16px 18px;
+  margin: 8px 12px 0;
+}
+.renewal-top-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.renewal-eyebrow {
+  font-family: var(--font-d);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--black);
+  font-weight: 700;
+}
+.renewal-date {
+  font-family: var(--font-b);
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(13,13,13,0.5);
+}
+.renewal-rate {
+  font-family: var(--font-d);
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: var(--black);
+  margin-bottom: 5px;
+  line-height: 1.1;
+}
+.renewal-rate-num {
+  font-size: 26px;
+  letter-spacing: -0.01em;
+}
+.renewal-note {
+  font-family: var(--font-b);
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(13,13,13,0.6);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+.renewal-link {
+  font-family: var(--font-d);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--black);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ── CTA ── */
+.cta-zone { padding: 14px 12px 14px; }
+.cta-btn {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  background: var(--pink);
+  color: var(--white);
+  border: none;
+  border-radius: 999px;
+  font-family: var(--font-d);
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  text-align: center;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.cta-sub {
+  font-family: var(--font-b);
+  font-size: 10.5px;
+  font-weight: 600;
+  color: rgba(13,13,13,0.55);
+  text-align: center;
+  margin-top: 7px;
+  line-height: 1.4;
+}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  padding: 10px 0 20px;
+  flex-shrink: 0;
+}
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+.nav-icon       { font-size: 22px; color: var(--black); line-height: 1; }
+.nav-icon.active{ color: var(--pink); }
+.nav-label {
+  font-family: var(--font-d);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(13,13,13,0.45);
+}
+.nav-label.active { color: var(--pink); }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="scroll">
+
+    <!-- HERO — yellow, compact, horizontal -->
+    <div class="hero">
+      <img src="tracks_black.png" alt="Tracks" class="hero-wordmark">
+      <div class="hero-body">
+        <div class="dog-circle">
+          <img src="daisy.jpg" alt="Daisy">
+        </div>
+        <div class="hero-text">
+          <p class="hero-location">November · Austin, TX</p>
+          <h1 class="hero-h">Daisy turns 1<br>in 5 months.</h1>
+          <p class="hero-sub">She's healthy. You're covered.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- VITALS -->
+    <div class="vitals">
+      <div class="vital-item"><span class="vital-label">Name</span><span class="vital-value yellow">Daisy</span></div>
+      <div class="vital-item"><span class="vital-label">Breed</span><span class="vital-value">Frenchie</span></div>
+      <div class="vital-item"><span class="vital-label">Age</span><span class="vital-value">7 mo</span></div>
+      <div class="vital-item"><span class="vital-label">Plan</span><span class="vital-value pink">Active</span></div>
+    </div>
+
+    <!-- MOSAIC -->
+    <div class="mosaic">
+
+      <!-- TILE 1: BREED / HEALTH LEAD — pink, full width -->
+      <div class="tile-breed-lead">
+        <div class="breed-pulse-wrap">
+          <div class="breed-pulse"></div>
+        </div>
+        <div class="breed-lead-tag">
+          <div class="breed-lead-tag-dot"></div>
+          <span class="breed-lead-tag-label">Heads up this month</span>
+        </div>
+        <p class="breed-lead-title">Daisy's first-year<br>stretch is <span class="yellow">starting.</span></p>
+        <p class="breed-lead-copy">French Bulldogs often show their first breed-specific signs between 7 and 14 months. Nothing's wrong. Worth knowing what to watch for.</p>
+        <p class="watch-chips-label">Look out for issues related to</p>
+        <div class="watch-chips">
+          <div class="watch-chip">
+            <i class="ti ti-wind watch-chip-icon" aria-hidden="true"></i>
+            <span class="watch-chip-label">Breathing</span>
+          </div>
+          <div class="watch-chip">
+            <i class="ti ti-droplet watch-chip-icon" aria-hidden="true"></i>
+            <span class="watch-chip-label">Skin folds</span>
+          </div>
+          <div class="watch-chip">
+            <i class="ti ti-walk watch-chip-icon" aria-hidden="true"></i>
+            <span class="watch-chip-label">Stair hesitation</span>
+          </div>
+          <div class="watch-chip">
+            <i class="ti ti-eye watch-chip-icon" aria-hidden="true"></i>
+            <span class="watch-chip-label">Eye discharge</span>
+          </div>
+        </div>
+        <span class="breed-lead-link">What to mention at her 1-year checkup</span>
+      </div>
+
+      <!-- TILE 2: COVERAGE — left -->
+      <div class="tile-coverage">
+        <div>
+          <div class="cov-status-row">
+            <div class="cov-status-dot"></div>
+            <span class="cov-status-label">Coverage active</span>
+          </div>
+          <div class="cov-amount">$0</div>
+          <div class="cov-amount-label">claimed<br>since May</div>
+        </div>
+        <div class="cov-detail">Daisy's been<br>healthy.<br>That's the goal.</div>
+      </div>
+
+      <!-- TILE 3: VET — right -->
+      <div class="tile-vet">
+        <div class="vet-eyebrow">Last vet visit</div>
+        <p class="vet-date">Sep 8</p>
+        <p class="vet-clinic">Austin Animal Clinic</p>
+        <div class="vet-status">
+          <div class="vet-status-dot"></div>
+          <span class="vet-status-label">Healthy</span>
+        </div>
+        <p class="vet-next">Next due Apr 2026</p>
+      </div>
+
+      <!-- TILE 4: MILESTONE — full width -->
+      <div class="tile-milestone">
+        <p class="milestone-eyebrow">Daisy's milestones</p>
+        <div class="milestone-track-wrap">
+          <div class="milestone-col"><div class="m-dot done"></div><span class="m-lbl">Home</span></div>
+          <div class="milestone-col"><div class="m-dot done"></div><span class="m-lbl">Enroll</span></div>
+          <div class="milestone-col"><div class="m-dot done"></div><span class="m-lbl">6 mo</span></div>
+          <div class="milestone-col"><div class="m-dot now"></div><span class="m-lbl now">Now</span></div>
+          <div class="milestone-col"><div class="m-dot"></div><span class="m-lbl">1 yr</span></div>
+        </div>
+        <div class="milestone-stat-row">
+          <div class="m-stat">
+            <span class="m-stat-value">7</span>
+            <span class="m-stat-label">Months covered</span>
+          </div>
+          <div class="m-stat">
+            <span class="m-stat-value">1</span>
+            <span class="m-stat-label">Vet visit<br>Healthy</span>
+          </div>
+          <div class="m-stat">
+            <span class="m-stat-value"><span class="pink">$0</span></span>
+            <span class="m-stat-label">Claimed<br>since May</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /mosaic -->
+
+    <!-- FOR DAISY SECTION -->
+    <div class="for-daisy">
+      <div class="for-daisy-header">
+        <span class="for-daisy-label">For Daisy</span>
+        <span class="for-daisy-sub">Curated by our vet team</span>
+      </div>
+
+      <!-- Card 1: Trending -->
+      <div class="feed-card">
+        <div class="feed-card-meta">
+          <div class="feed-dot trending"></div>
+          <span class="feed-type">Trending</span>
+          <span class="feed-when">· This week</span>
+        </div>
+        <p class="feed-title">Frenchie pet parents are worried about winter paw cracking.</p>
+        <p class="feed-body">Cold pavement and dry air dry out paw pads fast. Musher's Secret or any paw balm before walks. Check between the toes too.</p>
+        <div class="feed-source">
+          <div class="feed-source-check"><i class="ti ti-check" aria-hidden="true"></i></div>
+          r/frenchbulldogs · verified by our vet team
+        </div>
+      </div>
+
+      <!-- Card 2: Local -->
+      <div class="feed-card">
+        <div class="feed-card-meta">
+          <div class="feed-dot local"></div>
+          <span class="feed-type">Local</span>
+          <span class="feed-when">· 2 days ago</span>
+        </div>
+        <p class="feed-title">Barton Springs dog area closes Nov 22 for maintenance.</p>
+        <p class="feed-body">Back open Dec 6. Red Bud Isle is your best off-leash option while it's closed. Keep an eye on Daisy near the water.</p>
+      </div>
+
+      <!-- Card 3: Seasonal -->
+      <div class="feed-card">
+        <div class="feed-card-meta">
+          <div class="feed-dot seasonal"></div>
+          <span class="feed-type">Seasonal</span>
+          <span class="feed-when">· This month</span>
+        </div>
+        <p class="feed-title">Holiday plants to keep off the floor.</p>
+        <p class="feed-body">Poinsettias are mildly toxic. Mistletoe and holly are the ones to actually avoid. Daisy will try to eat all of them.</p>
+        <div class="feed-source">
+          <div class="feed-source-check"><i class="ti ti-check" aria-hidden="true"></i></div>
+          r/AustinPets · verified by our vet team
+        </div>
+      </div>
+
+      <!-- Card 4: Tip -->
+      <div class="feed-card">
+        <div class="feed-card-meta">
+          <div class="feed-dot tip"></div>
+          <span class="feed-type">Tip</span>
+          <span class="feed-when">· Last week</span>
+        </div>
+        <p class="feed-title">Heartworm prevention is due.</p>
+        <p class="feed-body">We don't cover this. It's wellness, not insurance. We'll remind you so a $12 pill doesn't become a $4,000 surgery.</p>
+      </div>
+
+    </div><!-- /for-daisy -->
+
+    <!-- RENEWAL -->
+    <div class="tile-renewal">
+      <div class="renewal-top-row">
+        <span class="renewal-eyebrow">Renewal</span>
+        <span class="renewal-date">Coming May 2027</span>
+      </div>
+      <p class="renewal-rate"><span class="renewal-rate-num">$76</span>/mo starting year two</p>
+      <p class="renewal-note">Your rate goes up $5 at renewal. Age-based pricing. Same coverage. No surprises.</p>
+      <span class="renewal-link">See what changes, what doesn't →</span>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-zone">
+      <button class="cta-btn">See Daisy's health timeline</button>
+      <p class="cta-sub">7 months covered. Everything's up to date.</p>
+    </div>
+
+  </div><!-- /scroll -->
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <div class="nav-item" aria-current="page">
+      <i class="ti ti-home nav-icon active" aria-hidden="true"></i>
+      <span class="nav-label active">Home</span>
+    </div>
+    <div class="nav-item">
+      <i class="ti ti-paw nav-icon" aria-hidden="true"></i>
+      <span class="nav-label">Daisy</span>
+    </div>
+    <div class="nav-item">
+      <i class="ti ti-clipboard nav-icon" aria-hidden="true"></i>
+      <span class="nav-label">Claims</span>
+    </div>
+    <div class="nav-item">
+      <i class="ti ti-user nav-icon" aria-hidden="true"></i>
+      <span class="nav-label">Account</span>
+    </div>
+  </nav>
+</div>
+
+</body>
+</html>
