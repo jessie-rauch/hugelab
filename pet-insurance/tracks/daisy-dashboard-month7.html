@@ -14,8 +14,8 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --pink:   #ed47a2;
-  --yellow: #f9d129;
+  --pink:   #EA3E70;
+  --yellow: #FCFF58;
   --black:  #0d0d0d;
   --white:  #ffffff;
   --cream:  #f5ecd8;
@@ -28,7 +28,7 @@
 
 html, body {
   min-height: 100%;
-  background: #e8e4dd;
+  background: var(--cream);
   font-family: var(--font-b);
   color: var(--black);
   display: flex;
@@ -66,10 +66,9 @@ html, body {
 }
 
 .hero-wordmark {
-  height: 16px;
+  height: 40px;
   display: block;
   margin-bottom: 14px;
-  /* black logo on yellow — no invert needed */
 }
 
 .hero-body {
@@ -554,16 +553,6 @@ html, body {
   gap: 6px;
   margin-bottom: 7px;
 }
-.feed-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.feed-dot.trending { background: var(--pink); }
-.feed-dot.local    { background: #3b82f6; }
-.feed-dot.seasonal { background: #f97316; }
-.feed-dot.tip      { background: #8b5cf6; }
 
 .feed-type {
   font-family: var(--font-d);
@@ -618,7 +607,7 @@ html, body {
   justify-content: center;
   flex-shrink: 0;
 }
-.feed-source-check i { font-size: 8px; color: #16a34a; }
+.feed-source-check i { font-size: 8px; color: var(--ink); }
 
 /* ── TILE: RENEWAL ── */
 .tile-renewal {
@@ -745,7 +734,7 @@ html, body {
 
     <!-- HERO — yellow, compact, horizontal -->
     <div class="hero">
-      <img src="tracks_black.png" alt="Tracks" class="hero-wordmark">
+      <img src="black-white.png" alt="Tracks" class="hero-wordmark">
       <div class="hero-body">
         <div class="dog-circle">
           <img src="daisy.jpg" alt="Daisy">
@@ -865,7 +854,7 @@ html, body {
       <!-- Card 1: Trending -->
       <div class="feed-card">
         <div class="feed-card-meta">
-          <div class="feed-dot trending"></div>
+
           <span class="feed-type">Trending</span>
           <span class="feed-when">· This week</span>
         </div>
@@ -880,7 +869,7 @@ html, body {
       <!-- Card 2: Local -->
       <div class="feed-card">
         <div class="feed-card-meta">
-          <div class="feed-dot local"></div>
+
           <span class="feed-type">Local</span>
           <span class="feed-when">· 2 days ago</span>
         </div>
@@ -891,7 +880,7 @@ html, body {
       <!-- Card 3: Seasonal -->
       <div class="feed-card">
         <div class="feed-card-meta">
-          <div class="feed-dot seasonal"></div>
+
           <span class="feed-type">Seasonal</span>
           <span class="feed-when">· This month</span>
         </div>
@@ -906,7 +895,7 @@ html, body {
       <!-- Card 4: Tip -->
       <div class="feed-card">
         <div class="feed-card-meta">
-          <div class="feed-dot tip"></div>
+
           <span class="feed-type">Tip</span>
           <span class="feed-when">· Last week</span>
         </div>
